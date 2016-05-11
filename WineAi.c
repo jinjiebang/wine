@@ -77,7 +77,6 @@ private:
 // 核心AI类
 class AI:public Analyse {
 public:
-  void ShowThink();
   struct xy gobang();
 
 private:
