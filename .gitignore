@@ -1,0 +1,30 @@
+#include<math.h>
+#include<time.h>
+#include<stdlib.h>
+#include<conio.h>
+#include<iostream>
+using namespace std;
+
+#define win    6                // 连五
+#define flex4  5                // 活四
+#define block4  4               // 冲四
+#define flex3      3            // 活三
+#define block3   2              // 眠三
+#define flex2    1              // 活二
+#define Ntype    7              // 棋型个数
+#define SearchDepth  8   //搜索最大深度
+#define size 15                 // 棋盘大小
+#define color(step)       (((step)-1)%2+1)
+
+// 棋子坐标结构
+struct xy {
+  int x;
+  int y;
+};
+
+// 待选点结构
+struct point {
+  struct xy p;
+  int val;
+};
+
