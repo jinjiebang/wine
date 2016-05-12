@@ -568,7 +568,7 @@ struct xy AI::gobang() {
   return BestMove;
 }
 void Gui::ShowThink() {
-  int x = BestMove.x + 1;
+  char x = BestMove.x + 65;
   int y = BestMove.y + 1;
   /* cout<<"-------------------------------\n"; cout<<" 作者:jinjiebang \n";
      cout<<" 邮箱:724895582@qq.com \n"; cout
@@ -578,7 +578,7 @@ void Gui::ShowThink() {
   cout << " 搜索局面: " << total;
   cout << " 剪枝: " << ABcut;
   cout << endl;
-  cout << " 最佳点: (" << x << "," << y << ")";
+  cout << " 最佳点:" << x << y;
   cout << " 步数: " << step;
   cout << " 局势: " << BestVal;
   cout << endl;
@@ -658,11 +658,10 @@ void Gui::DrawChess() {
     }
     cout << endl;
   }
-  for (i = 0; i <= size; i++) {
-    if (i < 10)
-      cout << i << " ";
-    else
-      cout << i % 10 << " ";
+  cout << "  ";
+  for (i = 0; i < size; i++) {
+    char c=65+i;
+    cout << c << " ";
   }
   cout << endl;
 }
