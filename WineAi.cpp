@@ -548,9 +548,10 @@ struct xy AI::gobang() {
   // 第二，三步随机
   if (step == 2 || step == 1) {
     int rx, ry;
+    int d=step*2+1;
     do {
-      rx = rand() % 5 + chessxy[1].x - 2;
-      ry = rand() % 5 + chessxy[1].y - 2;
+      rx = rand() % d + chessxy[1].x - step;
+      ry = rand() % d + chessxy[1].y - step;
     } while (chessboard[rx][ry] != 0);
     BestMove.x = rx;
     BestMove.y = ry;
