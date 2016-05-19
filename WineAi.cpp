@@ -105,6 +105,7 @@ public:
   void ChessStart();
 
 };
+//下子
 void Chess::MakeMove(struct xy next) {
   Analyse analyse;
   int x = next.x;
@@ -117,7 +118,7 @@ void Chess::MakeMove(struct xy next) {
   analyse.UpdateType(x, y);
 
 }
-//下子
+//删子
 void Chess::DelMove() {
   Analyse analyse;
   int x = chessxy[step].x;
@@ -126,7 +127,7 @@ void Chess::DelMove() {
   step--;
   analyse.UpdateType(x, y);
 }
-//删子
+//悔棋
 void Chess::Undo() {
   if (step >= 2) {
     DelMove();
