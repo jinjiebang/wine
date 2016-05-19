@@ -52,13 +52,13 @@ public:
   void Undo();
 
 };
+
 // 棋盘类
 class Board:public Chess {
 public:
   int CheckWin();
   int CheckXy(int x, int y);
 };
-
 
 // 棋盘分析类
 class Analyse:public Board {
@@ -73,6 +73,7 @@ private:
   void TypeCount(int x, int y, int role, int *type);
 
 };
+
 // 核心AI类
 class AI:public Analyse {
 public:
@@ -88,6 +89,7 @@ private:
   int AlphaBeta(int depth, int alpha, int beta);
 
 };
+
 // 界面类
 class Gui:public Board {
 public:
@@ -98,6 +100,7 @@ public:
 private:
   int GoToP(int *x, int *y);
 };
+
 // 游戏控制类
 class Game:public Board {
 public:
@@ -105,6 +108,7 @@ public:
   void ChessStart();
 
 };
+
 //下子
 void Chess::MakeMove(struct xy next) {
   Analyse analyse;
