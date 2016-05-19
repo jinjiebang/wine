@@ -224,7 +224,7 @@ void Analyse::UpdateRound(int n) {
     y = chessxy[k].y;
     for (i = x - n; i <= x + n; i++) {
       for (j = y - n; j <= y + n; j++) {
-        if(!CheckXy(a,b))
+        if(!CheckXy(i,j))
           continue;
         ChessRound[i][j] = 1;
       }
