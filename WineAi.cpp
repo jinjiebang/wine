@@ -40,8 +40,10 @@ int BestVal;                    // 局势
 int total;                      // 节点
 int ABcut;                      // 剪枝
 struct xy BestMove;             // 最佳走法
+int dx[4] = { 1, 0, 1, 1 };     //方向向量
+int dy[4] = { 0, 1, 1, -1 };
 int shape[size][size][2][4] = { 0 }; // 保存棋型
-int ChessRound[size][size] = { 0 };
+int ChessRound[size][size] = { 0 }; //合理着法
 // 棋子基类
 class Chess {
 public:
@@ -55,9 +57,6 @@ class Board:public Chess {
 public:
   int CheckWin();
   int CheckXy(int x, int y);
-
-private:
-  int FiveLine(int role, int x, int y, int i, int j);
 };
 
 
@@ -118,7 +117,7 @@ void Chess::MakeMove(struct xy next) {
   analyse.UpdateType(x, y);
 
 }
-
+//下子
 void Chess::DelMove() {
   Analyse analyse;
   int x = chessxy[step].x;
@@ -127,69 +126,53 @@ void Chess::DelMove() {
   step--;
   analyse.UpdateType(x, y);
 }
-
+//删子
 void Chess::Undo() {
   if (step >= 2) {
     DelMove();
     DelMove();
   }
 }
+//检查坐标越界
 int Board::CheckXy(int x, int y) {
   if (x < 0 || x >= size || y < 0 || y >= size)
     return 0;
   else
     return 1;
 }
-int Board::FiveLine(int role, int x, int y, int i, int j) {
-  int a, b, k;
-  int count = 1;
-  a = x;
-  b = y;
-  for (k = 0; k < 4; k++) {
-    a += i;
-    b += j;
-    if (!CheckXy(a, b))
-      break;
-    if (chessboard[a][b] != role)
-      break;
-    count++;
-  }
-  a = x;
-  b = y;
-  for (k = 0; k < 4; k++) {
-    a -= i;
-    b -= j;
-    if (!CheckXy(a, b))
-      break;
-    if (chessboard[a][b] != role)
-      break;
-    count++;
-  }
-  if (count >= 5)
-    return 1;
-
-  return 0;
-}
+//判断最后一子是否成五
 int Board::CheckWin() {
-  int x = chessxy[step].x;
-  int y = chessxy[step].y;
-  int role = color(step);
-
-  if (FiveLine(role, x, y, 1, 0))
-    return win;
-  if (FiveLine(role, x, y, 0, 1))
-    return win;
-  if (FiveLine(role, x, y, 1, 1))
-    return win;
-  if (FiveLine(role, x, y, 1, -1))
-    return win;
-
+	int x = chessxy[step].x;
+	int y = chessxy[step].y;
+	int role = color(step);
+	
+	int a, b;
+	int count;
+	for(int i=0;i<4;i++){
+		count = 1;
+		a = x,b = y;
+		for (int j= 0; j< 4; j++) {
+			a += dx[i];
+			b += dy[i];
+			if (!CheckXy(a, b)) break;
+			if (chessboard[a][b] != role) break;
+			count++;
+		}
+		a = x,b = y;
+		for (int k= 0; k< 4; k++) {
+			a -= dx[i];
+			b -= dy[i];
+			if (!CheckXy(a, b)) break;
+			if (chessboard[a][b] != role) break;
+			count++;
+		}
+		if (count >= 5) return win;
+  }
+  
   return 0;
 }
-
+//更新(x,y)附近位置的棋形信息
 void Analyse::UpdateType(int x, int y) {
-  int dx[4] = { 1, 0, 1, 1 };
-  int dy[4] = { 0, 1, 1, -1 };
   int a, b;
   for (int i = 0; i < 4; i++) {
     a = x;
@@ -222,6 +205,7 @@ void Analyse::UpdateType(int x, int y) {
     }
   }
 }
+//更新合理着法
 void Analyse::UpdateRound(int n) {
   int x, y;
   int i, j;
@@ -235,13 +219,14 @@ void Analyse::UpdateRound(int n) {
     y = chessxy[k].y;
     for (i = x - n; i <= x + n; i++) {
       for (j = y - n; j <= y + n; j++) {
+        if(!CheckXy(a,b))
+          continue;
         ChessRound[i][j] = 1;
       }
     }
   }
 }
-
-
+//判断角色role在点(x,y)的方向(i,j)能成的棋形
 int Analyse::TypeLine(int role, int x, int y, int i, int j) {
   int a, b, k;
   int kong = 0, block = 0;
@@ -299,7 +284,7 @@ int Analyse::TypeLine(int role, int x, int y, int i, int j) {
       break;
     }
   }
-
+  //判断棋形
   if (len >= 5 && count > 1) {
     if (count == 5)
       return win;
@@ -323,7 +308,7 @@ int Analyse::TypeLine(int role, int x, int y, int i, int j) {
   }
   return 0;
 }
-
+//统计棋形个数
 void Analyse::TypeCount(int x, int y, int role, int *type) {
   int d[4];
   // 四个方向
@@ -339,8 +324,7 @@ void Analyse::TypeCount(int x, int y, int role, int *type) {
 
 }
 
-
-
+//计算点(x,y)的分数
 int Analyse::ScoreMove(int x, int y) {
   int MeType[7] = { 0 }, YouType[7] = {
   0};
@@ -379,6 +363,7 @@ int Analyse::ScoreMove(int x, int y) {
 
   return score;
 }
+//统计角色role的总分
 void Analyse::ChessScore(int role, int *score, int *type) {
   int i;
   int x, y;
@@ -427,7 +412,7 @@ int AI::evaluate2() {
 
   return Cscore - Hscore;
 }
-
+//局面评估
 int AI::evaluate() {
   int val, i, j;
   int max = 0;
@@ -465,6 +450,7 @@ int AI::sort(struct point *a, int n) {
     }
     a[j] = key;
   }
+  return 0;
 }
 
  // 生成下一步所有走法，返回总个数
@@ -531,6 +517,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   }
   return alpha;
 }
+//获取最佳点
 struct xy AI::gobang() {
   int i;
   clock_t start, finish;
@@ -568,6 +555,7 @@ struct xy AI::gobang() {
   ThinkTime = (double)(finish - start) / CLOCKS_PER_SEC;
   return BestMove;
 }
+//显示思考信息
 void Gui::ShowThink() {
   char x = BestMove.x + 65;
   int y = BestMove.y + 1;
@@ -584,7 +572,7 @@ void Gui::ShowThink() {
   cout << " 局势: " << BestVal;
   cout << endl;
 }
-
+//返回用户选点坐标,并画出当前坐标
 int Gui::GoToP(int *x, int *y) {
   struct xy p;
   AI ai;
@@ -630,8 +618,7 @@ int Gui::GoToP(int *x, int *y) {
   *y = dy;
   return 1;
 }
-
-
+//画棋盘
 void Gui::DrawChess() {
   clrscr();
   ShowThink();
@@ -666,7 +653,7 @@ void Gui::DrawChess() {
   }
   cout << endl;
 }
-
+//获取用户选点坐标
 void Gui::GetXy(int *x, int *y) {
   int i, j;
   int flag;
@@ -703,7 +690,7 @@ void Gui::GetXy(int *x, int *y) {
     flag = (GoToP(x, y));
   } while (flag || chessboard[*x][*y] != 0);
 }
-
+//控制游戏流程
 void Game::Play() {
   struct xy next;
   Gui gui;
@@ -734,7 +721,7 @@ void Game::Play() {
     }
   }
 }
-
+//游戏重新开始
 void Game::ChessStart() {
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) {
