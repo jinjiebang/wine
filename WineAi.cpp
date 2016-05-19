@@ -567,8 +567,8 @@ void Gui::ShowThink() {
   /* cout<<"-------------------------------\n"; cout<<" 作者:jinjiebang \n";
      cout<<" 邮箱:724895582@qq.com \n"; cout
      <<"-------------------------------\n"; */
-  cout << " 思考时间: " << ThinkTime;
-  cout << "s" << endl;
+  cout << " 思考时间: " << ThinkTime<<"s";
+  cout << " 难度: " << branch << endl;
   cout << " 搜索局面: " << total;
   cout << " 剪枝: " << ABcut;
   cout << endl;
