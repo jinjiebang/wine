@@ -392,7 +392,7 @@ int AI::evaluate2() {
 		return -10000;
 	else if(Ctype[flex4] > 0 || Ctype[block4] > 1)
 		return 10000;
-	else if(Htype[flex3] > 0)
+	else if(Htype[flex3] > 0 && Ctype[block4]==0)
 		return -10000;
 
 	return Cscore - Hscore;
