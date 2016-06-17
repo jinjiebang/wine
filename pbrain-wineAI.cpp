@@ -8,51 +8,51 @@
 #include<string>
 using namespace std;
 
-const int win = 6;            // Á¬Îå
-const int flex4 = 5;          // »îËÄ
-const int block4 = 4;         // ³åËÄ
-const int flex3 = 3;          // »îÈı
-const int block3 = 2;         // ÃßÈı
-const int flex2 = 1;          // »î¶ş
-const int Ntype = 7;          // ÆåĞÍ¸öÊı
-const int SearchDepth = 8;    // ËÑË÷×î´óÉî¶È
-const int MaxSize = 15;          // ÆåÅÌ´óĞ¡
+const int win = 6;            // è¿äº”
+const int flex4 = 5;          // æ´»å››
+const int block4 = 4;         // å†²å››
+const int flex3 = 3;          // æ´»ä¸‰
+const int block3 = 2;         // çœ ä¸‰
+const int flex2 = 1;          // æ´»äºŒ
+const int Ntype = 7;          // æ£‹å‹ä¸ªæ•°
+const int SearchDepth = 8;    // æœç´¢æœ€å¤§æ·±åº¦
+const int MaxSize = 20;          // æ£‹ç›˜æœ€å¤§å°ºå¯¸
 inline int color(int step) {
 	return (((step) % 2)?1 :2);
 }
 
-// Æå×Ó×ø±ê½á¹¹
+// æ£‹å­åæ ‡ç»“æ„
 struct xy {
 	int x;
 	int y;
 };
 
-// ´ıÑ¡µã½á¹¹
+// å¾…é€‰ç‚¹ç»“æ„
 struct point {
 	struct xy p;
 	int val;
 };
 
-// ÆåÅÌÊı×é
+// æ£‹ç›˜æ•°ç»„
 int chessboard[MaxSize][MaxSize] = { 0 };
 int size;
-int step = 0;                   // µ±Ç°²½Êı
-int cpt;                        // Ë«·½Æå×ÓÑÕÉ«
-struct xy chessxy[MaxSize*MaxSize];         // ÒÑÂäÆå×ÓÊı×é
-int branch = 14;                // ·ÖÖ§Êı
-double ThinkTime;               // Ë¼¿¼Ê±¼ä
-int BestVal;                    // ¾ÖÊÆ
-int total;                      // ½Úµã
-int ABcut;                      // ¼ôÖ¦
-struct xy BestMove;             // ×î¼Ñ×ß·¨
-int dx[4] = { 1, 0, 1, 1 };     //·½ÏòÏòÁ¿
+int step = 0;                   // å½“å‰æ­¥æ•°
+int cpt;                        // åŒæ–¹æ£‹å­é¢œè‰²
+struct xy chessxy[MaxSize*MaxSize];         // å·²è½æ£‹å­æ•°ç»„
+int branch = 14;                // åˆ†æ”¯æ•°
+double ThinkTime;               // æ€è€ƒæ—¶é—´
+int BestVal;                    // å±€åŠ¿
+int total;                      // èŠ‚ç‚¹
+int ABcut;                      // å‰ªæ
+struct xy BestMove;             // æœ€ä½³èµ°æ³•
+int dx[4] = { 1, 0, 1, 1 };     //æ–¹å‘å‘é‡
 int dy[4] = { 0, 1, 1, -1 };
 int MeVal[5] = { 0, 10, 10, 35, 35 };
 int YouVal[5] = { 0, 5, 5, 30, 30 };
 int count[7] = { 0, 2, 3, 3, 4, 4, 5 };
-int shape[MaxSize][MaxSize][2][4] = { 0 }; // ±£´æÆåĞÍ
-int ChessRound[MaxSize][MaxSize] = { 0 }; //ºÏÀí×Å·¨
-// Æå×Ó»ùÀà
+int shape[MaxSize][MaxSize][2][4] = { 0 }; // ä¿å­˜æ£‹å‹
+int ChessRound[MaxSize][MaxSize] = { 0 }; //åˆç†ç€æ³•
+// æ£‹å­åŸºç±»
 class Chess {
 public:
 	void MakeMove(struct xy next);
@@ -60,14 +60,14 @@ public:
 	void Undo();
 };
 
-// ÆåÅÌÀà
+// æ£‹ç›˜ç±»
 class Board :public Chess {
 public:
 	int CheckWin();
 	int CheckXy(int x, int y);
 };
 
-// ÆåÅÌ·ÖÎöÀà
+// æ£‹ç›˜åˆ†æç±»
 class Analyse :public Board {
 public:
 	int ScoreMove(int x, int y);
@@ -81,7 +81,7 @@ private:
 
 };
 
-// ºËĞÄAIÀà
+// æ ¸å¿ƒAIç±»
 class AI :public Analyse {
 public:
 	struct xy gobang();
@@ -98,7 +98,7 @@ private:
 };
 
 
-//ÏÂ×Ó
+//ä¸‹å­
 void Chess::MakeMove(struct xy next) {
 	Analyse analyse;
 	int x = next.x;
@@ -111,7 +111,7 @@ void Chess::MakeMove(struct xy next) {
 	analyse.UpdateType(x, y);
 
 }
-//É¾×Ó
+//åˆ å­
 void Chess::DelMove() {
 	Analyse analyse;
 	int x = chessxy[step].x;
@@ -120,21 +120,21 @@ void Chess::DelMove() {
 	step--;
 	analyse.UpdateType(x, y);
 }
-//»ÚÆå
+//æ‚”æ£‹
 void Chess::Undo() {
 	if(step >= 2) {
 		DelMove();
 		DelMove();
 	}
 }
-//¼ì²é×ø±êÔ½½ç
+//æ£€æŸ¥åæ ‡è¶Šç•Œ
 int Board::CheckXy(int x, int y) {
 	if(x < 0 || x >= size || y < 0 || y >= size)
 		return 0;
 	else
 		return 1;
 }
-//ÅĞ¶Ï×îºóÒ»×ÓÊÇ·ñ³ÉÎå
+//åˆ¤æ–­æœ€åä¸€å­æ˜¯å¦æˆäº”
 int Board::CheckWin() {
 	int x = chessxy[step].x;
 	int y = chessxy[step].y;
@@ -165,7 +165,7 @@ int Board::CheckWin() {
 
 	return 0;
 }
-//¸üĞÂ(x,y)¸½½üÎ»ÖÃµÄÆåĞÎĞÅÏ¢
+//æ›´æ–°(x,y)é™„è¿‘ä½ç½®çš„æ£‹å½¢ä¿¡æ¯
 void Analyse::UpdateType(int x, int y) {
 	int a, b;
 	for(int i = 0; i < 4; i++) {
@@ -195,7 +195,7 @@ void Analyse::UpdateType(int x, int y) {
 		}
 	}
 }
-//¸üĞÂºÏÀí×Å·¨
+//æ›´æ–°åˆç†ç€æ³•
 void Analyse::UpdateRound(int n) {
 	int x, y;
 	int i, j, k;
@@ -216,7 +216,7 @@ void Analyse::UpdateRound(int n) {
 		}
 	}
 }
-//ÅĞ¶Ï½ÇÉ«roleÔÚµã(x,y)µÄ·½Ïò(i,j)ÄÜ³ÉµÄÆåĞÎ
+//åˆ¤æ–­è§’è‰²roleåœ¨ç‚¹(x,y)çš„æ–¹å‘(i,j)èƒ½æˆçš„æ£‹å½¢
 int Analyse::TypeLine(int role, int x, int y, int i, int j) {
 	int a, b, k;
 	int kong = 0, block = 0;
@@ -227,7 +227,7 @@ int Analyse::TypeLine(int role, int x, int y, int i, int j) {
 		a += i;
 		b += j;
 		if(!CheckXy(a, b)) {
-			/* len2==kong+count±íÊ¾ÉÏÒ»µã ÊÇ¼º·½Æå×Ó */
+			/* len2==kong+countè¡¨ç¤ºä¸Šä¸€ç‚¹ æ˜¯å·±æ–¹æ£‹å­ */
 			if(len2 == kong + count)
 				block++;
 			break;
@@ -249,7 +249,7 @@ int Analyse::TypeLine(int role, int x, int y, int i, int j) {
 			break;
 		}
 	}
-	// ¼ÆËãÖĞ¼ä¿Õ¸ñ
+	// è®¡ç®—ä¸­é—´ç©ºæ ¼
 	kong = len2 - count;
 	a = x;
 	b = y;
@@ -278,7 +278,7 @@ int Analyse::TypeLine(int role, int x, int y, int i, int j) {
 			break;
 		}
 	}
-	//ÅĞ¶ÏÆåĞÎ
+	//åˆ¤æ–­æ£‹å½¢
 	if(len >= 5 && count > 1) {
 		if(count == 5)
 			return win;
@@ -303,15 +303,15 @@ int Analyse::TypeLine(int role, int x, int y, int i, int j) {
 	}
 	return 0;
 }
-//Í³¼ÆÆåĞÎ¸öÊı
+//ç»Ÿè®¡æ£‹å½¢ä¸ªæ•°
 void Analyse::TypeCount(int x, int y, int role, int *type) {
 	int d[4];
-	// ËÄ¸ö·½Ïò
+	// å››ä¸ªæ–¹å‘
 	d[0] = shape[x][y][role - 1][0];
 	d[1] = shape[x][y][role - 1][1];
 	d[2] = shape[x][y][role - 1][2];
 	d[3] = shape[x][y][role - 1][3];
-	// ¼ÇÂ¼ÆåĞÍ
+	// è®°å½•æ£‹å‹
 	type[d[0]]++;
 	type[d[1]]++;
 	type[d[2]]++;
@@ -319,7 +319,7 @@ void Analyse::TypeCount(int x, int y, int role, int *type) {
 
 }
 
-//¼ÆËãµã(x,y)µÄ·ÖÊı
+//è®¡ç®—ç‚¹(x,y)çš„åˆ†æ•°
 int Analyse::ScoreMove(int x, int y) {
 	int MeType[7] = { 0 }, YouType[7] = { 0 };
 	int score = 0;
@@ -352,7 +352,7 @@ int Analyse::ScoreMove(int x, int y) {
 
 	return score;
 }
-//Í³¼Æ½ÇÉ«roleµÄ×Ü·Ö
+//ç»Ÿè®¡è§’è‰²roleçš„æ€»åˆ†
 void Analyse::ChessScore(int role, int *score, int *type) {
 	int x, y;
 	int val[5] = { 0, 2, 2, 5, 5 };
@@ -372,12 +372,12 @@ void Analyse::ChessScore(int role, int *score, int *type) {
 			type[i]++;
 	}
 
-	// ¼Ó×Ü»î¶ş£¬ÃßÈı£¬»îÈı£¬³åËÄ·ÖÖµ
+	// åŠ æ€»æ´»äºŒï¼Œçœ ä¸‰ï¼Œæ´»ä¸‰ï¼Œå†²å››åˆ†å€¼
 	for(i = 1; i < 5; i++) {
 		*score += val[i] * type[i];
 	}
 }
-// ¸ù¾İË«·½ÆåĞÍÆÀ¹À¾ÖÊÆ
+// æ ¹æ®åŒæ–¹æ£‹å‹è¯„ä¼°å±€åŠ¿
 int AI::evaluate2() {
 	int Cscore, Hscore;
 	int Ctype[7] = { 0 }, Htype[7] = { 0 };
@@ -397,12 +397,12 @@ int AI::evaluate2() {
 
 	return Cscore - Hscore;
 }
-//¾ÖÃæÆÀ¹À
+//å±€é¢è¯„ä¼°
 int AI::evaluate() {
 	int val, i, j;
 	int max = 0;
 	struct xy p;
-	// Ñ¡³ö×î¼Ñµã
+	// é€‰å‡ºæœ€ä½³ç‚¹
 	for(i = 0; i < size; i++) {
 		for(j = 0; j < size; j++) {
 			if(chessboard[i][j] == 0) {
@@ -417,14 +417,14 @@ int AI::evaluate() {
 			}
 		}
 	}
-	// ÆÀ¹À×î¼ÑµãÏÂÁËÖ®ºóµÄ¾ÖÊÆ
+	// è¯„ä¼°æœ€ä½³ç‚¹ä¸‹äº†ä¹‹åçš„å±€åŠ¿
 	MakeMove(p);
 	val = evaluate2();
 	DelMove();
 	return val;
 }
 
-// ÅÅĞò
+// æ’åº
 int AI::sort(struct point *a, int n) {
 	int i, j;
 	struct point key;
@@ -438,7 +438,7 @@ int AI::sort(struct point *a, int n) {
 	return 0;
 }
 
-// Éú³ÉÏÂÒ»²½ËùÓĞ×ß·¨£¬·µ»Ø×Ü¸öÊı
+// ç”Ÿæˆä¸‹ä¸€æ­¥æ‰€æœ‰èµ°æ³•ï¼Œè¿”å›æ€»ä¸ªæ•°
 int AI::GetMove(int depth) {
 	int i, j;
 	int n = 0;
@@ -456,16 +456,16 @@ int AI::GetMove(int depth) {
 			}
 		}
 	}
-	// ¿ÕµãÅÅĞò
+	// ç©ºç‚¹æ’åº
 	sort(sp, n);
 
-	// ÏŞÖÆ·ÖÖ§Êı
+	// é™åˆ¶åˆ†æ”¯æ•°
 	if(n < branch)
 		count = n;
 	else
 		count = branch;
 
-	// ¸´ÖÆ¿ÉÑ¡µã
+	// å¤åˆ¶å¯é€‰ç‚¹
 	for(i = 1; i <= count; i++) {
 		s[depth][i] = sp[i];
 	}
@@ -476,14 +476,14 @@ int AI::GetMove(int depth) {
 int AI::AlphaBeta(int depth, int alpha, int beta) {
 	int val;
 	total++;
-	// ¶Ô·½×îºóÒ»×ÓÁ¬Îå
+	// å¯¹æ–¹æœ€åä¸€å­è¿äº”
 	if(CheckWin())
 		return -10000;
-	// Ò¶½Úµã
+	// å¶èŠ‚ç‚¹
 	if(depth == 0)
 		return evaluate();
 	int count = GetMove(depth);
-	// ±éÀúËùÓĞ×ß·¨
+	// éå†æ‰€æœ‰èµ°æ³•
 	for(int i = 1; i <= count; i++) {
 		MakeMove(s[depth][i].p);
 		val = -AlphaBeta(depth - 1, -beta, -alpha);
@@ -502,21 +502,21 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
 	}
 	return alpha;
 }
-//»ñÈ¡×î¼Ñµã
+//è·å–æœ€ä½³ç‚¹
 struct xy AI::gobang() {
 	clock_t start, finish;
 	start = clock();
-	//cout << "µçÄÔË¼¿¼ÖĞ......\n";
+	//cout << "ç”µè„‘æ€è€ƒä¸­......\n";
 	total = 0;
 	ABcut = 0;
 	srand(time(NULL));
-	// µÚÒ»²½ÏÂÖĞĞÄµã
+	// ç¬¬ä¸€æ­¥ä¸‹ä¸­å¿ƒç‚¹
 	if(step == 0) {
 		BestMove.x = size / 2;
 		BestMove.y = size / 2;
 		return BestMove;
 	}
-	// µÚ¶ş£¬Èı²½Ëæ»ú
+	// ç¬¬äºŒï¼Œä¸‰æ­¥éšæœº
 	if(step == 2 || step == 1) {
 		int rx, ry;
 		int d = step * 2 + 1;
@@ -528,7 +528,7 @@ struct xy AI::gobang() {
 		BestMove.y = ry;
 		return BestMove;
 	}
-	// µü´ú¼ÓÉîËÑË÷
+	// è¿­ä»£åŠ æ·±æœç´¢
 	for(int i = 2; i <= SearchDepth; i += 2) {
 		MaxDepth = i;
 		BestVal = AlphaBeta(i, -10001, 10000);
@@ -645,7 +645,7 @@ int gomocup() {
 			int time_left;
 			string key;
 			cin >> key;
-			if(key == "timeout_turn") {//Ö»½ÓÊÜÂıÆå
+			if(key == "timeout_turn") {//åªæ¥å—æ…¢æ£‹
 				int value;
 				cin >> value;
 				if(value >= 100) {
