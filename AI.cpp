@@ -1,453 +1,254 @@
-#include<math.h>
+#include "AI.h"
 #include<time.h>
 #include<stdlib.h>
-#include<conio.h>
 #include<iostream>
 using namespace std;
-
-#define win    6                //Á¬Îå
-#define flex4  5                // »îËÄ
-#define block4  4               // ³åËÄ
-#define flex3      3            // »îÈı
-#define block3   2              // ÃßÈı
-#define flex2    1              // »î¶ş
-#define Ntype    7              // ÆåĞÍ¸öÊı
-#define SearchDepth  8          // ËÑË÷×î´óÉî¶È
-#define size 15                 // ÆåÅÌ´óĞ¡
-#define color(step)       (((step)-1)%2+1)
-
-// Æå×Ó×ø±ê½á¹¹
-struct xy {
-  int x;
-  int y;
-};
-
-// ´ıÑ¡µã½á¹¹
-struct point {
-  struct xy p;
-  int val;
-};
-
-// ÆåÅÌÊı×é
-int chessboard[size][size] = { 0 };
-int step = 0;                   // µ±Ç°²½Êı
-int cpt;                        // Ë«·½Æå×ÓÑÕÉ«
-int mode;                       // ÓÎÏ·Ä£Ê½
-struct xy chessxy[226];         // ÒÑÂäÆå×ÓÊı×é
-int branch = 10;                // ·ÖÖ§Êı
-double ThinkTime;               // Ë¼¿¼Ê±¼ä
-int BestVal;                    // ¾ÖÊÆ
-int total;                      // ½Úµã
-int ABcut;                      // ¼ôÖ¦
-struct xy BestMove;             // ×î¼Ñ×ß·¨
-int dx[4] = { 1, 0, 1, 1 };     //·½ÏòÏòÁ¿
-int dy[4] = { 0, 1, 1, -1 };
-int shape[size][size][2][4] = { 0 }; // ±£´æÆåĞÍ
-int ChessRound[size][size] = { 0 }; //ºÏÀí×Å·¨
-// Æå×Ó»ùÀà
-class Chess {
-public:
-  void MakeMove(struct xy next);
-  void DelMove();
-  void Undo();
-
-};
-
-// ÆåÅÌÀà
-class Board:public Chess {
-public:
-  int CheckWin();
-  int CheckXy(int x, int y);
-};
-
-// ÆåÅÌ·ÖÎöÀà
-class Analyse:public Board {
-public:
-  int ScoreMove(int x, int y);
-  void ChessScore(int role, int *score, int *type);
-  void UpdateType(int x, int y);
-  void UpdateRound(int n);
-
-private:
-  int TypeLine(int role, int x, int y, int i, int j);
-  void TypeCount(int x, int y, int role, int *type);
-
-};
-
-// ºËĞÄAIÀà
-class AI:public Analyse {
-public:
-  struct xy gobang();
-
-private:
-  int MaxDepth;
-  struct point s[11][21];
-  int evaluate2();
-  int evaluate();
-  int sort(struct point *a, int n);
-  int GetMove(int depth);
-  int AlphaBeta(int depth, int alpha, int beta);
-
-};
-
-// ½çÃæÀà
-class Gui:public Board {
-public:
-  void ShowThink();
-  void DrawChess();
-  void GetXy(int *x, int *y);
-
-private:
-  int GoToP(int *x, int *y);
-};
-
-// ÓÎÏ·¿ØÖÆÀà
-class Game:public Board {
-public:
-  void Play();
-  void ChessStart();
-
-};
-
-//ÏÂ×Ó
-void Chess::MakeMove(struct xy next) {
-  Analyse analyse;
-  int x = next.x;
-  int y = next.y;
-  step++;
-  chessboard[x][y] = color(step);
-  chessxy[step].x = x;
-  chessxy[step].y = y;
-  analyse.UpdateRound(2);
-  analyse.UpdateType(x, y);
-
-}
-//É¾×Ó
-void Chess::DelMove() {
-  Analyse analyse;
-  int x = chessxy[step].x;
-  int y = chessxy[step].y;
-  chessboard[x][y] = 0;
-  step--;
-  analyse.UpdateType(x, y);
-}
-//»ÚÆå
-void Chess::Undo() {
-  if (step >= 2) {
-    DelMove();
-    DelMove();
-  }
-}
-//¼ì²é×ø±êÔ½½ç
-int Board::CheckXy(int x, int y) {
-  if (x < 0 || x >= size || y < 0 || y >= size)
-    return 0;
-  else
-    return 1;
-}
-//ÅĞ¶Ï×îºóÒ»×ÓÊÇ·ñ³ÉÎå
-int Board::CheckWin() {
-	int x = chessxy[step].x;
-	int y = chessxy[step].y;
-	int role = color(step);
-	
-	int a, b;
-	int count;
-	for(int i=0;i<4;i++){
-		count = 1;
-		a = x,b = y;
-		for (int j= 0; j< 4; j++) {
-			a += dx[i];
-			b += dy[i];
-			if (!CheckXy(a, b)) break;
-			if (chessboard[a][b] != role) break;
-			count++;
-		}
-		a = x,b = y;
-		for (int k= 0; k< 4; k++) {
-			a -= dx[i];
-			b -= dy[i];
-			if (!CheckXy(a, b)) break;
-			if (chessboard[a][b] != role) break;
-			count++;
-		}
-		if (count >= 5) return win;
-  }
-  
-  return 0;
-}
-//¸üĞÂ(x,y)¸½½üÎ»ÖÃµÄÆåĞÎĞÅÏ¢
-void Analyse::UpdateType(int x, int y) {
-  int a, b;
-  for (int i = 0; i < 4; i++) {
-    a = x;
-    b = y;
-    for (int j = 0; j < 4; j++) {
-      a += dx[i];
-      b += dy[i];
-      if (!CheckXy(a, b))
-        continue;
-      if (chessboard[a][b] == 0 && ChessRound[a][b] == 0)
-        continue;
-      shape[a][b][0][i]
-        = TypeLine(1, a, b, dx[i], dy[i]);
-      shape[a][b][1][i]
-        = TypeLine(2, a, b, dx[i], dy[i]);
-    }
-    a = x;
-    b = y;
-    for (int j = 0; j < 4; j++) {
-      a -= dx[i];
-      b -= dy[i];
-      if (!CheckXy(a, b))
-        continue;
-      if (chessboard[a][b] == 0 && ChessRound[a][b] == 0)
-        continue;
-      shape[a][b][0][i]
-        = TypeLine(1, a, b, dx[i], dy[i]);
-      shape[a][b][1][i]
-        = TypeLine(2, a, b, dx[i], dy[i]);
-    }
-  }
-}
-//¸üĞÂºÏÀí×Å·¨
-void Analyse::UpdateRound(int n) {
-  int x, y;
-  int i, j;
-  for (i = 0; i < size; i++) {
-    for (j = 0; j < size; j++) {
-      ChessRound[i][j] = 0;
-    }
-  }
-  for (int k = 1; k <= step; k++) {
-    x = chessxy[k].x;
-    y = chessxy[k].y;
-    for (i = x - n; i <= x + n; i++) {
-      for (j = y - n; j <= y + n; j++) {
-        if(!CheckXy(i,j))
-          continue;
-        ChessRound[i][j] = 1;
-      }
-    }
-  }
-}
-//ÅĞ¶Ï½ÇÉ«roleÔÚµã(x,y)µÄ·½Ïò(i,j)ÄÜ³ÉµÄÆåĞÎ
-int Analyse::TypeLine(int role, int x, int y, int i, int j) {
-  int a, b, k;
-  int kong = 0, block = 0;
-  int len = 1, len2 = 1, count = 1;
-  a = x;
-  b = y;
-  for (k = 0; k < 4; k++) {
-    a += i;
-    b += j;
-    if (!CheckXy(a, b)) {
-      /* len2==kong+count±íÊ¾ÉÏÒ»µã ÊÇ¼º·½Æå×Ó */
-      if (len2 == kong + count)
-        block++;
-      break;
-    }
-    if (chessboard[a][b] == role) {
-      if (kong > 2 || kong + count > 4)
-        break;
-      count++;
-      len++;
-      len2 = kong + count;
-    } else if (chessboard[a][b] == 0) {
-      len++;
-      kong++;
-    } else {
-      if (len2 == kong + count)
-        block++;
-      break;
-    }
-  }
-  // ¼ÆËãÖĞ¼ä¿Õ¸ñ
-  kong = len2 - count;
-  a = x;
-  b = y;
-  for (k = 0; k < 4; k++) {
-    a -= i;
-    b -= j;
-    if (!CheckXy(a, b)) {
-      if (len2 == kong + count)
-        block++;
-      break;
-    }
-    if (chessboard[a][b] == role) {
-      if (kong > 2 || kong + count > 4)
-        break;
-      count++;
-      len++;
-      len2 = kong + count;
-    } else if (chessboard[a][b] == 0) {
-      len++;
-      kong++;
-    } else {
-      if (len2 == kong + count)
-        block++;
-      break;
-    }
-  }
-  //ÅĞ¶ÏÆåĞÎ
-  if (len >= 5 && count > 1) {
-    if (count == 5)
-      return win;
-    if (len > 5 && len2 < 5 && block == 0) {
-      switch (count) {
-      case 2:
-        return flex2;
-      case 3:
-        return flex3;
-      case 4:
-        return flex4;
-      }
-    } else {
-      switch (count) {
-      case 3:
-        return block3;
-      case 4:
-        return block4;
-      }
-    }
-  }
-  return 0;
-}
-//Í³¼ÆÆåĞÎ¸öÊı
-void Analyse::TypeCount(int x, int y, int role, int *type) {
-  int d[4];
-  // ËÄ¸ö·½Ïò
-  d[0] = shape[x][y][role - 1][0];
-  d[1] = shape[x][y][role - 1][1];
-  d[2] = shape[x][y][role - 1][2];
-  d[3] = shape[x][y][role - 1][3];
-  // ¼ÇÂ¼ÆåĞÍ
-  type[d[0]]++;
-  type[d[1]]++;
-  type[d[2]]++;
-  type[d[3]]++;
-
-}
-
-//¼ÆËãµã(x,y)µÄ·ÖÊı
-int Analyse::ScoreMove(int x, int y) {
-  int MeType[7] = { 0 }, YouType[7] = {
-  0};
+// ç€æ³•æ‰“åˆ†
+int AI::ScoreMove(int x, int y, int wNum) {
+  int MeType[Ntype] = { 0 };
+  int YouType[Ntype] = { 0 };
   int score = 0;
-
+  int *MeVal, *YouVal;
   int me = color(step + 1);
-  int you = 3 - me;
-
-  int MeVal[5] = { 0, 10, 10, 35, 35 };
-  int YouVal[5] = { 0, 5, 5, 30, 30 };
 
   TypeCount(x, y, me, MeType);
-  TypeCount(x, y, you, YouType);
+  TypeCount(x, y, 3 - me, YouType);
 
-  for (int i = 1; i < 5; i++) {
+  if (MeType[win] > 0)
+    return 10000;
+  else if (YouType[win] > 0)
+    return 5000;
+  else if (MeType[flex4] > 0 || MeType[block4] > 1)
+    return 2400;
+  else if (MeType[block4] > 0 && MeType[flex3] > 0)
+    return 2000;
+  else if (YouType[flex4] > 0 || YouType[block4] > 1)
+    return 1200;
+  else if (YouType[block4] > 0 && YouType[flex3] > 0)
+    return 1000;
+  else if (MeType[flex3] > 1)
+    return 400;
+  else if (YouType[flex3] > 1)
+    return 200;
+
+  if (wNum == 1) {
+    MeVal = w1;
+    YouVal = w2;
+  } else {
+    MeVal = w3;
+    YouVal = w4;
+  }
+  for (int i = 1; i <=block4; i++) {
     score += MeVal[i] * MeType[i];
     score += YouVal[i] * YouType[i];
   }
 
-  if (MeType[win] > 0)
-    score += 10000;
-  else if (YouType[win] > 0)
-    score += 5000;
-  else if (MeType[flex4] > 0 || MeType[block4] > 1)
-    score += 2400;
-  else if (MeType[block4] > 0 && MeType[flex3] > 0)
-    score += 2000;
-  else if (YouType[flex4] > 0 || YouType[block4] > 1)
-    score += 1200;
-  else if (YouType[block4] > 0 && YouType[flex3] > 0)
-    score += 1000;
-  else if (MeType[flex3] > 1)
-    score += 400;
-  else if (YouType[flex3] > 1)
-    score += 200;
-
   return score;
 }
-//Í³¼Æ½ÇÉ«roleµÄ×Ü·Ö
-void Analyse::ChessScore(int role, int *score, int *type) {
-  int i;
-  int x, y;
-  int count[7] = { 0, 2, 3, 3, 4, 4, 5 };
-  int val[5] = { 0, 2, 2, 5, 5 };
-  *score = 0;
+
+ // ç»Ÿè®¡æ£‹ç›˜æ‰€æœ‰æ£‹å‹ä¸ªæ•°
+void AI::AllType(int role, int *type) {
+  int x, y, i;
+  int count[Ntype] = { 0, 2,2, 3, 3, 4, 4, 5 };
 
   for (i = role; i <= step; i += 2) {
-    x = chessxy[i].x;
-    y = chessxy[i].y;
+    x = remMove[i].x;
+    y = remMove[i].y;
     TypeCount(x, y, role, type);
   }
-
-  for (i = 1; i < Ntype; i++) {
-    int c = type[i] % count[i];
-    type[i] = type[i] / count[i];
-    if (c == count[i] - 1)
-      type[i]++;
-  }
-
-  // ¼Ó×Ü»î¶ş£¬ÃßÈı£¬»îÈı£¬³åËÄ·ÖÖµ
-  for (i = 1; i < 5; i++) {
-    *score += val[i] * type[i];
+  for (i = 1; i < Ntype; ++i) {
+    if (type[i] % count[i] == count[i] - 1)
+      ++type[i];
+    type[i] /= count[i];
   }
 }
-// ¸ù¾İË«·½ÆåĞÍÆÀ¹À¾ÖÊÆ
-int AI::evaluate2() {
-  int Cscore, Hscore;
-  int Ctype[7] = { 0 }, Htype[7] = {
-  0};
-  int me = color(step);
-  ChessScore(me, &Cscore, Ctype);
-  ChessScore(3 - me, &Hscore, Htype);
-  if (Ctype[win] > 0)
-    return 10000;
-  else if (Htype[flex4] > 0 || Htype[block4] > 0)
-    return -10000;
-  else if (Ctype[flex4] > 0 || Ctype[block4] > 1)
-    Cscore += 250;
-  else if (Ctype[block4] > 0 && Ctype[flex3] > 0)
-    Cscore += 200;
-  else if (Htype[flex3] > 0)
-    Hscore += 150;
-  else if (Ctype[flex3] > 1)
-    Cscore += 80;
 
-  return Cscore - Hscore;
+//è®¡ç®—æ€»æ£‹å‹åˆ†
+int AI::ScoreChess(int *type) {
+  int score = 0;
+  for (int i = 1; i <=block4; ++i) {
+    score += type[i] * Tval[i];
+  }
+  return score;
 }
-//¾ÖÃæÆÀ¹À
-int AI::evaluate() {
-  int val, i, j;
-  int max = 0;
-  struct xy p;
-  // Ñ¡³ö×î¼Ñµã
-  for (i = 0; i < size; i++) {
-    for (j = 0; j < size; j++) {
-      if (chessboard[i][j] == 0) {
-        if (ChessRound[i][j]) {
-          val = ScoreMove(i, j);
-          if (val > max) {
-            max = val;
-            p.x = i;
-            p.y = j;
-          }
-        }
+//è¿”å›æœ€ä½³ç‚¹
+Pos AI::gobang() {
+  start = clock();
+  total = 0;
+  srand(time(NULL));
+
+  // ç¬¬ä¸€æ­¥ä¸‹ä¸­å¿ƒç‚¹
+  if (step == 0) {
+    BestMove.x = size / 2;
+    BestMove.y = size / 2;
+    return BestMove;
+  }
+  // ç¬¬äºŒï¼Œä¸‰æ­¥éšæœº 
+  if (step == 2 || step == 1) {
+    int rx, ry;
+    int d = step * 2 + 1;
+    do {
+      rx = rand() % d + remMove[1].x - step;
+      ry = rand() % d + remMove[1].y - step;
+    } while (cell[rx][ry].piece != 0);
+    BestMove.x = rx;
+    BestMove.y = ry;
+    return BestMove;
+  }
+  remStep=step;
+  
+  // è¿­ä»£åŠ æ·±æœç´¢
+  for (int i = 2; i <= SearchDepth; i += 2) {
+    MaxDepth = i;
+    BestVal = minimax(i, -10001, 10000);
+    if (BestVal == 10000)
+      break;
+  }
+  ThinkTime = (int)(clock() - start) / CLOCKS_PER_SEC*1000;
+  return BestMove;
+}
+
+// maxå‡½æ•°
+int AI::minimax(int depth, int alpha, int beta) {
+  UpdateRound(2);
+  Pos moves[22];
+  Pos p;
+  int val;
+  int count = GetMove(moves, 20);
+  moves[0] = (depth > 2) ? BestMove : moves[1];
+  // éå†æ‰€æœ‰èµ°æ³•
+  for (int i = 0; i <= count; i++) {
+  	//ThinkTime = (int)(clock() - start) / CLOCKS_PER_SEC*1000;
+  	//if(time_left<=1000||ThinkTime> timeout_turn/2) break;
+    p = moves[i];
+    if (i > 0 && p.x == moves[0].x && p.y == moves[0].y)
+      continue;
+    //ShowMove(moves[i]); //è°ƒè¯•ä»£ç 
+    MakeMove(moves[i]);
+    do {
+      if (i > 0 && alpha + 1 < beta) {
+        val = -AlphaBeta(depth - 1, -alpha - 1, -alpha);
+        if (val <= alpha || val >= beta)
+          break;
+      }
+      val = -AlphaBeta(depth - 1, -beta, -alpha);
+    } while (0);
+    DelMove();
+    if (val >= beta) {
+      BestMove = moves[i];
+      return val;
+    }
+    if (val > alpha) {
+      alpha = val;
+      BestMove = moves[i];
+    }
+  }
+  cout << endl; //è°ƒè¯•ä»£ç 
+  return alpha;
+}
+
+// alpha-betaæœç´¢
+int AI::AlphaBeta(int depth, int alpha, int beta) {
+  int val;
+  Pos moves[22];
+  total++;
+  
+  // å¯¹æ–¹æœ€åä¸€å­è¿äº”
+  if (CheckWin())
+  	return -10000;
+  	
+  // å¶èŠ‚ç‚¹
+  if (depth == 0) 
+    return evaluate();
+    
+  int count = GetMove(moves, 20);
+  // éå†æ‰€æœ‰èµ°æ³•
+  for (int i = 1; i <= count; i++) {
+  	//ThinkTime = (int)(clock() - start) / CLOCKS_PER_SEC*1000;
+  	//if(time_left<=200||ThinkTime> timeout_turn/2) break;
+    MakeMove(moves[i]);
+    do {
+      if (i > 1 && alpha + 1 < beta) {
+        val = -AlphaBeta(depth - 1, -alpha - 1, -alpha);
+        if (val <= alpha || val >= beta)
+          break;
+      }
+      val = -AlphaBeta(depth - 1, -beta, -alpha);
+    } while (0);
+    
+    DelMove();
+    if (val >= beta) {
+      return val;
+    }
+    if (val > alpha) {
+      alpha = val;
+    }
+  }
+  return alpha;
+}
+int AI::CutCand(Pos * moves, Point * cand, int Csize) {
+  int me = color(step + 1);
+  int Msize = 0;
+  if (cand[1].val >= 1200) {
+    Msize = 1;
+    moves[Msize] = cand[1].p;
+  }
+  if (cand[1].val == 1200) {
+    if (cand[2].val == 1200) {
+      Msize = 2;
+      moves[Msize] = cand[2].p;
+    }
+    for (int i = Msize + 1; i <= Csize; ++i) {
+      if (IsType(cand[i].p, me, block4) || IsType(cand[i].p, 3 - me, block4)) {
+        ++Msize;
+        moves[Msize] = cand[i].p;
       }
     }
   }
-  // ÆÀ¹À×î¼ÑµãÏÂÁËÖ®ºóµÄ¾ÖÊÆ
-  MakeMove(p);
-  val = evaluate2();
-  DelMove();
-  return val;
+  return Msize;
 }
 
- // ÅÅĞò
-int AI::sort(struct point *a, int n) {
+// ç”Ÿæˆæ‰€æœ‰ç€æ³•ï¼Œå¹¶è¿”å›ä¸ªæ•°
+int AI::GetMove(Pos * moves, int branch) {
+  Point cand[200];
+  int Csize = 0, Msize = 0;
+  int val;
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < size; j++) {
+      if (IsCand[i][j] && cell[i][j].piece == 0) {
+        val = ScoreMove(i, j, 1);
+        if (val > 0) {
+          ++Csize;
+          cand[Csize].p.x = i;
+          cand[Csize].p.y = j;
+          cand[Csize].val = val;
+        }
+
+      }
+    }
+  }
+  // ç€æ³•æ’åº
+  sort(cand, Csize);
+  // åˆ†æ”¯æœ€å¤§ä¸è¶…è¿‡branch
+  Csize = (Csize < branch) ? Csize : branch;
+  // æ£‹å‹å‰ªæ
+  Msize = CutCand(moves, cand, Csize);
+
+  // å¦‚æœæ²¡æœ‰å‰ªæ
+  if (Msize == 0) {
+    Msize = Csize;
+    for (int k = 1; k <= Msize; k++) {
+      moves[k] = cand[k].p;
+    }
+  }
+
+  return Msize;
+}
+
+// æ’åº
+void AI::sort(Point * a, int n) {
   int i, j;
-  struct point key;
+  Point key;
   for (i = 2; i <= n; i++) {
     key = a[i];
     for (j = i; j > 1 && a[j - 1].val < key.val; j--) {
@@ -455,301 +256,52 @@ int AI::sort(struct point *a, int n) {
     }
     a[j] = key;
   }
-  return 0;
 }
 
- // Éú³ÉÏÂÒ»²½ËùÓĞ×ß·¨£¬·µ»Ø×Ü¸öÊı
-int AI::GetMove(int depth) {
-  int i, j;
-  int n = 0;
-  int count;
-  struct point sp[225];
-  for (i = 0; i < size; i++) {
-    for (j = 0; j < size; j++) {
-      if (chessboard[i][j] == 0) {
-        if (ChessRound[i][j]) {
-          n++;
-          sp[n].p.x = i;
-          sp[n].p.y = j;
-          sp[n].val = ScoreMove(i, j);
-        }
-      }
-    }
-  }
-  // ¿ÕµãÅÅĞò
-  sort(sp, n);
-
-  // ÏŞÖÆ·ÖÖ§Êı
-  if (n < branch)
-    count = n;
-  else
-    count = branch;
-
-  // ¸´ÖÆ¿ÉÑ¡µã
-  for (i = 1; i <= count; i++) {
-    s[depth][i] = sp[i];
-  }
-
-  return count;
-}
-
-int AI::AlphaBeta(int depth, int alpha, int beta) {
+// ä¼°å€¼å‡½æ•°
+int AI::evaluate() {
   int val;
-  total++;
-  // ¶Ô·½×îºóÒ»×ÓÁ¬Îå
-  if (CheckWin())
-    return -10000;
-  // Ò¶½Úµã
-  if (depth == 0)
-    return evaluate();
-  int count = GetMove(depth);
-  // ±éÀúËùÓĞ×ß·¨
-  for (int i = 1; i <= count; i++) {
-    MakeMove(s[depth][i].p);
-    val = -AlphaBeta(depth - 1, -beta, -alpha);
-    DelMove();
-    if (val >= beta) {
-      if (depth == MaxDepth)
-        BestMove = s[depth][i].p;
-      ABcut++;
-      return val;
-    }
-    if (val > alpha) {
-      alpha = val;
-      if (depth == MaxDepth)
-        BestMove = s[depth][i].p;
-    }
-  }
-  return alpha;
-}
-//»ñÈ¡×î¼Ñµã
-struct xy AI::gobang() {
-  int i;
-  clock_t start, finish;
-  start = clock();
-  cout << "µçÄÔË¼¿¼ÖĞ......\n";
-  total = 0;
-  ABcut = 0;
-  srand(time(NULL));
-  // µÚÒ»²½ÏÂÖĞĞÄµã
-  if (step == 0) {
-    BestMove.x = size / 2;
-    BestMove.y = size / 2;
-    return BestMove;
-  }
-  // µÚ¶ş£¬Èı²½Ëæ»ú
-  if (step == 2 || step == 1) {
-    int rx, ry;
-    int d=step*2+1;
-    do {
-      rx = rand() % d + chessxy[1].x - step;
-      ry = rand() % d + chessxy[1].y - step;
-    } while (chessboard[rx][ry] != 0);
-    BestMove.x = rx;
-    BestMove.y = ry;
-    return BestMove;
-  }
-  // µü´ú¼ÓÉîËÑË÷
-  for (i = 2; i <= SearchDepth; i += 2) {
-    MaxDepth = i;
-    BestVal = AlphaBeta(i, -10001, 10000);
-    if (BestVal == 10000)
-      break;
-  }
-  finish = clock();
-  ThinkTime = (double)(finish - start) / CLOCKS_PER_SEC;
-  return BestMove;
-}
-//ÏÔÊ¾Ë¼¿¼ĞÅÏ¢
-void Gui::ShowThink() {
-  char x = BestMove.x + 65;
-  int y = 15-BestMove.y;
-  /* cout<<"-------------------------------\n"; cout<<" ×÷Õß:jinjiebang \n";
-     cout<<" ÓÊÏä:724895582@qq.com \n"; cout
-     <<"-------------------------------\n"; */
-  cout << " Ë¼¿¼Ê±¼ä: " << ThinkTime<<"s";
-  cout << " ÄÑ¶È: " << branch << endl;
-  cout << " ËÑË÷¾ÖÃæ: " << total;
-  cout << " ¼ôÖ¦: " << ABcut;
-  cout << endl;
-  cout << " ×î¼Ñµã:" << x << y;
-  cout << " ²½Êı: " << step;
-  cout << " ¾ÖÊÆ: " << BestVal;
-  cout << endl;
-}
-//·µ»ØÓÃ»§Ñ¡µã×ø±ê,²¢»­³öµ±Ç°×ø±ê
-int Gui::GoToP(int *x, int *y) {
-  struct xy p;
-  AI ai;
-  int dx = *x, dy = *y;
-  int c = getch();
-  switch (c) {
-  case 'w':
-    dy--;
-    break;
-  case 's':
-    dy++;
-    break;
-  case 'a':
-    dx--;
-    break;
-  case 'd':
-    dx++;
-    break;
-  case 'u':
-    Undo();
-    break;
-  case 'p':
-    mode = 4;
-  case 'q':
-    if (mode == 3)
-      mode = cpt = color(step + 1);
-    p = ai.gobang();
-    *x = p.x;
-    *y = p.y;
-    return 0;
-  case 'y':
-    return 0;
-  default:
-    return 1;
-  }
-  if (!CheckXy(dx, dy))
-    return 1;
-  int temp = chessboard[dx][dy];
-  chessboard[dx][dy] = 3;
-  DrawChess();
-  chessboard[dx][dy] = temp;
-  *x = dx;
-  *y = dy;
-  return 1;
-}
-//»­ÆåÅÌ
-void Gui::DrawChess() {
-  system("cls");
-  ShowThink();
-  int i, j;
-  for (i = 0; i < size; i++) {
-    if (15-i< 10)
-      cout << " " << 15-i;
-    else
-      cout << 15-i;
-    for (j = 0; j < size; j++) {
-      switch (chessboard[j][i]) {
-      case 0:
-        cout << "+ ";
-        break;
-      case 1:
-        cout << "O ";
-        break;
-      case 2:
-        cout << "X ";
-        break;
-      case 3:
-        cout << "? ";
-        break;
-      }
-    }
-    cout << endl;
-  }
-  cout << "  ";
-  for (i = 0; i < size; i++) {
-    char c=65+i;
-    cout << c << " ";
-  }
-  cout << endl;
-}
-//»ñÈ¡ÓÃ»§Ñ¡µã×ø±ê
-void Gui::GetXy(int *x, int *y) {
-  int i, j;
-  int flag;
-  int dx, dy;
-  if (step != 0) {
-    dx = chessxy[step].x;
-    dy = chessxy[step].y;
-    for (i = dx - 2; i <= dx + 2; i++) {
-      for (j = dy - 2; j <= dy + 2; j++) {
-        if (!CheckXy(i, j))
-          continue;
-        if (chessboard[i][j] == 0) {
-          dx = i;
-          dy = j;
-          break;
+  int max = 0;
+  Pos p;
+  // é€‰å‡ºæœ€ä½³ç‚¹
+  for (int i = 0; i < size; ++i) {
+    for (int j = 0; j < size; ++j) {
+      if (IsCand[i][j] && cell[i][j].piece == 0) {
+        val = ScoreMove(i, j, 2);
+        if (val > max) {
+          max = val;
+          p.x = i;
+          p.y = j;
         }
       }
-      if (chessboard[dx][dy] == 0)
-        break;
-    }
-  } else {
-    dx = dy = size / 2;
-  }
-  chessboard[dx][dy] = 3;
-  DrawChess();
-  chessboard[dx][dy] = 0;
-  *x = dx;
-  *y = dy;
-  cout << "°´wasdÒÆ¶¯£¬yÈ·ÈÏ\n";
-  cout << "u: »ÚÆå";
-  cout << "  q: µçÄÔ¼ÆËã";
-  cout << "  p: µçÄÔ×Ô¶¯¶ÔŞÄ\n";
-  do {
-    flag = (GoToP(x, y));
-  } while (flag || chessboard[*x][*y] != 0);
-}
-//¿ØÖÆÓÎÏ·Á÷³Ì
-void Game::Play() {
-  struct xy next;
-  Gui gui;
-  AI ai;
-  gui.DrawChess();              // »­ÆåÅÌ
-  ChessStart();                 // ³õÊ¼»¯Æå¾Ö
-  while (1) {
-    if (mode == 4) {
-      next = ai.gobang();
-    } else if (mode == 3) {
-      gui.GetXy(&next.x, &next.y);
-    } else {
-      if (color(step) == cpt) {
-        gui.GetXy(&next.x, &next.y);
-      } else {
-        next = ai.gobang();
-      }
-    }
-    MakeMove(next);
-    gui.DrawChess();
-    // ÓĞÈËÊ¤Àû
-    if (CheckWin()) {
-      if (color(step) == cpt)
-        cout << "µçÄÔÓ®ÁË\n";
-      else
-        cout << "ÄãÓ®ÁË^_^\n";
-      ChessStart();
     }
   }
-}
-//ÓÎÏ·ÖØĞÂ¿ªÊ¼
-void Game::ChessStart() {
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < size; j++) {
-      chessboard[i][j] = 0;
-    }
-  }
-  step = 0;
-  BestVal = 0;
-  cout << "ÇëÊäÈë";
-  cout << " µçÄÔÏÈÊÖ:1";
-  cout << " µçÄÔºóÊÖ:2";
-  cout << " ´òÆ×:3\n";
-  cin >> mode;
-  cpt = mode;
-  cout << "ÄÑ¶ÈµÈ¼¶\n";
-  cout << "³õ¼¶:6 ÖĞ¼¶:10 ¸ß¼¶:14\n";
-  cin >> branch;
+  // è¯„ä¼°æœ€ä½³ç‚¹ä¸‹äº†ä¹‹åçš„å±€åŠ¿
+  MakeMove(p);
+  val = (CheckWin())? 10000 : evaluate2();
+   DelMove();
+  return val;
 }
 
+// æ£‹å‹ä¼°å€¼å‡½æ•°
+int AI::evaluate2() {
+  int Ctype[Ntype] = { 0 };
+  int Htype[Ntype] = { 0 };
+  int Cscore = 0, Hscore = 0;
+  int me = color(step);
 
-main() {
-  Game game;
-  game.Play();                  // ÓÎÏ·Æô¶¯
+  AllType(me, Ctype);
+  AllType(3 - me, Htype);
 
-  return 0;
+  if (Htype[flex4] > 0 || Htype[block4] > 0)
+    return -10000;
+  else if (Ctype[flex4] > 0 || Ctype[block4] > 1)
+    return 10000;
+  else if (Htype[flex3] > 0 && Ctype[block4] == 0)
+    return -10000;
+
+  Cscore = ScoreChess(Ctype);
+  Hscore = ScoreChess(Htype);
+
+  return Cscore - Hscore;
 }
