@@ -38,7 +38,7 @@ int AI::ScoreMove(int x, int y, int wNum) {
     MeVal = w3;
     YouVal = w4;
   }
-  for (int i = 1; i <=block4; i++) {
+  for (int i = block2; i <=block4; i++) {
     score += MeVal[i] * MeType[i];
     score += YouVal[i] * YouType[i];
   }
