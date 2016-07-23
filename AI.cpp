@@ -156,7 +156,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   	return -10000;
   
   ThinkTime = (int)(clock() - start) / CLOCKS_PER_SEC*1000;
-  if(time_left<=500||ThinkTime-timeout_turn<=500) depth=0;
+  if(time_left<=500||timeout_turn-ThinkTime<=500) depth=0;
   
   // 叶节点
   if (depth == 0) 
