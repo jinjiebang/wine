@@ -100,8 +100,8 @@ Pos AI::gobang() {
   // 迭代加深搜索
   for (int i = 2; i <= SearchDepth; i += 2) {
     MaxDepth = i;
-    if (time_left<=10000&&i==10)
-      break;
+    //if (time_left<=10000&&i==10)
+      //break;
     BestVal = minimax(i, -10001, 10000);
     if (BestVal == 10000)
       break;
@@ -116,7 +116,7 @@ int AI::minimax(int depth, int alpha, int beta) {
   Pos moves[22];
   Pos p;
   int val;
-  int count = GetMove(moves, 16);
+  int count = GetMove(moves, 20);
   moves[0] = (depth > 2) ? BestMove : moves[1];
   // 遍历所有走法
   for (int i = 0; i <= count; i++) {
@@ -157,14 +157,14 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   if (CheckWin())
   	return -10000;
 
-  ThinkTime = (int)(clock() - start) / CLOCKS_PER_SEC*1000;
-  if(timeout_turn-ThinkTime<=500) depth=0;
+  //ThinkTime = (int)(clock() - start) / CLOCKS_PER_SEC*1000;
+  //if(timeout_turn-ThinkTime<=500) depth=0;
   
   // 叶节点
   if (depth == 0) 
     return evaluate();
     
-  int count = GetMove(moves, 20);
+  int count = GetMove(moves, 16);
   // 遍历所有走法
   for (int i = 1; i <= count; i++) {
     MakeMove(moves[i]);
