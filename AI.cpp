@@ -118,8 +118,6 @@ int AI::minimax(int depth, int alpha, int beta) {
   moves[0] = (depth > 2) ? BestMove : moves[1];
   // 遍历所有走法
   for (int i = 0; i <= count; i++) {
-  	//ThinkTime = (int)(clock() - start) / CLOCKS_PER_SEC*1000;
-  	//if(time_left<=1000||ThinkTime> timeout_turn/2) break;
     p = moves[i];
     if (i > 0 && p.x == moves[0].x && p.y == moves[0].y)
       continue;
@@ -143,7 +141,7 @@ int AI::minimax(int depth, int alpha, int beta) {
       BestMove = moves[i];
     }
   }
-  cout << endl; //调试代码
+  //cout << endl; //调试代码
   return alpha;
 }
 
