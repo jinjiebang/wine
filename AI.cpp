@@ -154,7 +154,10 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   // 对方最后一子连五
   if (CheckWin())
   	return -10000;
-  	
+  
+  ThinkTime = (int)(clock() - start) / CLOCKS_PER_SEC*1000;
+  if(time_left<=500||ThinkTime-timeout_turn<=500) depth=0;
+  
   // 叶节点
   if (depth == 0) 
     return evaluate();
@@ -162,8 +165,6 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   int count = GetMove(moves, 20);
   // 遍历所有走法
   for (int i = 1; i <= count; i++) {
-  	//ThinkTime = (int)(clock() - start) / CLOCKS_PER_SEC*1000;
-  	//if(time_left<=200||ThinkTime> timeout_turn/2) break;
     MakeMove(moves[i]);
     do {
       if (i > 1 && alpha + 1 < beta) {
