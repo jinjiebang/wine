@@ -100,6 +100,8 @@ Pos AI::gobang() {
   // 迭代加深搜索
   for (int i = 2; i <= SearchDepth; i += 2) {
     MaxDepth = i;
+    if (time_left<=10000&&i==10)
+      break;
     BestVal = minimax(i, -10001, 10000);
     if (BestVal == 10000)
       break;
@@ -141,7 +143,7 @@ int AI::minimax(int depth, int alpha, int beta) {
       BestMove = moves[i];
     }
   }
-  //cout << endl; //调试代码
+  cout << endl; //调试代码
   return alpha;
 }
 
@@ -154,9 +156,9 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   // 对方最后一子连五
   if (CheckWin())
   	return -10000;
-  
+
   ThinkTime = (int)(clock() - start) / CLOCKS_PER_SEC*1000;
-  if(time_left<=500||timeout_turn-ThinkTime<=500) depth=0;
+  if(timeout_turn-ThinkTime<=500) depth=0;
   
   // 叶节点
   if (depth == 0) 
