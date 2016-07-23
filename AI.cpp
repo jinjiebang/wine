@@ -116,7 +116,7 @@ int AI::minimax(int depth, int alpha, int beta) {
   Pos moves[22];
   Pos p;
   int val;
-  int count = GetMove(moves, 20);
+  int count = GetMove(moves, 16);
   moves[0] = (depth > 2) ? BestMove : moves[1];
   // 遍历所有走法
   for (int i = 0; i <= count; i++) {
