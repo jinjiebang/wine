@@ -38,7 +38,7 @@ Pos AI::gobang() {
   }
 
     // 迭代加深搜索
-    for (int i = 2; i <= SearchDepth; i += 2) {
+  for (int i = 2; i <= SearchDepth; i += 2) {
     if (GetTime() * 14 >= StopTime() && i > 4)
       break;
     MaxDepth = i;
