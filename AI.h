@@ -1,37 +1,37 @@
 #ifndef  _AI
 #define   _AI
 #include "Board.h"
-#include "Board.cpp"
-#include<time.h>
+#include <ctime>
 class AI:public Board {
 private:
-  int w1[6] = { 0, 4, 10, 10, 24, 24 };
-  int w2[6] = { 0, 2, 5, 5, 12, 12 };
-  int w3[6] = { 0, 4, 10, 10, 24, 24 };
-  int w4[6] = { 0, 2, 5, 5, 12, 12 };
-  int Tval[6] = { 0, 1, 6 , 6, 36, 36 };
+  int MeVal[6] = { 0, 4, 10, 10, 24, 24 };
+  int YouVal[6] = { 0, 2, 5, 5, 12, 12 };
+  int Tval[6] = { 0, 1, 6, 6, 36, 36 };
 
 public:
   int total = 0;
-  int remStep = 0;
   int BestVal = 0;
+  int _BestVal = 0;
   int MaxDepth = 0;
-  int SearchDepth = 10;
-  clock_t start;
+  int SearchDepth = 12;
+  int time_left = 10000000;
+  int timeout_turn = 1000000;
+  int timeout_match = 10000000;
   int ThinkTime = 0;
-  int timeout_turn=30000;
-  int timeout_match=180000;
-  int time_left=10000000;
+  bool stopThink = false;
+  clock_t start;
   Pos BestMove;
+  Pos _BestMove;
 
   Pos gobang();
   void sort(Point * a, int n);
   void AllType(int role, int *type);
-  int ScoreMove(int x, int y, int wNum);
-  int ScoreChess(int *type);
+  int GetTime();
+  int StopTime();
+  int ScoreMove(int x, int y);
   int minimax(int depth, int alpha, int beta);
   int AlphaBeta(int depth, int alpha, int beta);
-  int CutCand(Pos * moves, Point * cand, int Csize);
+  int CutCand(Pos * moves, Point * cand, int Csize,int branch);
   int GetMove(Pos * moves, int branch);
   int evaluate();
   int evaluate2();
