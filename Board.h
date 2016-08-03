@@ -6,9 +6,9 @@ const int block4 = 5;           // 冲四
 const int flex3 = 4;            // 活三
 const int block3 = 3;           // 眠三
 const int flex2 = 2;            // 活二
-const int block2=1;           //眠二
+const int block2 = 1;           // 眠二
 const int Ntype = 8;            // 棋型数量
-const int MaxSize = 20;     //最大尺寸
+const int MaxSize = 20;         // 最大尺寸
 
 
 // 坐标
@@ -31,16 +31,16 @@ struct Cell {
 
 class Board {
 public:
-  
-  int step=0;
-  int size=15;
-  int dx[4]={1,0,1,1};
-  int dy[4]={0,1,1,-1};
+
+  int step = 0;
+  int size = 15;
+  int dx[4] = { 1, 0, 1, 1 };
+  int dy[4] = { 0, 1, 1, -1 };
   int typeTable[10][6][6][3];
   Cell cell[MaxSize][MaxSize];
   Pos remMove[MaxSize * MaxSize];
   bool IsCand[MaxSize][MaxSize];
-  
+
   Board();
   ~Board();
   void InitType();
@@ -53,7 +53,7 @@ public:
   void TypeCount(int x, int y, int role, int *type);
   bool CheckWin();
   bool CheckXy(int x, int y);
-  bool IsType(Pos p,int role,int type);
+  bool IsType(Pos p, int role, int type);
   int color(int step);
   int TypeLine(int role, int x, int y, int i, int j);
   int GetType(int len, int len2, int count, int block);

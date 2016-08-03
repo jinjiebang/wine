@@ -2,14 +2,14 @@
 #include <cstring>
 #include <iostream>
 using namespace std;
-Board::Board(){
-	InitType();
-	memset(cell,0,sizeof(cell));
-	memset(IsCand,0,sizeof(IsCand));
-	memset(remMove,0,sizeof(remMove));
+Board::Board() {
+  InitType();
+  memset(cell, 0, sizeof(cell));
+  memset(IsCand, 0, sizeof(IsCand));
+  memset(remMove, 0, sizeof(remMove));
 }
-Board::~Board(){
-	
+Board::~Board() {
+
 }
 // 下子
 void Board::MakeMove(Pos next) {
@@ -27,7 +27,7 @@ void Board::MakeMove(Pos next) {
 void Board::DelMove() {
   int x = remMove[step].x;
   int y = remMove[step].y;
-  
+
   --step;
   cell[x][y].piece = 0;
   UpdateType(x, y);
@@ -46,21 +46,6 @@ void Board::ReStart() {
   while (step) {
     DelMove();
   }
-  for(int i=0;i<size;i++){
-  	for(int j=0;j<size;j++){
-  		if(cell[i][j].piece){
-  			cout<<"Error"<<endl;
-  		}
-  		for(int k=0;k<4;k++){
-  			int a=cell[i][j].pattern[0][k];
-  			int b=cell[i][j].pattern[1][k];
-  			if(a||b){
-  				cout<<"Error"<<endl;
-  			}
-  		}
-  	}
-  }
-  			
 }
 
   // 检查坐标
@@ -76,20 +61,20 @@ int Board::color(int step) {
 // 检查胜利
 bool Board::CheckWin() {
   int role = color(step);
-  Pos p=remMove[step];
-  Cell *c=&cell[p.x][p.y];
-  
+  Pos p = remMove[step];
+  Cell *c = &cell[p.x][p.y];
+
   return (c->pattern[role - 1][0] == win
           || c->pattern[role - 1][1] == win
           || c->pattern[role - 1][2] == win 
           || c->pattern[role - 1][3] == win);
 }
 
-bool Board::IsType(Pos p,int role,int type){
-	Cell *c=&cell[p.x][p.y];
-	return (c->pattern[role - 1][0] == type
+bool Board::IsType(Pos p, int role, int type) {
+  Cell *c = &cell[p.x][p.y];
+  return (c->pattern[role - 1][0] == type
           || c->pattern[role - 1][1] == type
-          || c->pattern[role - 1][2] == type 
+          || c->pattern[role - 1][2] == type
           || c->pattern[role - 1][3] == type);
 }
 
@@ -101,14 +86,14 @@ void Board::UpdateType(int x, int y) {
     a = x + dx[i];
     b = y + dy[i];
     for (int j = 0; j < 4 && CheckXy(a, b); a += dx[i], b += dy[i], ++j) {
-      c=&cell[a][b];
+      c = &cell[a][b];
       c->pattern[0][i] = TypeLine(1, a, b, dx[i], dy[i]);
       c->pattern[1][i] = TypeLine(2, a, b, dx[i], dy[i]);
     }
     a = x - dx[i];
     b = y - dy[i];
     for (int k = 0; k < 4 && CheckXy(a, b); a -= dx[i], b -= dy[i], ++k) {
-      c=&cell[a][b];
+      c = &cell[a][b];
       c->pattern[0][i] = TypeLine(1, a, b, dx[i], dy[i]);
       c->pattern[1][i] = TypeLine(2, a, b, dx[i], dy[i]);
     }
@@ -118,12 +103,12 @@ void Board::UpdateType(int x, int y) {
 // 更新合理着法
 void Board::UpdateRound(int n) {
   memset(IsCand, false, sizeof(IsCand));
-  int x,y;
+  int x, y;
   for (int k = 1; k <= step; ++k) {
-  	x=remMove[k].x+n;
-  	y=remMove[k].y+n;
-    for (int i = x-2*n; i <= x; ++i) {
-      for (int j = y-2*n; j <= y; ++j) {
+    x = remMove[k].x + n;
+    y = remMove[k].y + n;
+    for (int i = x - 2 * n; i <= x; ++i) {
+      for (int j = y - 2 * n; j <= y; ++j) {
         if (!CheckXy(i, j))
           continue;
         IsCand[i][j] = true;
@@ -146,7 +131,7 @@ int Board::TypeLine(int role, int x, int y, int i, int j) {
         ++block;
       break;
     }
-    c=&cell[a][b];
+    c = &cell[a][b];
     if (c->piece == role) {
       if (kong + count > 4)
         break;
@@ -172,7 +157,7 @@ int Board::TypeLine(int role, int x, int y, int i, int j) {
         ++block;
       break;
     }
-    c=&cell[a][b];
+    c = &cell[a][b];
     if (c->piece == role) {
       if (kong + count > 4)
         break;
@@ -223,7 +208,7 @@ int Board::GetType(int len, int len2, int count, int block) {
     } else {
       switch (count) {
       case 2:
-         return block2;
+        return block2;
       case 3:
         return block3;
       case 4:
