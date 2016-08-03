@@ -1,6 +1,5 @@
 #include<iostream>
 #include<cstdlib>
-#include<vector>
 #include<sstream>
 #include<string>
 #include "AI.h"
@@ -52,8 +51,8 @@ int gomocup() {
         wine.MakeMove(best);
         cout << "MESSAGE";
         cout << " level=" << wine.MaxDepth;
-        cout<< " val=" << wine.BestVal;
-        cout<< " NPS=" << wine.total / (wine.ThinkTime + 1) << endl;
+        cout << " val=" << wine.BestVal;
+        cout << " NPS=" << wine.total / (wine.ThinkTime + 1) << endl;
         cout << best.x << "," << best.y << endl;
       }
     }
@@ -113,7 +112,7 @@ int gomocup() {
         cin >> t;
       }
     } else if (command == "END") {
-      exit(1);
+      exit(0);
 
     }
   }
