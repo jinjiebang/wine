@@ -6,14 +6,13 @@ class AI:public Board {
 private:
   int MeVal[6] = { 0, 4, 10, 10, 24, 24 };
   int YouVal[6] = { 0, 2, 5, 5, 12, 12 };
-  int Tval[6] = { 0, 1, 6, 6, 36, 36 };
+  int Tval[6] = { 0, 1, 6, 6, 36, 40 };
 
 public:
   int total = 0;
   int BestVal = 0;
-  int _BestVal = 0;
   int MaxDepth = 0;
-  int SearchDepth = 12;
+  int SearchDepth = 8 ;
   int time_left = 10000000;
   int timeout_turn = 1000000;
   int timeout_match = 10000000;
@@ -21,7 +20,6 @@ public:
   bool stopThink = false;
   clock_t start;
   Pos BestMove;
-  Pos _BestMove;
 
   Pos gobang();
   void sort(Point * a, int n);
@@ -31,9 +29,10 @@ public:
   int ScoreMove(int x, int y);
   int minimax(int depth, int alpha, int beta);
   int AlphaBeta(int depth, int alpha, int beta);
-  int CutCand(Pos * moves, Point * cand, int Csize,int branch);
-  int GetMove(Pos * moves, int branch);
+  int CutCand(Pos * move, Point * cand, int Csize);
+  int GetMove(Pos * move, int MaxMove);
   int evaluate();
   int evaluate2();
+  bool Same(Pos a, Pos b);
 };
 #endif

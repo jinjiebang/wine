@@ -11,12 +11,12 @@ int AI::GetTime() {
 int AI::StopTime() {
   return (timeout_turn < time_left / 7) ? timeout_turn : time_left / 7;
 }
+
 // 返回最佳点
 Pos AI::gobang() {
+  start = clock();
   total = 0;
   stopThink = false;
-  srand(time(NULL));
-  start = clock();
 
   // 第一步下中心点
   if (step == 0) {
@@ -25,9 +25,10 @@ Pos AI::gobang() {
     return BestMove;
   }
   // 第二，三步随机
-  if (step == 1) {
+  if (step == 1 || step == 2) {
     int rx, ry;
     int d = step * 2 + 1;
+    srand(time(NULL));
     do {
       rx = rand() % d + remMove[1].x - step;
       ry = rand() % d + remMove[1].y - step;
@@ -36,52 +37,44 @@ Pos AI::gobang() {
     BestMove.y = ry;
     return BestMove;
   }
-
-    // 迭代加深搜索
+  // 迭代加深搜索
   for (int i = 2; i <= SearchDepth; i += 2) {
     if (GetTime() * 14 >= StopTime() && i > 4)
       break;
-    MaxDepth = i;
-
-    _BestVal = minimax(i, -10001, 10000);
-    if (!stopThink) {
-      BestMove = _BestMove;
-      BestVal = _BestVal;
-    }
-    if (BestVal == 10000) break;
+    MaxDepth=i;
+    BestVal = minimax(i, -10001, 10000);
+    if (BestVal == 10000)
+      break;
   }
 
   ThinkTime = (clock() - start) / CLOCKS_PER_SEC * 1000;
   return BestMove;
 }
 
-// max函数
+inline bool AI::Same(Pos a, Pos b) {
+  return a.x == b.x && a.y == b.y;
+}
+
+  // max函数
 int AI::minimax(int depth, int alpha, int beta) {
   UpdateRound(2);
-  Pos moves[22];
-  Pos p;
+  Pos move[22];
   int val;
-  int count = GetMove(moves, 20);
+  int count = GetMove(move, 20);
 
   if (count == 1) {
-    _BestMove = moves[1];
+    BestMove = move[1];
     return BestVal;
   }
 
-  moves[0] = (depth > 2) ? BestMove : moves[1];
+  move[0] = (depth > 2) ? BestMove : move[1];
 
   // 遍历所有走法
   for (int i = 0; i <= count; i++) {
-
-    p = moves[i];
-    if (i > 0 && p.x == moves[0].x && p.y == moves[0].y)
+    if (i > 0 && Same(move[0], move[i]))
       continue;
 
-    if (GetTime() + 1000 >= StopTime())
-      return alpha;
-
-    MakeMove(moves[i]);
-
+    MakeMove(move[i]);
     do {
       if (i > 0 && alpha + 1 < beta) {
         val = -AlphaBeta(depth - 1, -alpha - 1, -alpha);
@@ -90,17 +83,18 @@ int AI::minimax(int depth, int alpha, int beta) {
       }
       val = -AlphaBeta(depth - 1, -beta, -alpha);
     } while (0);
-
     DelMove();
 
+    if (stopThink)
+      break;
+
     if (val >= beta) {
-      _BestMove = moves[i];
+      BestMove = move[i];
       return val;
     }
-
     if (val > alpha) {
       alpha = val;
-      _BestMove = moves[i];
+      BestMove = move[i];
     }
   }
   return alpha;
@@ -108,10 +102,17 @@ int AI::minimax(int depth, int alpha, int beta) {
 
 // alpha-beta搜索
 int AI::AlphaBeta(int depth, int alpha, int beta) {
-  int val;
-  static int cnt = 0;
-  Pos moves[22];
   total++;
+
+  static int cnt = 1000;
+  if (--cnt <= 0) {
+    cnt = 1000;
+    if (GetTime() + 1000 >= StopTime())
+      stopThink = true;
+  }
+  // 停止思考
+  if (stopThink)
+    return alpha;
 
   // 对方最后一子连五
   if (CheckWin())
@@ -121,21 +122,17 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   if (depth == 0)
     return evaluate();
 
-  if (--cnt <= 0) {
-    cnt = 1000;
-    if (GetTime() + 1000 >= StopTime())
-      stopThink = true;
-  }
-  if (stopThink)
-    return alpha;
+  Pos move[22];
+  int count = GetMove(move, 16);
 
-  int count = GetMove(moves, 16);
+
   // 遍历所有走法
+  int val;
   for (int i = 1; i <= count; i++) {
     if (stopThink)
       break;
 
-    MakeMove(moves[i]);
+    MakeMove(move[i]);
 
     do {
       if (i > 1 && alpha + 1 < beta) {
@@ -157,25 +154,31 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   }
   return alpha;
 }
-int AI::CutCand(Pos * moves, Point * cand, int Csize,int branch) {
-  int me = color(step + 1);
-  int Msize = 0;
 
+//安全剪枝
+int AI::CutCand(Pos * move, Point * cand, int Csize) {
+  int me = color(step + 1);
+  int you = 3 - me;
+  int Msize = 0;
+  // 下子方能成五或活四
+  // 对方能成五
   if (cand[1].val >= 2400) {
+    move[1] = cand[1].p;
     Msize = 1;
-    moves[Msize] = cand[1].p;
   }
-  if (cand[1].val >= 1200 && cand[1].val < 2000) {
+  // 对方能成活四
+  if (cand[1].val == 1200) {
+    move[1] = cand[1].p;
     Msize = 1;
-    moves[Msize] = cand[1].p;
-    if (cand[2].val >= 1200) {
+    if (cand[2].val == 1200) {
+      move[2] = cand[2].p;
       Msize = 2;
-      moves[Msize] = cand[2].p;
     }
-    for (int i = Msize + 1; i <= Csize&& Msize < branch;++i){
-      if (IsType(cand[i].p, me, block4) || IsType(cand[i].p, 3 - me, block4)) {
+    for (int i = Msize + 1; i <= Csize; ++i) {
+      if (IsType(cand[i].p, me, block4)
+          || IsType(cand[i].p, you, block4)) {
         ++Msize;
-        moves[Msize] = cand[i].p;
+        move[Msize] = cand[i].p;
       }
     }
   }
@@ -183,7 +186,7 @@ int AI::CutCand(Pos * moves, Point * cand, int Csize,int branch) {
 }
 
 // 生成所有着法，并返回个数
-int AI::GetMove(Pos * moves, int branch) {
+int AI::GetMove(Pos * move, int branch) {
   Point cand[200];
   int Csize = 0, Msize = 0;
   int val;
@@ -203,15 +206,15 @@ int AI::GetMove(Pos * moves, int branch) {
   }
   // 着法排序
   sort(cand, Csize);
-
+  Csize = (Csize < branch) ? Csize : branch;
   // 棋型剪枝
-  Msize = CutCand(moves, cand, Csize,branch);
+  Msize = CutCand(move, cand, Csize);
 
   // 如果没有剪枝
   if (Msize == 0) {
-    Msize=(Csize < branch) ? Csize : branch;
+    Msize = Csize;
     for (int k = 1; k <= Msize; k++) {
-      moves[k] = cand[k].p;
+      move[k] = cand[k].p;
     }
   }
 
@@ -252,7 +255,7 @@ int AI::evaluate() {
   }
   // 评估最佳点下了之后的局势
   MakeMove(p);
-  val = evaluate2();
+  val = CheckWin()? 10000 : evaluate2();
   DelMove();
   return val;
 }
@@ -267,8 +270,6 @@ int AI::evaluate2() {
   AllType(me, Ctype);
   AllType(3 - me, Htype);
 
-  if (Ctype[win] > 0)
-    return 10000;
   if (Htype[flex4] > 0 || Htype[block4] > 0)
     return -10000;
   if (Ctype[flex4] > 0 || Ctype[block4] > 1)
@@ -292,7 +293,6 @@ int AI::ScoreMove(int x, int y) {
   int YouType[Ntype] = { 0 };
   int me = color(step + 1);
 
-
   TypeCount(x, y, me, MeType);
   TypeCount(x, y, 3 - me, YouType);
 
@@ -302,17 +302,16 @@ int AI::ScoreMove(int x, int y) {
     return 5000;
   if (MeType[flex4] > 0 || MeType[block4] > 1)
     return 2400;
-
-  if (MeType[block4] > 0 && MeType[flex3] > 0)
-    score += 2000;
-  else if (YouType[flex4] > 0 || YouType[block4] > 1)
-    score += 1200;
-  else if (YouType[block4] > 0 && YouType[flex3] > 0)
-    score += 1000;
-  else if (MeType[flex3] > 1)
-    score += 400;
-  else if (YouType[flex3] > 1)
-    score += 200;
+   if (MeType[block4] > 0 && MeType[flex3] > 0)
+    return 2000;
+  if (YouType[flex4] > 0 || YouType[block4] > 1)
+    return 1200;
+  if (YouType[block4] > 0 && YouType[flex3] > 0)
+    return 1000;
+  if (MeType[flex3] > 1)
+    return 400;
+  if (YouType[flex3] > 1)
+    return 200;
 
   for (int i = 1; i <= block4; i++) {
     score += MeVal[i] * MeType[i];
@@ -339,4 +338,3 @@ void AI::AllType(int role, int *type) {
     type[i] /= cnt[i];
   }
 }
-
