@@ -107,7 +107,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   static int cnt = 1000;
   if (--cnt <= 0) {
     cnt = 1000;
-    if (GetTime() + 1000 >= StopTime())
+    if (GetTime() + 500 >= StopTime())
       stopThink = true;
   }
   // 停止思考
