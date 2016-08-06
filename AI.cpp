@@ -123,7 +123,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     return evaluate();
 
   Pos move[22];
-  int count = GetMove(move, 20);
+  int count = GetMove(move, 18);
 
 
   // 遍历所有走法
