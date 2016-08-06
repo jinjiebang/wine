@@ -5,7 +5,7 @@
 using namespace std;
 
 int AI::GetTime() {
-  return (clock() - start) / CLOCKS_PER_SEC * 1000;
+  return (double)(clock() - start) / CLOCKS_PER_SEC * 1000;
 }
 
 int AI::StopTime() {
@@ -47,7 +47,7 @@ Pos AI::gobang() {
       break;
   }
 
-  ThinkTime = (clock() - start) / CLOCKS_PER_SEC * 1000;
+  ThinkTime = (double)(clock() - start) / CLOCKS_PER_SEC * 1000;
   return BestMove;
 }
 
