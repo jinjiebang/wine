@@ -61,38 +61,41 @@ int Board::color(int step) {
 // 检查胜利
 bool Board::CheckWin() {
   int role = color(step);
-  Pos & p = remMove[step];
-  Cell & c = cell[p.x][p.y];
+  Pos p = remMove[step];
+  Cell *c = &cell[p.x][p.y];
 
-  return (c.pattern[role - 1][0] == win
-          || c.pattern[role - 1][1] == win
-          || c.pattern[role - 1][2] == win 
-          || c.pattern[role - 1][3] == win);
+  return (c->pattern[role - 1][0] == win
+          || c->pattern[role - 1][1] == win
+          || c->pattern[role - 1][2] == win 
+          || c->pattern[role - 1][3] == win);
 }
-
+//判断棋型
 bool Board::IsType(Pos p, int role, int type) {
-  Cell & c = cell[p.x][p.y];
-  return (c.pattern[role - 1][0] == type
-          || c.pattern[role - 1][1] == type
-          || c.pattern[role - 1][2] == type 
-          || c.pattern[role - 1][3] == type);
+  Cell *c = &cell[p.x][p.y];
+  return (c->pattern[role - 1][0] == type
+          || c->pattern[role - 1][1] == type
+          || c->pattern[role - 1][2] == type
+          || c->pattern[role - 1][3] == type);
 }
 
 // 更新点(x,y)周围位置的棋型
 void Board::UpdateType(int x, int y) {
   int a, b;
+  Cell *c;
   for (int i = 0; i < 4; ++i) {
     a = x + dx[i];
     b = y + dy[i];
     for (int j = 0; j < 4 && CheckXy(a, b); a += dx[i], b += dy[i], ++j) {
-      cell[a][b].pattern[0][i] = TypeLine(1, a, b, dx[i], dy[i]);
-      cell[a][b].pattern[1][i] = TypeLine(2, a, b, dx[i], dy[i]);
+      c = &cell[a][b];
+      c->pattern[0][i] = TypeLine(1, a, b, dx[i], dy[i]);
+      c->pattern[1][i] = TypeLine(2, a, b, dx[i], dy[i]);
     }
     a = x - dx[i];
     b = y - dy[i];
     for (int k = 0; k < 4 && CheckXy(a, b); a -= dx[i], b -= dy[i], ++k) {
-      cell[a][b].pattern[0][i] = TypeLine(1, a, b, dx[i], dy[i]);
-      cell[a][b].pattern[1][i] = TypeLine(2, a, b, dx[i], dy[i]);
+      c = &cell[a][b];
+      c->pattern[0][i] = TypeLine(1, a, b, dx[i], dy[i]);
+      c->pattern[1][i] = TypeLine(2, a, b, dx[i], dy[i]);
     }
   }
 }
@@ -119,6 +122,7 @@ int Board::TypeLine(int role, int x, int y, int i, int j) {
   int kong = 0, block = 0;
   int len = 1, len2 = 1, count = 1;
   int a, b, k;
+  Cell *c;
   a = x + i;
   b = y + j;
   for (k = 0; k < 4; a += i, b += j, ++k) {
@@ -127,13 +131,14 @@ int Board::TypeLine(int role, int x, int y, int i, int j) {
         ++block;
       break;
     }
-    if (cell[a][b].piece == role) {
+    c = &cell[a][b];
+    if (c->piece == role) {
       if (kong + count > 4)
         break;
       ++count;
       ++len;
       len2 = kong + count;
-    } else if (cell[a][b].piece == 0) {
+    } else if (c->piece == 0) {
       ++len;
       ++kong;
     } else {
@@ -152,13 +157,14 @@ int Board::TypeLine(int role, int x, int y, int i, int j) {
         ++block;
       break;
     }
-    if (cell[a][b].piece == role) {
+    c = &cell[a][b];
+    if (c->piece == role) {
       if (kong + count > 4)
         break;
       ++count;
       ++len;
       len2 = kong + count;
-    } else if (cell[a][b].piece == 0) {
+    } else if (c->piece == 0) {
       ++len;
       ++kong;
     } else {
@@ -173,11 +179,12 @@ int Board::TypeLine(int role, int x, int y, int i, int j) {
 // 棋型计数
 void Board::TypeCount(int x, int y, int role, int *type) {
   int d[4];
+  Cell *c = &cell[x][y];
   // 四个方向
-  d[0] = cell[x][y].pattern[role - 1][0];
-  d[1] = cell[x][y].pattern[role - 1][1];
-  d[2] = cell[x][y].pattern[role - 1][2];
-  d[3] = cell[x][y].pattern[role - 1][3];
+  d[0] = c->pattern[role - 1][0];
+  d[1] = c->pattern[role - 1][1];
+  d[2] = c->pattern[role - 1][2];
+  d[3] = c->pattern[role - 1][3];
   // 记录棋型
   ++type[d[0]];
   ++type[d[1]];
