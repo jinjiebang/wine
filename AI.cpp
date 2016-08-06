@@ -58,9 +58,9 @@ inline bool AI::Same(Pos a, Pos b) {
   // max函数
 int AI::minimax(int depth, int alpha, int beta) {
   UpdateRound(2);
-  Pos move[22];
+  Pos move[25];
   int val;
-  int count = GetMove(move, 20);
+  int count = GetMove(move, 24);
 
   if (count == 1) {
     BestMove = move[1];
