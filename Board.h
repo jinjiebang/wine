@@ -52,11 +52,14 @@ public:
   void UpdateRound(int n);
   void TypeCount(int x, int y, int role, int *type);
   bool CheckWin();
-  bool CheckXy(int x, int y);
   bool IsType(Pos p, int role, int type);
-  int color(int step);
+  bool CheckXy(int x, int y) {
+    return (x >= 0 && x < size && y >= 0 && y < size);
+  }
+  int color(int step) {
+    return (step % 2) ? 1 : 2;
+  }
   int TypeLine(int role, int x, int y, int i, int j);
   int GetType(int len, int len2, int count, int block);
-
 };
 #endif
