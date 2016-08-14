@@ -1,17 +1,17 @@
 #include "Board.h"
 #include <cstring>
 #include <iostream>
-using namespace std;
+  using namespace std;
 
 Board::Board() {
   InitType();
   memset(cell, 0, sizeof(cell));
   memset(IsCand, 0, sizeof(IsCand));
   memset(remMove, 0, sizeof(remMove));
-  for (int i=0;i<size;i++){
-  	for (int j=0;j<size;j++){
-  		cell[i][j].piece=Empty;
-  	}
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < size; j++) {
+      cell[i][j].piece = Empty;
+    }
   }
 }
 
@@ -58,7 +58,7 @@ void Board::ReStart() {
 
   // 检查胜利
 bool Board::CheckWin() {
-  int role = color(step) ;
+  int role = color(step);
   Pos p = remMove[step];
   Cell *c = &cell[p.x][p.y];
 
