@@ -62,7 +62,7 @@ public:
     return (x >= 0 && x < size && y >= 0 && y < size);
   }
   int color(int step) {
-    return step%2;
+    return step % 2;
   }
   int TypeLine(int role, int x, int y, int i, int j);
   int GetType(int len, int len2, int count, int block);
