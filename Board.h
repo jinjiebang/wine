@@ -10,6 +10,10 @@ const int block2 = 1;           // 眠二
 const int Ntype = 8;            // 棋型数量
 const int MaxSize = 20;         // 最大尺寸
 
+const int Empty=2;
+const int Black=1;
+const int White=0;
+
 
 // 坐标
 struct Pos {
@@ -31,11 +35,11 @@ struct Cell {
 
 class Board {
 public:
-
+  
   int step = 0;
   int size = 15;
-  int dx[4] = { 1, 0, 1, 1 };
-  int dy[4] = { 0, 1, 1, -1 };
+  const int dx[4] = { 1, 0, 1, 1 };
+  const int dy[4] = { 0, 1, 1, -1 };
   int typeTable[10][6][6][3];
   Cell cell[MaxSize][MaxSize];
   Pos remMove[MaxSize * MaxSize];
@@ -58,7 +62,7 @@ public:
     return (x >= 0 && x < size && y >= 0 && y < size);
   }
   int color(int step) {
-    return (step % 2) ? 1 : 2;
+    return step%2;
   }
   int TypeLine(int role, int x, int y, int i, int j);
   int GetType(int len, int len2, int count, int block);

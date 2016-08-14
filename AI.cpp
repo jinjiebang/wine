@@ -2,7 +2,7 @@
 #include<ctime>
 #include<cstdlib>
 #include<iostream>
-using namespace std;
+  using namespace std;
 
 int AI::GetTime() {
   return (double)(clock() - start) / CLOCKS_PER_SEC * 1000;
@@ -32,7 +32,7 @@ Pos AI::gobang() {
     do {
       rx = rand() % d + remMove[1].x - step;
       ry = rand() % d + remMove[1].y - step;
-    } while (cell[rx][ry].piece != 0);
+    } while (cell[rx][ry].piece != Empty);
     BestMove.x = rx;
     BestMove.y = ry;
     return BestMove;
@@ -76,7 +76,7 @@ int AI::minimax(int depth, int alpha, int beta) {
       continue;
 
     Pos & m = move[i];
-    if (IsLose[m.x][m.y])
+    if (i > 0 && IsLose[m.x][m.y])
       continue;
 
     MakeMove(move[i]);
@@ -166,7 +166,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
 // 安全剪枝
 int AI::CutCand(Pos * move, Point * cand, int Csize) {
   int me = color(step + 1);
-  int you = 3 - me;
+  int you = !me;
   int Msize = 0;
   // 下子方能成五或活四
   // 对方能成五
@@ -200,7 +200,7 @@ int AI::GetMove(Pos * move, int branch) {
   int val;
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) {
-      if (IsCand[i][j] && cell[i][j].piece == 0) {
+      if (IsCand[i][j] && cell[i][j].piece == Empty) {
         val = ScoreMove(i, j);
         if (val > 0) {
           ++Csize;
@@ -251,7 +251,7 @@ int AI::evaluate() {
   // 选出最佳点
   for (int i = 0; i < size; ++i) {
     for (int j = 0; j < size; ++j) {
-      if (IsCand[i][j] && cell[i][j].piece == 0) {
+      if (IsCand[i][j] && cell[i][j].piece == Empty) {
         val = ScoreMove(i, j);
         if (val > max) {
           max = val;
@@ -276,7 +276,7 @@ int AI::evaluate2() {
   int me = color(step);
 
   AllType(me, Ctype);
-  AllType(3 - me, Htype);
+  AllType(!me, Htype);
 
   if (Htype[flex4] > 0 || Htype[block4] > 0)
     return -10000;
@@ -302,7 +302,7 @@ int AI::ScoreMove(int x, int y) {
   int me = color(step + 1);
 
   TypeCount(x, y, me, MeType);
-  TypeCount(x, y, 3 - me, YouType);
+  TypeCount(x, y, !me, YouType);
 
   if (MeType[win] > 0)
     return 10000;
@@ -334,7 +334,8 @@ void AI::AllType(int role, int *type) {
   int x, y, i;
   int cnt[Ntype] = { 0, 2, 2, 3, 3, 4, 4, 5 };
 
-  for (i = role; i <= step; i += 2) {
+  int begin = (role == Black) ? 1 : 2;
+  for (i = begin; i <= step; i += 2) {
     x = remMove[i].x;
     y = remMove[i].y;
     TypeCount(x, y, role, type);
