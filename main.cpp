@@ -43,7 +43,7 @@ int gomocup() {
     } else if (command == "TURN") {
       cin >> input.x >> dot >> input.y;
       if (!wine.CheckXy(input.x, input.y)
-          || wine.cell[input.x][input.y].piece) {
+          || wine.cell[input.x][input.y].piece != Empty) {
         cout << "ERROR" << endl;
       } else {
         wine.MakeMove(input);
