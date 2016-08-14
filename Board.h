@@ -18,7 +18,6 @@ const int White=0;
 const int dx[4] = { 1, 0, 1, 1 };
 const int dy[4] = { 0, 1, 1, -1 };
 
-
 // 坐标
 struct Pos {
   int x;
