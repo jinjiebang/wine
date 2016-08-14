@@ -12,9 +12,9 @@ public:
   int total = 0;
   int BestVal = 0;
   int MaxDepth = 0;
-  int SearchDepth = 12 ;
+  int SearchDepth = 14;
   int time_left = 10000000;
-  int timeout_turn = 1000000;
+  int timeout_turn = 10000000;
   int timeout_match = 10000000;
   int ThinkTime = 0;
   bool stopThink = false;
