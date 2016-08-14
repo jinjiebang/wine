@@ -10,9 +10,13 @@ const int block2 = 1;           // 眠二
 const int Ntype = 8;            // 棋型数量
 const int MaxSize = 20;         // 最大尺寸
 
+//棋子
 const int Empty=2;
 const int Black=1;
 const int White=0;
+//方向向量
+const int dx[4] = { 1, 0, 1, 1 };
+const int dy[4] = { 0, 1, 1, -1 };
 
 
 // 坐标
@@ -35,11 +39,8 @@ struct Cell {
 
 class Board {
 public:
-  
   int step = 0;
   int size = 15;
-  const int dx[4] = { 1, 0, 1, 1 };
-  const int dy[4] = { 0, 1, 1, -1 };
   int typeTable[10][6][6][3];
   Cell cell[MaxSize][MaxSize];
   Pos remMove[MaxSize * MaxSize];
