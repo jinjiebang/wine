@@ -40,6 +40,7 @@ public:
   Cell cell[MaxSize][MaxSize];
   Pos remMove[MaxSize * MaxSize];
   bool IsCand[MaxSize][MaxSize];
+  bool IsLose[MaxSize][MaxSize];
 
   Board();
   ~Board();

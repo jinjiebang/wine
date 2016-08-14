@@ -38,10 +38,11 @@ Pos AI::gobang() {
     return BestMove;
   }
   // 迭代加深搜索
+  memset(IsLose, false, sizeof(IsLose));
   for (int i = 2; i <= SearchDepth; i += 2) {
     if (GetTime() * 14 >= StopTime() && i > 4)
       break;
-    MaxDepth=i;
+    MaxDepth = i;
     BestVal = minimax(i, -10001, 10000);
     if (BestVal == 10000)
       break;
@@ -74,6 +75,10 @@ int AI::minimax(int depth, int alpha, int beta) {
     if (i > 0 && Same(move[0], move[i]))
       continue;
 
+    Pos & m = move[i];
+    if (IsLose[m.x][m.y])
+      continue;
+
     MakeMove(move[i]);
     do {
       if (i > 0 && alpha + 1 < beta) {
@@ -87,6 +92,9 @@ int AI::minimax(int depth, int alpha, int beta) {
 
     if (stopThink)
       break;
+
+    if (val == -10000)
+      IsLose[m.x][m.y] = true;
 
     if (val >= beta) {
       BestMove = move[i];
@@ -122,7 +130,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   if (depth == 0)
     return evaluate();
 
-  Pos move[22];
+  Pos move[20];
   int count = GetMove(move, 18);
 
 
@@ -155,7 +163,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   return alpha;
 }
 
-//安全剪枝
+// 安全剪枝
 int AI::CutCand(Pos * move, Point * cand, int Csize) {
   int me = color(step + 1);
   int you = 3 - me;
@@ -302,7 +310,7 @@ int AI::ScoreMove(int x, int y) {
     return 5000;
   if (MeType[flex4] > 0 || MeType[block4] > 1)
     return 2400;
-   if (MeType[block4] > 0 && MeType[flex3] > 0)
+  if (MeType[block4] > 0 && MeType[flex3] > 0)
     return 2000;
   if (YouType[flex4] > 0 || YouType[block4] > 1)
     return 1200;
