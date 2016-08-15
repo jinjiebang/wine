@@ -281,9 +281,9 @@ int AI::evaluate2() {
   if (Htype[flex4] > 0 || Htype[block4] > 0)
     return -10000;
   if (Ctype[flex4] > 0 || Ctype[block4] > 1)
-    return 10000;
+    return 9998;
   if (Htype[flex3] > 0 && Ctype[block4] == 0)
-    return -10000;
+    return -9998;
 
   for (int i = 1; i <= block4; ++i) {
     Cscore += Ctype[i] * Tval[i];
