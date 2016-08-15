@@ -120,8 +120,8 @@ void Board::UpdateRound(int n) {
   for (int k = 1; k <= step; ++k) {
     x = remMove[k].x + n;
     y = remMove[k].y + n;
-    for (int i = x - n << 1; i <= x; ++i) {
-      for (int j = y - n << 1; j <= y; ++j) {
+    for (int i = x - (n << 1); i <= x; ++i) {
+      for (int j = y - (n << 1); j <= y; ++j) {
         if (!CheckXy(i, j))
           continue;
         IsCand[i][j] = true;
