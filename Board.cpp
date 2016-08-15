@@ -6,7 +6,7 @@
 Board::Board() {
   InitType();
   memset(cell, 0, sizeof(cell));
-  memset(IsLose,0,sizeof(IsLose));
+  memset(IsLose, 0, sizeof(IsLose));
   memset(IsCand, 0, sizeof(IsCand));
   memset(remMove, 0, sizeof(remMove));
   for (int i = 0; i < size; i++) {
