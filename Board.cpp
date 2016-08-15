@@ -81,21 +81,34 @@ bool Board::IsType(Pos p, int role, int type) {
 // 更新点(x,y)周围位置的棋型
 void Board::UpdateType(int x, int y) {
   int a, b;
+  int p1, p2;
   Cell *c;
   for (int i = 0; i < 4; ++i) {
     a = x + dx[i];
     b = y + dy[i];
     for (int j = 0; j < 4 && CheckXy(a, b); a += dx[i], b += dy[i], ++j) {
       c = &cell[a][b];
-      c->pattern[0][i] = TypeLine(0, a, b, dx[i], dy[i]);
-      c->pattern[1][i] = TypeLine(1, a, b, dx[i], dy[i]);
+      // 更新白棋棋型
+      p1 = TypeLine(0, a, b, dx[i], dy[i]);
+      p2 = TypeLine(0, a, b, -dx[i], -dy[i]);
+      c->pattern[0][i] = (p1 > p2) ? p1; p2;
+      // 更新黑棋棋型
+      p1 = TypeLine(1, a, b, dx[i], dy[i]);
+      p2 = TypeLine(1 , a, b, -dx[i], -dy[i]);
+      c->pattern[1][i] = (p1 > p2) ? p1; p2;
     }
     a = x - dx[i];
     b = y - dy[i];
     for (int k = 0; k < 4 && CheckXy(a, b); a -= dx[i], b -= dy[i], ++k) {
       c = &cell[a][b];
-      c->pattern[0][i] = TypeLine(0, a, b, dx[i], dy[i]);
-      c->pattern[1][i] = TypeLine(1, a, b, dx[i], dy[i]);
+      // 更新白棋棋型
+      p1 = TypeLine(0, a, b, dx[i], dy[i]);
+      p2 = TypeLine(0, a, b, -dx[i], -dy[i]);
+      c->pattern[0][i] = (p1 > p2) ? p1; p2;
+      // 更新黑棋棋型
+      p1 = TypeLine(1, a, b, dx[i], dy[i]);
+      p2 = TypeLine(1 , a, b, -dx[i], -dy[i]);
+      c->pattern[1][i] = (p1 > p2) ? p1; p2;
     }
   }
 }
