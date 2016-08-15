@@ -91,11 +91,11 @@ void Board::UpdateType(int x, int y) {
       // 更新白棋棋型
       p1 = TypeLine(0, a, b, dx[i], dy[i]);
       p2 = TypeLine(0, a, b, -dx[i], -dy[i]);
-      c->pattern[0][i] = (p1 > p2) ? p1; p2;
+      c->pattern[0][i] = (p1 > p2) ? p1: p2;
       // 更新黑棋棋型
       p1 = TypeLine(1, a, b, dx[i], dy[i]);
       p2 = TypeLine(1 , a, b, -dx[i], -dy[i]);
-      c->pattern[1][i] = (p1 > p2) ? p1; p2;
+      c->pattern[1][i] = (p1 > p2) ? p1: p2;
     }
     a = x - dx[i];
     b = y - dy[i];
@@ -104,11 +104,11 @@ void Board::UpdateType(int x, int y) {
       // 更新白棋棋型
       p1 = TypeLine(0, a, b, dx[i], dy[i]);
       p2 = TypeLine(0, a, b, -dx[i], -dy[i]);
-      c->pattern[0][i] = (p1 > p2) ? p1; p2;
+      c->pattern[0][i] = (p1 > p2) ? p1: p2;
       // 更新黑棋棋型
       p1 = TypeLine(1, a, b, dx[i], dy[i]);
       p2 = TypeLine(1 , a, b, -dx[i], -dy[i]);
-      c->pattern[1][i] = (p1 > p2) ? p1; p2;
+      c->pattern[1][i] = (p1 > p2) ? p1: p2;
     }
   }
 }
