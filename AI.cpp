@@ -1,5 +1,6 @@
 #include "AI.h"
 #include<ctime>
+#include<cstring>
 #include<cstdlib>
 #include<iostream>
   using namespace std;
