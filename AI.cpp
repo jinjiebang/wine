@@ -3,7 +3,7 @@
 #include<cstring>
 #include<cstdlib>
 #include<iostream>
-using namespace std;
+  using namespace std;
 
 int AI::GetTime() {
   return (double)(clock() - start) / CLOCKS_PER_SEC * 1000;
@@ -243,31 +243,55 @@ void AI::sort(Point * a, int n) {
   }
 }
 
-// 局势评估函数
+// 估值函数
 int AI::evaluate() {
+  int val;
+  int max = -1;
+  Pos p;
+  // 选出最佳点
+  for (int i = 0; i < size; ++i) {
+    for (int j = 0; j < size; ++j) {
+      if (IsCand[i][j] && cell[i][j].piece == Empty) {
+        val = ScoreMove(i, j);
+        if (val > max) {
+          max = val;
+          p.x = i;
+          p.y = j;
+        }
+      }
+    }
+  }
+  // 评估最佳点下了之后的局势
+  MakeMove(p);
+  val = CheckWin()? 10000 : evaluate2();
+  DelMove();
+  return val;
+}
+
+// 棋型估值函数
+int AI::evaluate2() {
   int Ctype[Ntype] = { 0 };
   int Htype[Ntype] = { 0 };
   int Cscore = 0, Hscore = 0;
-  int me = color(step + 1);
+  int me = color(step);
 
   AllType(me, Ctype);
   AllType(!me, Htype);
 
-  if (Ctype[block4] > 0 || Ctype[flex4] > 0)
-    return 10000;
-  if (Htype[flex4] > 0 || Htype[block4] > 1)
+  if (Htype[flex4] > 0 || Htype[block4] > 0)
     return -10000;
-  if (Ctype[flex3] > 0 && Htype[block4] == 0)
-    return 9998;
+  if (Ctype[flex4] > 0 || Ctype[block4] > 1)
+    return 10000;
+  if (Htype[flex3] > 0 && Ctype[block4] == 0)
+    return -10000;
 
   for (int i = 1; i <= block4; ++i) {
-    Cscore += Ctype[i] * MeEval[i];
-    Hscore += Htype[i] * YouEval[i];
+    Cscore += Ctype[i] * Tval[i];
+    Hscore += Htype[i] * Tval[i];
   }
 
   return Cscore - Hscore;
 }
-
 // 着法打分
 int AI::ScoreMove(int x, int y) {
   int score = 0;

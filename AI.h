@@ -5,13 +5,11 @@
 class AI:public Board {
 private:
   // 选点棋型分值
-  int MeVal[6] = { 0, 4, 10, 10, 24, 24 };
+  int MeVal[6] = { 0, 4, 10, 10, 24, 24  };
   int YouVal[6] = { 0, 2, 5, 5, 12, 12 };
   // 局势棋型分值
-  int MeEval[6] = { 0, 1, 6, 6, 36, 40 };
-  int YouEval[6] = { 0, 1, 6, 6, 15, 24 };
-
-
+  int Tval[6] = { 0, 1, 6, 6, 36, 40 };
+  
 public:
   int total = 0;
   int BestVal = 0;
@@ -36,6 +34,7 @@ public:
   int CutCand(Pos * move, Point * cand, int Csize);
   int GetMove(Pos * move, int MaxMove);
   int evaluate();
+  int evaluate2();
   bool Same(Pos a, Pos b);
 };
 #endif
