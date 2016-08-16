@@ -33,14 +33,14 @@ Pos AI::gobang() {
     do {
       rx = rand() % d + remMove[1].x - step;
       ry = rand() % d + remMove[1].y - step;
-    } while (cell[rx][ry].piece != Empty);
+    } while (cell[rx]y[ry].piece != Empty);
     BestMove.x = rx;
     BestMove.y = ry;
     return BestMove;
   }
   // 迭代加深搜索
   memset(IsLose, false, sizeof(IsLose));
-  for (int i = 2; i <= SearchDepth; i++) {
+  for (int i = 2; i <= SearchDepth; i += 2) {
     if (GetTime() * 14 >= StopTime() && i > 4)
       break;
     MaxDepth = i;
