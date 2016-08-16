@@ -68,7 +68,7 @@ void DrawChess(AI * ai) {
     for (int j = 0; j < size; j++) {
       switch (ai->cell[j][i].piece) {
       case 2:
-        ai->IsLose[j][i] ? cout << " L" : cout << "+ ";
+        cout << "+ ";
         break;
       case 1:
         cout << "● ";
