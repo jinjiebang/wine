@@ -9,7 +9,7 @@ private:
   int YouVal[6] = { 0, 2, 5, 5, 12, 12 };
   // 局势棋型分值
   int MeEval[6] = { 0, 1, 6, 6, 36, 40 };
-  int YouEval[6] = { 0, 1, 6, 6, 15, 20 };
+  int YouEval[6] = { 0, 1, 6, 6, 15, 24 };
 
 
 public:
