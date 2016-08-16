@@ -176,7 +176,7 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
     Msize = 1;
   }
   // 对方能成活四
-  if (cand[1].val == 1200) {
+  else if (cand[1].val == 1200) {
     move[1] = cand[1].p;
     Msize = 1;
     if (cand[2].val == 1200) {
