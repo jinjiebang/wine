@@ -65,6 +65,7 @@ public:
     return step % 2;
   }
   int TypeLine(int role, int x, int y, int i, int j);
+  int ShortType(int role,int x,int y,int i,int j);
   int GetType(int len, int len2, int count, int block);
 };
 #endif

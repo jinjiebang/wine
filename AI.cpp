@@ -26,14 +26,14 @@ Pos AI::gobang() {
     return BestMove;
   }
   // 第二，三步随机
-  if (step == 1 || step == 2) {
+  if (step == 1) {
     int rx, ry;
     int d = step * 2 + 1;
     srand(time(NULL));
     do {
       rx = rand() % d + remMove[1].x - step;
       ry = rand() % d + remMove[1].y - step;
-    } while (cell[rx]y[ry].piece != Empty);
+    } while (cell[rx][ry].piece != Empty);
     BestMove.x = rx;
     BestMove.y = ry;
     return BestMove;
@@ -176,7 +176,7 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
     Msize = 1;
   }
   // 对方能成活四
-  else if (cand[1].val == 1200) {
+  if (cand[1].val == 1200) {
     move[1] = cand[1].p;
     Msize = 1;
     if (cand[2].val == 1200) {
@@ -209,7 +209,6 @@ int AI::GetMove(Pos * move, int branch) {
           cand[Csize].p.y = j;
           cand[Csize].val = val;
         }
-
       }
     }
   }
@@ -222,7 +221,7 @@ int AI::GetMove(Pos * move, int branch) {
   // 如果没有剪枝
   if (Msize == 0) {
     Msize = Csize;
-    for (int k = 1; k <= Msize; k++) {
+    for (int k = 1; k <= Msize; ++k) {
       move[k] = cand[k].p;
     }
   }
@@ -263,7 +262,7 @@ int AI::evaluate() {
   }
   // 评估最佳点下了之后的局势
   MakeMove(p);
-  val = CheckWin()? 10000 : evaluate2();
+  val = evaluate2();
   DelMove();
   return val;
 }
@@ -275,7 +274,12 @@ int AI::evaluate2() {
   int Cscore = 0, Hscore = 0;
   int me = color(step);
 
+  //统计己方全部棋子的棋型
   AllType(me, Ctype);
+
+  if (Ctype[win] > 0)
+    return 10000;
+  //统计对方全部棋子的棋型
   AllType(!me, Htype);
 
   if (Htype[flex4] > 0 || Htype[block4] > 0)

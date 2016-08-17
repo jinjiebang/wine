@@ -1,7 +1,7 @@
 #include "Board.h"
 #include <cstring>
 #include <iostream>
-  using namespace std;
+using namespace std;
 
 Board::Board() {
   InitType();
@@ -9,8 +9,8 @@ Board::Board() {
   memset(IsLose, 0, sizeof(IsLose));
   memset(IsCand, 0, sizeof(IsCand));
   memset(remMove, 0, sizeof(remMove));
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < size; j++) {
+  for (int i = 0; i < MaxSize; i++) {
+    for (int j = 0; j < MaxSize; j++) {
       cell[i][j].piece = Empty;
     }
   }
@@ -65,7 +65,7 @@ bool Board::CheckWin() {
 
   return (c->pattern[role][0] == win
           || c->pattern[role][1] == win
-          || c->pattern[role][2] == win 
+          || c->pattern[role][2] == win
           || c->pattern[role][3] == win);
 }
 
@@ -74,7 +74,7 @@ bool Board::IsType(Pos p, int role, int type) {
   Cell *c = &cell[p.x][p.y];
   return (c->pattern[role][0] == type
           || c->pattern[role][1] == type
-          || c->pattern[role][2] == type 
+          || c->pattern[role][2] == type
           || c->pattern[role][3] == type);
 }
 
@@ -100,26 +100,66 @@ void Board::UpdateType(int x, int y) {
   }
 }
 
-
 // 更新合理着法
 void Board::UpdateRound(int n) {
   memset(IsCand, false, sizeof(IsCand));
   int x, y;
+  int Lx, Rx;
+  int Ly, Ry;
+
   for (int k = 1; k <= step; ++k) {
-    x = remMove[k].x + n;
-    y = remMove[k].y + n;
-    for (int i = x - (n << 1); i <= x; ++i) {
-      for (int j = y - (n << 1); j <= y; ++j) {
-        if (!CheckXy(i, j))
-          continue;
-        IsCand[i][j] = true;
+    x = remMove[k].x;
+    y = remMove[k].y;
+    // 边界设置
+    Lx = x - n < 0 ? 0 : x - n;
+    Ly = y - n < 0 ? 0 : y - n;
+    Rx = x + n > size - 1 ? size - 1: x + n;
+    Ry = y + n > size - 1 ? size - 1: y + n;
+    // 设置n格以内的空点为合理着法
+    for (int i = Lx; i <= Rx; ++i) {
+      for (int j = Ly; j <= Ry; ++j) {
+          IsCand[i][j] = true;
       }
     }
   }
 }
 
-// 棋型判断
+//棋型判断
 int Board::TypeLine(int role, int x, int y, int i, int j) {
+  int a, b, k;
+  int you = !role;
+  int len = 0, len2 = 0;
+  // 计算右边棋型长度
+  a = x + i;
+  b = y + j;
+  for (k = 1; k <= 4 && CheckXy(a, b) && cell[a][b].piece != you;
+       a += i, b += j, ++k) {
+    if (cell[a][b].piece == role)
+      len = k;
+  }
+  // 计算左边棋型长度
+  a = x - i;
+  b = y - j;
+  for (k = 1; k <= 4 && CheckXy(a, b) && cell[a][b].piece != you;
+       a -= i, b -= j, ++k) {
+    if (cell[a][b].piece == role)
+      len2 = k;
+  }
+  // 短棋型判断一次即可
+  // 长棋型需双向判断
+  if (len + len2 == 0) {
+    return 0;
+  } else if (len + len2 < 5) {
+    return ShortType(role, x, y, i, j);
+  } else {
+    int p1 = ShortType(role, x, y, i, j);
+    int p2 = ShortType(role, x, y, -i, -j);
+    return p1 > p2 ? p1 : p2;
+  }
+}
+
+//短棋型判断
+int Board::ShortType(int role, int x, int y, int i, int j) {
   int kong = 0, block = 0;
   int len = 1, len2 = 1, count = 1;
   int a, b, k;
