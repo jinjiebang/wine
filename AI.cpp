@@ -26,7 +26,7 @@ Pos AI::gobang() {
     return BestMove;
   }
   // 第二，三步随机
-  if (step == 1) {
+  if (step == 1 || step == 2) {
     int rx, ry;
     int d = step * 2 + 1;
     srand(time(NULL));
