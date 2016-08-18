@@ -41,7 +41,7 @@ Pos AI::gobang() {
   // 迭代加深搜索
   memset(IsLose, false, sizeof(IsLose));
   for (int i = 2; i <= SearchDepth; i += 2) {
-    if (GetTime() * 14 >= StopTime() && i > 4)
+    if (i > 4 && GetTime() * 14 >= StopTime())
       break;
     MaxDepth = i;
     BestVal = minimax(i, -10001, 10000);
@@ -135,11 +135,8 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   // 遍历所有走法
   int val;
   for (int i = 1; i <= count; i++) {
-    if (stopThink)
-      break;
 
     MakeMove(move[i]);
-
     do {
       if (i > 1 && alpha + 1 < beta) {
         val = -AlphaBeta(depth - 1, -alpha - 1, -alpha);
@@ -148,8 +145,11 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
       }
       val = -AlphaBeta(depth - 1, -beta, -alpha);
     } while (0);
-
     DelMove();
+    
+    if (stopThink)
+      break;
+    
     if (val >= beta) {
       return val;
     }
