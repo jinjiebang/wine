@@ -41,7 +41,7 @@ Pos AI::gobang() {
   // 迭代加深搜索
   memset(IsLose, false, sizeof(IsLose));
   for (int i = 2; i <= SearchDepth; i += 2) {
-    if (i > 4 && GetTime() * 14 >= StopTime())
+    if (i > 4 && GetTime() * 12 >= StopTime())
       break;
     MaxDepth = i;
     BestVal = minimax(i, -10001, 10000);
@@ -60,9 +60,9 @@ inline bool AI::Same(Pos a, Pos b) {
   // max函数
 int AI::minimax(int depth, int alpha, int beta) {
   UpdateRound(2);
-  Pos move[21];
+  Pos move[25];
   int val;
-  int count = GetMove(move, 20);
+  int count = GetMove(move, 24);
 
   if (count == 1) {
     BestMove = move[1];
