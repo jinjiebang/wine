@@ -60,9 +60,9 @@ inline bool AI::Same(Pos a, Pos b) {
   // max函数
 int AI::minimax(int depth, int alpha, int beta) {
   UpdateRound(2);
-  Pos move[25];
+  Pos move[31];
   int val;
-  int count = GetMove(move, 24);
+  int count = GetMove(move, 30);
 
   if (count == 1) {
     BestMove = move[1];
@@ -131,8 +131,8 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   if (depth == 0)
     return evaluate();
 
-  Pos move[19];
-  int count = GetMove(move, 18);
+  Pos move[31];
+  int count = GetMove(move, 30);
 
 
   // 遍历所有走法
@@ -153,7 +153,6 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     } while (0);
 
     DelMove();
-
     if (val >= beta) {
       return val;
     }
@@ -176,7 +175,7 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
     Msize = 1;
   }
   // 对方能成活四
-  if (cand[1].val == 1200) {
+  else if (cand[1].val == 1200) {
     move[1] = cand[1].p;
     Msize = 1;
     if (cand[2].val == 1200) {
@@ -271,15 +270,14 @@ int AI::evaluate() {
 int AI::evaluate2() {
   int Ctype[Ntype] = { 0 };
   int Htype[Ntype] = { 0 };
-  int Cscore = 0, Hscore = 0;
   int me = color(step);
 
-  //统计己方全部棋子的棋型
+  // 统计己方全部棋子的棋型
   AllType(me, Ctype);
 
   if (Ctype[win] > 0)
     return 10000;
-  //统计对方全部棋子的棋型
+  // 统计对方全部棋子的棋型
   AllType(!me, Htype);
 
   if (Htype[flex4] > 0 || Htype[block4] > 0)
@@ -289,6 +287,7 @@ int AI::evaluate2() {
   if (Htype[flex3] > 0 && Ctype[block4] == 0)
     return -10000;
 
+  int Cscore = 0, Hscore = 0;
   for (int i = 1; i <= block4; ++i) {
     Cscore += Ctype[i] * Tval[i];
     Hscore += Htype[i] * Tval[i];
@@ -324,8 +323,7 @@ int AI::ScoreMove(int x, int y) {
     return 200;
 
   for (int i = 1; i <= block4; i++) {
-    score += MeVal[i] * MeType[i];
-    score += YouVal[i] * YouType[i];
+    score += (MeVal[i] * MeType[i] + YouVal[i] * YouType[i]);
   }
 
   return score;
