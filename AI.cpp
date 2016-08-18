@@ -119,9 +119,6 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     if (GetTime() + 500 >= StopTime())
       stopThink = true;
   }
-  // 停止思考
-  if (stopThink)
-    return alpha;
 
   // 对方最后一子连五
   if (CheckWin())
