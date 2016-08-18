@@ -320,7 +320,8 @@ int AI::ScoreMove(int x, int y) {
     return 200;
 
   for (int i = 1; i <= block4; i++) {
-    score += (MeVal[i] * MeType[i] + YouVal[i] * YouType[i]);
+    score += MeVal[i] * MeType[i];
+    score += YouVal[i] * YouType[i];
   }
 
   return score;
