@@ -113,8 +113,8 @@ void Board::UpdateRound(int n) {
     // 边界设置
     Lx = x - n < 0 ? 0 : x - n;
     Ly = y - n < 0 ? 0 : y - n;
-    Rx = x + n > size - 1 ? size - 1: x + n;
-    Ry = y + n > size - 1 ? size - 1: y + n;
+    Rx = x + n < size ? x + n : size - 1;
+    Ry = y + n < size ? y + n : size - 1;
     // 设置n格以内的空点为合理着法
     for (int i = Lx; i <= Rx; ++i) {
       for (int j = Ly; j <= Ry; ++j) {
