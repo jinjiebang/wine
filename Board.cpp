@@ -121,6 +121,9 @@ void Board::UpdateRound(int n) {
           IsCand[i][j] = true;
       }
     }
+    // 以下代码搜得更全面
+    // 但nps下降严重
+    /*
     Lx = Lx - 1 < 0 ? 0 : Lx - 1;
     Ly = Ly - 1 < 0 ? 0 : Ly - 1;
     Rx = Rx + 1 >= size ? size -1 : Rx + 1;
@@ -129,6 +132,7 @@ void Board::UpdateRound(int n) {
     IsCand[y][Lx] = true , IsCand[y][Rx] = true;
     IsCand[Lx][Ly] = true , IsCand[Lx][Ry] = true;
     IsCand[Rx][Ly] = true , IsCand[Rx][Ry] = true;
+    */
   }
 }
 
