@@ -5,8 +5,8 @@
 class AI:public Board {
 private:
   // 选点棋型分值
-  int MeVal[6] = { 0, 4, 10, 10, 24, 24  };
-  int YouVal[6] = { 0, 2, 5, 5, 12, 12 };
+  int MeVal[6] = { 0, 4, 10, 10, 24, 30  };
+  int YouVal[6] = { 0, 2, 5, 5, 12, 15 };
   // 局势棋型分值
   int Tval[6] = { 0, 1, 6, 6, 36, 40 };
   
