@@ -113,14 +113,18 @@ void Board::UpdateRound(int n) {
     // 边界设置
     Lx = x - n < 0 ? 0 : x - n;
     Ly = y - n < 0 ? 0 : y - n;
-    Rx = x + n < size ? x + n : size - 1;
-    Ry = y + n < size ? y + n : size - 1;
+    Rx = x + n >= size ? size - 1 : x + n;
+    Ry = y + n >= size ? size - 1 : y + n;
     // 设置n格以内的空点为合理着法
     for (int i = Lx; i <= Rx; ++i) {
       for (int j = Ly; j <= Ry; ++j) {
           IsCand[i][j] = true;
       }
     }
+    Lx = Lx - 1 < 0 ? 0 : Lx - 1;
+    Ly = Ly - 1 < 0 ? 0 : Ly - 1;
+    Rx = Rx + 1 >= size ? size -1 : Rx + 1;
+    Ry = Ry + 1 >= size ? size - 1 : Ry + 1;
   }
 }
 
