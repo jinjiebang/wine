@@ -125,6 +125,10 @@ void Board::UpdateRound(int n) {
     Ly = Ly - 1 < 0 ? 0 : Ly - 1;
     Rx = Rx + 1 >= size ? size -1 : Rx + 1;
     Ry = Ry + 1 >= size ? size - 1 : Ry + 1;
+    IsCand[x][Ly] = true , IsCand[x][Ry] = true;
+    IsCand[y][Lx] = true , IsCand[y][Rx] = true;
+    IsCand[Lx][Ly] = true , IsCand[Lx][Ry] = true;
+    IsCand[Rx][Ly] = true , IsCand[Rx][Ry] = true;
   }
 }
 
