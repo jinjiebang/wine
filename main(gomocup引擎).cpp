@@ -3,7 +3,6 @@
 #include<sstream>
 #include<string>
 #include "AI.h"
-//#include "Test.h"
 using namespace std;
 
 int gomocup() {
@@ -22,7 +21,7 @@ int gomocup() {
     }
     if (command == "START") {
       cin >> size;
-      if (size > 20 || size <= 5) {
+      if (size > MaxSize || size <= 5) {
         cout << "ERROR" << endl;
       } else {
         wine.size = size;
