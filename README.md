@@ -7,7 +7,7 @@ Gomoku game (Five in a Row) playing program witha strong artificial intelligence
 
 •AI仍在改进中，希望有人能一起交流下
 
-•联系作者:QQ 724895582
+•联系作者 邮箱：724895582@qq.com QQ：724895582
 
 •Original author:JinJie Wang
 
