@@ -22,14 +22,11 @@ Board::~Board() {
 
 // 下子
 void Board::MakeMove(Pos next) {
-  int x = next.x;
-  int y = next.y;
-
   ++step;
-  cell[x][y].piece = color(step);
+  cell[next.x][next.y].piece = color(step);
   remMove[step] = next;
   UpdateRound(2);
-  UpdateType(x, y);
+  UpdateType(next.x, next.y);
 }
 
 // 删子
