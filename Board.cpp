@@ -60,8 +60,7 @@ void Board::ReStart() {
   // 检查胜利
 bool Board::CheckWin() {
   int role = color(step);
-  Pos p = remMove[step];
-  Cell *c = &cell[p.x][p.y];
+  Cell *c = &cell[remMove[step].x][remMove[step].y];
 
   return (c->pattern[role][0] == win
           || c->pattern[role][1] == win
