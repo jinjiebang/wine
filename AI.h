@@ -8,8 +8,8 @@ private:
   int MeVal[6] = { 0, 4, 10, 10, 24, 24 };
   int YouVal[6] = { 0, 2, 5, 5, 12, 12 };
   // 局势棋型分值
-  int Tval[6] = { 0, 1, 6, 6, 36, 40 };
-  
+  int Tval[8] = { 0, 1, 6, 9, 48, 72, 400, 600};
+
 public:
   int total = 0;                  //搜索局面数
   int BestVal = 0;                //最佳点分值
@@ -25,7 +25,6 @@ public:
 
   Pos gobang();
   void sort(Point * a, int n);
-  void AllType(int role, int *type);
   int GetTime();
   int StopTime();
   int ScoreMove(int x, int y);
@@ -34,7 +33,6 @@ public:
   int CutCand(Pos * move, Point * cand, int Csize);
   int GetMove(Pos * move, int MaxMove);
   int evaluate();
-  int evaluate2();
   bool Same(Pos a, Pos b);
 };
 #endif

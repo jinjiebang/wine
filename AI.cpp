@@ -146,10 +146,10 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
       val = -AlphaBeta(depth - 1, -beta, -alpha);
     } while (0);
     DelMove();
-    
+
     if (stopThink)
       break;
-    
+
     if (val >= beta) {
       return val;
     }
@@ -238,59 +238,36 @@ void AI::sort(Point * a, int n) {
   }
 }
 
-// 估值函数
+// 棋型估值函数
 int AI::evaluate() {
-  int val;
-  int max = -1;
-  Pos p;
-  // 选出最佳点
+  int Ctype[Ntype] = { 0 };
+  int Htype[Ntype] = { 0 };
+  int me = color(step + 1);
+
   for (int i = 0; i < size; ++i) {
     for (int j = 0; j < size; ++j) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
-        val = ScoreMove(i, j);
-        if (val > max) {
-          max = val;
-          p.x = i;
-          p.y = j;
-        }
+        TypeCount(i, j, me, Ctype);
+        TypeCount(i, j, !me, Htype);
       }
     }
   }
-  // 评估最佳点下了之后的局势
-  MakeMove(p);
-  val = evaluate2();
-  DelMove();
-  return val;
-}
-
-// 棋型估值函数
-int AI::evaluate2() {
-  int Ctype[Ntype] = { 0 };
-  int Htype[Ntype] = { 0 };
-  int me = color(step);
-
-  // 统计己方全部棋子的棋型
-  AllType(me, Ctype);
 
   if (Ctype[win] > 0)
     return 10000;
-  // 统计对方全部棋子的棋型
-  AllType(!me, Htype);
-
-  if (Htype[flex4] > 0 || Htype[block4] > 0)
+  if (Htype[win] > 1)
     return -10000;
-  if (Ctype[flex4] > 0 || Ctype[block4] > 1)
+  if (Ctype[flex4] > 0 && Htype[win]==0)
     return 10000;
-  if (Htype[flex3] > 0 && Ctype[block4] == 0)
-    return -10000;
 
-  int Cscore = 0, Hscore = 0;
-  for (int i = 1; i <= block4; ++i) {
+  int Cscore = 0;
+  int Hscore = 0;
+  for (int i = 1; i < Ntype; ++i) {
     Cscore += Ctype[i] * Tval[i];
     Hscore += Htype[i] * Tval[i];
   }
 
-  return Cscore - Hscore;
+  return Cscore * 3 - Hscore * 2;
 }
 // 着法打分
 int AI::ScoreMove(int x, int y) {
@@ -327,21 +304,3 @@ int AI::ScoreMove(int x, int y) {
   return score;
 }
 
- // 统计棋盘所有棋型个数
-void AI::AllType(int role, int *type) {
-  int x, y, i;
-  int cnt[Ntype] = { 0, 2, 2, 3, 3, 4, 4, 5 };
-
-  int begin = (role == Black) ? 1 : 2;
-  for (i = begin; i <= step; i += 2) {
-    x = remMove[i].x;
-    y = remMove[i].y;
-    TypeCount(x, y, role, type);
-  }
-
-  for (i = 1; i < Ntype; ++i) {
-    if (type[i] % cnt[i] == cnt[i] - 1)
-      ++type[i];
-    type[i] /= cnt[i];
-  }
-}
