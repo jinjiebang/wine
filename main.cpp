@@ -27,9 +27,7 @@ int gomocup() {
         wine.size = size;
         cout << "OK" << endl;
       }
-    }
-
-    if (command == "RESTART") {
+    } else if (command == "RESTART") {
       wine.ReStart();
       cout << "OK" << endl;
     } else if (command == "TAKEBACK") {
