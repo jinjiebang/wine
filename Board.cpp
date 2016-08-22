@@ -20,6 +20,28 @@ Board::~Board() {
 
 }
 
+// 下子
+void Board::MakeMove(Pos next) {
+  int x = next.x;
+  int y = next.y;
+
+  ++step;
+  cell[x][y].piece = color(step);
+  remMove[step] = next;
+  UpdateRound(2);
+  UpdateType(x, y);
+}
+
+// 删子
+void Board::DelMove() {
+  int x = remMove[step].x;
+  int y = remMove[step].y;
+
+  --step;
+  cell[x][y].piece = Empty;
+  UpdateType(x, y);
+}
+
 // 悔棋
 void Board::Undo() {
   if (step >= 2) {
@@ -35,6 +57,34 @@ void Board::ReStart() {
   }
 }
 
+// 记录四个方向棋型
+void Board::TypeCount(int x, int y, int role, int *type) {
+  Cell *c = &cell[x][y];
+  ++type[c->pattern[role][0]];
+  ++type[c->pattern[role][1]];
+  ++type[c->pattern[role][2]];
+  ++type[c->pattern[role][3]];
+}
+
+// 判断角色role在点p能否成棋型type
+bool Board::IsType(Pos p, int role, int type) {
+  Cell *c = &cell[p.x][p.y];
+  return c->pattern[role][0] == type
+    || c->pattern[role][1] == type
+    || c->pattern[role][2] == type 
+    || c->pattern[role][3] == type;
+}
+
+// 检查胜利
+bool Board::CheckWin() {
+  int role = color(step);
+  Cell *c = &cell[remMove[step].x][remMove[step].y];
+
+  return c->pattern[role][0] == win
+    || c->pattern[role][1] == win
+    || c->pattern[role][2] == win 
+    || c->pattern[role][3] == win;
+}
 
 // 更新点(x,y)周围位置的棋型
 void Board::UpdateType(int x, int y) {
