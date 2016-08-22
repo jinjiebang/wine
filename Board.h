@@ -56,8 +56,6 @@ public:
   void ReStart();
   void UpdateRound(int n);
   void UpdateType(int x, int y);
-  void TypeCount(int x, int y, int role, int *type);
-  bool CheckWin();
   bool IsType(Pos p, int role, int type);
   int TypeLine(int role, int x, int y, int i, int j);
   int ShortType(int role, int x, int y, int i, int j);
@@ -67,9 +65,27 @@ public:
   int color(int step) {
     return step % 2;
   }
-  
+
   bool CheckXy(int x, int y) {
     return x >= 0 && x < size && y >= 0 && y < size;
+  }
+
+  void TypeCount(int x, int y, int role, int *type) {
+    Cell *c = &cell[x][y];
+    ++type[c->pattern[role][0]];
+    ++type[c->pattern[role][1]];
+    ++type[c->pattern[role][2]];
+    ++type[c->pattern[role][3]];
+  }
+
+  bool CheckWin() {
+    int role = color(step);
+    Cell *c = &cell[remMove[step].x][remMove[step].y];
+
+    return c->pattern[role][0] == win
+      || c->pattern[role][1] == win
+      || c->pattern[role][2] == win
+      || c->pattern[role][3] == win;
   }
 
 };
