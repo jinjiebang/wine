@@ -243,12 +243,13 @@ int AI::evaluate() {
   int Ctype[Ntype] = { 0 };
   int Htype[Ntype] = { 0 };
   int me = color(step + 1);
+  int you = !me;
 
   for (int i = 0; i < size; ++i) {
     for (int j = 0; j < size; ++j) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
         TypeCount(i, j, me, Ctype);
-        TypeCount(i, j, !me, Htype);
+        TypeCount(i, j, you, Htype);
       }
     }
   }
