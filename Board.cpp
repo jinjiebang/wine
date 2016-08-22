@@ -1,7 +1,7 @@
 #include "Board.h"
 #include <cstring>
 #include <iostream>
-using namespace std;
+  using namespace std;
 
 Board::Board() {
   InitType();
@@ -20,28 +20,6 @@ Board::~Board() {
 
 }
 
-// 下子
-void Board::MakeMove(Pos next) {
-  int x = next.x;
-  int y = next.y;
-  
-  ++step;
-  cell[x][y].piece = color(step);
-  remMove[step] = next;
-  UpdateRound(2);
-  UpdateType(x, y);
-}
-
-// 删子
-void Board::DelMove() {
-  int x = remMove[step].x;
-  int y = remMove[step].y;
-
-  --step;
-  cell[x][y].piece = Empty;
-  UpdateType(x, y);
-}
-
 // 悔棋
 void Board::Undo() {
   if (step >= 2) {
@@ -57,25 +35,6 @@ void Board::ReStart() {
   }
 }
 
-  // 检查胜利
-bool Board::CheckWin() {
-  int role = color(step);
-  Cell *c = &cell[remMove[step].x][remMove[step].y];
-
-  return (c->pattern[role][0] == win
-          || c->pattern[role][1] == win
-          || c->pattern[role][2] == win
-          || c->pattern[role][3] == win);
-}
-
-// 判断角色role在点p能否成棋型type
-bool Board::IsType(Pos p, int role, int type) {
-  Cell *c = &cell[p.x][p.y];
-  return (c->pattern[role][0] == type
-          || c->pattern[role][1] == type
-          || c->pattern[role][2] == type
-          || c->pattern[role][3] == type);
-}
 
 // 更新点(x,y)周围位置的棋型
 void Board::UpdateType(int x, int y) {
@@ -117,13 +76,13 @@ void Board::UpdateRound(int n) {
     // 设置n格以内的空点为合理着法
     for (int i = Lx; i <= Rx; ++i) {
       for (int j = Ly; j <= Ry; ++j) {
-          IsCand[i][j] = true;
+        IsCand[i][j] = true;
       }
     }
   }
 }
 
-//棋型判断
+// 棋型判断
 int Board::TypeLine(int role, int x, int y, int i, int j) {
   int a, b, k;
   int you = !role;
@@ -157,7 +116,7 @@ int Board::TypeLine(int role, int x, int y, int i, int j) {
   }
 }
 
-//短棋型判断
+// 短棋型判断
 int Board::ShortType(int role, int x, int y, int i, int j) {
   int kong = 0, block = 0;
   int len = 1, len2 = 1, count = 1;
@@ -213,22 +172,6 @@ int Board::ShortType(int role, int x, int y, int i, int j) {
   return typeTable[len][len2][count][block];
 }
 
-// 棋型计数
-void Board::TypeCount(int x, int y, int role, int *type) {
-  int d[4];
-  Cell *c = &cell[x][y];
-  // 四个方向
-  d[0] = c->pattern[role][0];
-  d[1] = c->pattern[role][1];
-  d[2] = c->pattern[role][2];
-  d[3] = c->pattern[role][3];
-  // 记录棋型
-  ++type[d[0]];
-  ++type[d[1]];
-  ++type[d[2]];
-  ++type[d[3]];
-
-}
 int Board::GetType(int len, int len2, int count, int block) {
   if (len >= 5 && count > 1) {
     if (count == 5)
