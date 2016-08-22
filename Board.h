@@ -50,10 +50,15 @@ public:
     Board();
    ~Board();
   void InitType();
+  void MakeMove(Pos next);
+  void DelMove();
   void Undo();
   void ReStart();
-  void UpdateType(int x, int y);
   void UpdateRound(int n);
+  void UpdateType(int x, int y);
+  void TypeCount(int x, int y, int role, int *type);
+  bool CheckWin();
+  bool IsType(Pos p, int role, int type);
   int TypeLine(int role, int x, int y, int i, int j);
   int ShortType(int role, int x, int y, int i, int j);
   int GetType(int len, int len2, int count, int block);
@@ -62,60 +67,10 @@ public:
   int color(int step) {
     return step % 2;
   }
-  // 判断点是否在棋盘内 
+  
   bool CheckXy(int x, int y) {
     return x >= 0 && x < size && y >= 0 && y < size;
   }
 
-  // 下子
-  void MakeMove(Pos next) {
-    int x = next.x;
-    int y = next.y;
-
-    ++step;
-    cell[x][y].piece = color(step);
-    remMove[step] = next;
-    UpdateRound(2);
-    UpdateType(x, y);
-  }
-
-  // 删子
-  void DelMove() {
-    int x = remMove[step].x;
-    int y = remMove[step].y;
-
-    --step;
-    cell[x][y].piece = Empty;
-    UpdateType(x, y);
-  }
-
-  // 记录四个方向棋型
-  void TypeCount(int x, int y, int role, int *type) {
-    Cell *c = &cell[x][y];
-    ++type[c->pattern[role][0]];
-    ++type[c->pattern[role][1]];
-    ++type[c->pattern[role][2]];
-    ++type[c->pattern[role][3]];
-  }
-
-  // 判断角色role在点p能否成棋型type
-  bool IsType(Pos p, int role, int type) {
-    Cell *c = &cell[p.x][p.y];
-    return c->pattern[role][0] == type
-      || c->pattern[role][1] == type
-      || c->pattern[role][2] == type 
-      || c->pattern[role][3] == type;
-  }
-
-  // 检查胜利
-  bool CheckWin() {
-    int role = color(step);
-    Cell *c = &cell[remMove[step].x][remMove[step].y];
-
-    return c->pattern[role][0] == win
-      || c->pattern[role][1] == win
-      || c->pattern[role][2] == win 
-      || c->pattern[role][3] == win;
-  }
 };
 #endif
