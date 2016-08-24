@@ -155,11 +155,7 @@ int Board::ShortLine(int role, int *line) {
   int k;
 
   for (k = 4; k <= 7; k++) {
-    if (line[k] == 3) {
-      if (len2 == kong + count)
-        ++block;
-      break;
-    } else if (line[k] == role) {
+    if (line[k] == role) {
       if (kong + count > 4)
         break;
       ++count;
@@ -177,11 +173,7 @@ int Board::ShortLine(int role, int *line) {
   // 计算中间空格
   kong = len2 - count;
   for (k = 3; k >= 0; k--) {
-    if (line[k] == 3) {
-      if (len2 == kong + count)
-        ++block;
-      break;
-    } else if (line[k] == role) {
+    if (line[k] == role) {
       if (kong + count > 4)
         break;
       ++count;
