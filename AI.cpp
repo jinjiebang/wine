@@ -125,8 +125,13 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     return -10000;
 
   // 叶节点
-  if (depth == 0)
-    return evaluate();
+  if (depth == 0) {
+    //冲四挡后评价
+    if (IsType(remMove[step], color(step), block4))
+      depth++;
+    else
+      return evaluate();
+  }
 
   Pos move[25];
   int count = GetMove(move, 24);
