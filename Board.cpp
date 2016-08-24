@@ -1,10 +1,11 @@
 #include "Board.h"
 #include <cstring>
 #include <iostream>
-  using namespace std;
+using namespace std;
 
 Board::Board() {
   InitType();
+  InitPattern();
   memset(cell, 0, sizeof(cell));
   memset(IsLose, 0, sizeof(IsLose));
   memset(IsCand, 0, sizeof(IsCand));
@@ -62,28 +63,31 @@ bool Board::IsType(Pos p, int role, int type) {
   Cell *c = &cell[p.x][p.y];
   return c->pattern[role][0] == type
     || c->pattern[role][1] == type
-    || c->pattern[role][2] == type
+    || c->pattern[role][2] == type 
     || c->pattern[role][3] == type;
 }
 
 // 更新点(x,y)周围位置的棋型
 void Board::UpdateType(int x, int y) {
   int a, b;
+  int key;
   Cell *c;
   for (int i = 0; i < 4; ++i) {
     a = x + dx[i];
     b = y + dy[i];
     for (int j = 0; j < 4 && CheckXy(a, b); a += dx[i], b += dy[i], ++j) {
       c = &cell[a][b];
-      c->pattern[0][i] = TypeLine(0, a, b, dx[i], dy[i]);
-      c->pattern[1][i] = TypeLine(1, a, b, dx[i], dy[i]);
+      key = GetKey(a, b, i);
+      c->pattern[0][i] = patternTable[key][0];
+      c->pattern[1][i] = patternTable[key][1];
     }
     a = x - dx[i];
     b = y - dy[i];
     for (int k = 0; k < 4 && CheckXy(a, b); a -= dx[i], b -= dy[i], ++k) {
       c = &cell[a][b];
-      c->pattern[0][i] = TypeLine(0, a, b, dx[i], dy[i]);
-      c->pattern[1][i] = TypeLine(1, a, b, dx[i], dy[i]);
+      key = GetKey(a, b, i);
+      c->pattern[0][i] = patternTable[key][0];
+      c->pattern[1][i] = patternTable[key][1];
     }
   }
 }
@@ -112,60 +116,56 @@ void Board::UpdateRound(int n) {
   }
 }
 
-// 棋型判断
-int Board::TypeLine(int role, int x, int y, int i, int j) {
-  int a, b, k;
-  int you = !role;
-  int len = 0, len2 = 0;
-  // 计算右边棋型长度
-  a = x + i;
-  b = y + j;
-  for (k = 1; k <= 4 && CheckXy(a, b) && cell[a][b].piece != you;
-       a += i, b += j, ++k) {
-    if (cell[a][b].piece == role)
-      len = k;
+// 获取棋型key
+int Board::GetKey(int x, int y, int i) {
+  int key = 0;
+  int a = x - dx[i] * 4;
+  int b = y - dy[i] * 4;
+  for (int k = 0; k < 9; a += dx[i], b += dy[i], k++) {
+    if (k == 4)
+      continue;
+    key <<= 2;
+    if (!CheckXy(a, b)) {
+      key ^= 3;
+    } else {
+      key ^= cell[a][b].piece;
+    }
   }
-  // 计算左边棋型长度
-  a = x - i;
-  b = y - j;
-  for (k = 1; k <= 4 && CheckXy(a, b) && cell[a][b].piece != you;
-       a -= i, b -= j, ++k) {
-    if (cell[a][b].piece == role)
-      len2 = k;
-  }
-  // 短棋型判断一次即可
-  // 长棋型需双向判断
-  if (len + len2 == 0) {
-    return 0;
-  } else if (len + len2 < 5) {
-    return ShortType(role, x, y, i, j);
-  } else {
-    int p1 = ShortType(role, x, y, i, j);
-    int p2 = ShortType(role, x, y, -i, -j);
-    return p1 > p2 ? p1 : p2;
-  }
+  return key;
 }
 
-// 短棋型判断
-int Board::ShortType(int role, int x, int y, int i, int j) {
+ // 判断key的棋型，用于填充棋型表
+int Board::LineType(int role, int key) {
+  int line_left[8], line_right[8];
+  for (int i = 0; i < 8; i++) {
+    line_left[i] = key & 3;
+    line_right[7 - i] = key & 3;
+    key >>= 2;
+  }
+  //双向判断，取最大的棋型
+  int p1 = ShortLine(role, line_left);
+  int p2 = ShortLine(role, line_right);
+  return p1 > p2 ? p1 : p2;
+}
+
+// 判断单个方向的棋型
+int Board::ShortLine(int role, int *line) {
   int kong = 0, block = 0;
   int len = 1, len2 = 1, count = 1;
-  int a, b, k;
-  a = x + i;
-  b = y + j;
-  for (k = 0; k < 4; a += i, b += j, ++k) {
-    if (!CheckXy(a, b)) {
+  int k;
+
+  for (k = 4; k <= 7; k++) {
+    if (line[k] == 3) {
       if (len2 == kong + count)
         ++block;
       break;
-    }
-    if (cell[a][b].piece == role) {
+    } else if (line[k] == role) {
       if (kong + count > 4)
         break;
       ++count;
       ++len;
       len2 = kong + count;
-    } else if (cell[a][b].piece == Empty) {
+    } else if (line[k] == Empty) {
       ++len;
       ++kong;
     } else {
@@ -176,21 +176,18 @@ int Board::ShortType(int role, int x, int y, int i, int j) {
   }
   // 计算中间空格
   kong = len2 - count;
-  a = x - i;
-  b = y - j;
-  for (k = 0; k < 4; a -= i, b -= j, ++k) {
-    if (!CheckXy(a, b)) {
+  for (k = 3; k >= 0; k--) {
+    if (line[k] == 3) {
       if (len2 == kong + count)
         ++block;
       break;
-    }
-    if (cell[a][b].piece == role) {
+    } else if (line[k] == role) {
       if (kong + count > 4)
         break;
       ++count;
       ++len;
       len2 = kong + count;
-    } else if (cell[a][b].piece == Empty) {
+    } else if (line[k] == Empty) {
       ++len;
       ++kong;
     } else {
@@ -202,6 +199,7 @@ int Board::ShortType(int role, int x, int y, int i, int j) {
   return typeTable[len][len2][count][block];
 }
 
+//生成初级棋型表信息
 int Board::GetType(int len, int len2, int count, int block) {
   if (len >= 5 && count > 1) {
     if (count == 5)
@@ -228,6 +226,8 @@ int Board::GetType(int len, int len2, int count, int block) {
   }
   return 0;
 }
+
+//初级棋型表的初始化
 void Board::InitType() {
   for (int i = 0; i < 10; ++i) {
     for (int j = 0; j < 6; ++j) {
@@ -237,5 +237,13 @@ void Board::InitType() {
         }
       }
     }
+  }
+}
+
+//完整棋型表的初始化
+void Board::InitPattern() {
+  for (int key = 0; key < 65536; key++) {
+    patternTable[key][0] = LineType(0, key);
+    patternTable[key][1] = LineType(1, key);
   }
 }
