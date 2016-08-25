@@ -135,7 +135,7 @@ int Board::GetKey(int x, int y, int i) {
     if (k == 4)
       continue;
     key <<= 2;
-    key ^= cell[a][b].piece;
+    key |= cell[a][b].piece;
   }
   return key;
 }
