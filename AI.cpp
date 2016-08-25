@@ -55,7 +55,7 @@ Pos AI::gobang() {
   // 迭代加深搜索
   memset(IsLose, false, sizeof(IsLose));
   for (int i = 2; i <= SearchDepth; i += 2) {
-    if (i > 4 && GetTime() * 12 >= StopTime())
+    if (i > 4 && GetTime() * 10 >= StopTime())
       break;
     MaxDepth = i;
     BestVal = minimax(i, -10001, 10000);
