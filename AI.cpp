@@ -11,7 +11,7 @@ int AI::GetTime() {
 }
 
 int AI::StopTime() {
-  return (timeout_turn < time_left / 4) ? timeout_turn : time_left / 4;
+  return (timeout_turn < time_left / 7) ? timeout_turn : time_left / 7;
 }
 
 // 界面下子
@@ -55,7 +55,7 @@ Pos AI::gobang() {
   // 迭代加深搜索
   memset(IsLose, false, sizeof(IsLose));
   for (int i = 2; i <= SearchDepth; i += 2) {
-    if (i > 4 && GetTime() * 10 >= StopTime())
+    if (i > 4 && GetTime() * 12 >= StopTime())
       break;
     MaxDepth = i;
     BestVal = minimax(i, -10001, 10000);
