@@ -46,7 +46,7 @@ public:
   int patternTable[65536][2];                       // 完整棋型表
   Cell cell[MaxSize + 8][MaxSize + 8];              // 棋盘结构，记录棋子颜色和棋型
   Pos remMove[MaxSize * MaxSize];                   // 记录每步棋的坐标
-  bool IsCand[MaxSize][MaxSize];                    // 记录每个位置是否合理着法（两格内有棋子）
+  bool IsCand[MaxSize + 8][MaxSize + 8];                    // 记录每个位置是否合理着法（两格内有棋子）
   bool IsLose[25];                                  // 记录根节点的必败点
 
     Board();
