@@ -74,11 +74,10 @@ public:
   }
 
   void TypeCount(int x, int y, int role, int *type) {
-    Cell *c = &cell[x][y];
-    ++type[c->pattern[role][0]];
-    ++type[c->pattern[role][1]];
-    ++type[c->pattern[role][2]];
-    ++type[c->pattern[role][3]];
+    ++type[cell[x][y].pattern[role][0]];
+    ++type[cell[x][y].pattern[role][1]];
+    ++type[cell[x][y].pattern[role][2]];
+    ++type[cell[x][y].pattern[role][3]];
   }
 
   bool CheckWin() {
