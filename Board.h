@@ -12,6 +12,7 @@ const int Ntype = 8;            // 棋型数量
 const int MaxSize = 20;         // 最大尺寸
 
 // 棋子
+const int Outside = 3;
 const int Empty = 2;
 const int Black = 1;
 const int White = 0;
@@ -42,8 +43,8 @@ public:
   int step = 0;                 // 记录棋局步数
   int size = 15;                // 棋盘当前尺寸
   int typeTable[10][6][6][3];   // 初级棋型表
-  int patternTable[65536][2]; //完整棋型表
-  Cell cell[MaxSize][MaxSize];  // 棋盘结构，记录棋子颜色和棋型
+  int patternTable[65536][2];   // 完整棋型表
+  Cell cell[MaxSize + 8][MaxSize + 8]; // 棋盘结构，记录棋子颜色和棋型
   Pos remMove[MaxSize * MaxSize]; // 记录每步棋的坐标
   bool IsCand[MaxSize][MaxSize]; // 记录每个位置是否合理着法（两格内有棋子）
   bool IsLose[MaxSize][MaxSize]; // 记录根节点的必败点
@@ -52,6 +53,7 @@ public:
    ~Board();
   void InitType();
   void InitPattern();
+  void SetSize(int _size);
   void MakeMove(Pos next);
   void DelMove();
   void Undo();
@@ -68,9 +70,8 @@ public:
   int color(int step) {
     return step & 1;
   } 
-  
   bool CheckXy(int x, int y) {
-    return x >= 0 && x < size && y >= 0 && y < size;
+    return cell[x][y].piece != Outside;
   }
 
   void TypeCount(int x, int y, int role, int *type) {
@@ -86,8 +87,7 @@ public:
 
     return c->pattern[role][0] == win
       || c->pattern[role][1] == win
-      || c->pattern[role][2] == win 
-      || c->pattern[role][3] == win;
+      || c->pattern[role][2] == win || c->pattern[role][3] == win;
   }
 
 };

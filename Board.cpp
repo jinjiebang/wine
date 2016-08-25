@@ -1,7 +1,8 @@
+
 #include "Board.h"
 #include <cstring>
 #include <iostream>
-using namespace std;
+  using namespace std;
 
 Board::Board() {
   InitType();
@@ -10,15 +11,24 @@ Board::Board() {
   memset(IsLose, 0, sizeof(IsLose));
   memset(IsCand, 0, sizeof(IsCand));
   memset(remMove, 0, sizeof(remMove));
-  for (int i = 0; i < MaxSize; i++) {
-    for (int j = 0; j < MaxSize; j++) {
-      cell[i][j].piece = Empty;
-    }
-  }
+  SetSize(15);
 }
 
 Board::~Board() {
 
+}
+
+//设置棋盘尺寸和边界
+void Board::SetSize(int _size) {
+  size = _size;
+  for (int i = 0; i < MaxSize + 8; i++) {
+    for (int j = 0; j < MaxSize + 8; j++) {
+      if (i < 4 || i >= size + 4 || j < 4 || j >= size + 4)
+        cell[i][j].piece = Outside;
+      else
+        cell[i][j].piece = Empty;
+    }
+  }
 }
 
 // 下子
@@ -125,11 +135,7 @@ int Board::GetKey(int x, int y, int i) {
     if (k == 4)
       continue;
     key <<= 2;
-    if (!CheckXy(a, b)) {
-      key ^= 3;
-    } else {
-      key ^= cell[a][b].piece;
-    }
+    key ^= cell[a][b].piece;
   }
   return key;
 }
@@ -142,7 +148,7 @@ int Board::LineType(int role, int key) {
     line_right[7 - i] = key & 3;
     key >>= 2;
   }
-  //双向判断，取最大的棋型
+  // 双向判断，取最大的棋型
   int p1 = ShortLine(role, line_left);
   int p2 = ShortLine(role, line_right);
   return p1 > p2 ? p1 : p2;
@@ -191,7 +197,7 @@ int Board::ShortLine(int role, int *line) {
   return typeTable[len][len2][count][block];
 }
 
-//生成初级棋型表信息
+// 生成初级棋型表信息
 int Board::GetType(int len, int len2, int count, int block) {
   if (len >= 5 && count > 1) {
     if (count == 5)
@@ -219,7 +225,7 @@ int Board::GetType(int len, int len2, int count, int block) {
   return 0;
 }
 
-//初级棋型表的初始化
+// 初级棋型表的初始化
 void Board::InitType() {
   for (int i = 0; i < 10; ++i) {
     for (int j = 0; j < 6; ++j) {
@@ -232,7 +238,7 @@ void Board::InitType() {
   }
 }
 
-//完整棋型表的初始化
+// 完整棋型表的初始化
 void Board::InitPattern() {
   for (int key = 0; key < 65536; key++) {
     patternTable[key][0] = LineType(0, key);

@@ -1,9 +1,10 @@
+
 #include<iostream>
 #include<cstdlib>
 #include<sstream>
 #include<string>
 #include "AI.h"
-using namespace std;
+  using namespace std;
 
 int gomocup() {
   AI wine;
@@ -24,7 +25,7 @@ int gomocup() {
       if (size > MaxSize || size <= 5) {
         cout << "ERROR" << endl;
       } else {
-        wine.size = size;
+        wine.SetSize(size);
         cout << "OK" << endl;
       }
     } else if (command == "RESTART") {
@@ -34,26 +35,25 @@ int gomocup() {
       wine.DelMove();
       cout << "OK" << endl;
     } else if (command == "BEGIN") {
-      best = wine.gobang();
-      wine.MakeMove(best);
+      best = wine.TurnBest();
+      wine.TurnMove(best);
       cout << best.x << "," << best.y << endl;
     } else if (command == "TURN") {
       cin >> input.x >> dot >> input.y;
-      if (!wine.CheckXy(input.x, input.y)
-          || wine.cell[input.x][input.y].piece != Empty) {
+      if ((input.x < 0 || input.x >= size || input.y < 0 || input.y >= size)
+          || wine.cell[input.x + 4][input.y + 4].piece != Empty) {
         cout << "ERROR" << endl;
       } else {
-        wine.MakeMove(input);
-        best = wine.gobang();
-        wine.MakeMove(best);
+        wine.TurnMove(input);
+        best = wine.TurnBest();
+        wine.TurnMove(best);
         cout << "MESSAGE";
         cout << " level=" << wine.MaxDepth;
         cout << " val=" << wine.BestVal;
         cout << " NPS=" << wine.total / (wine.ThinkTime + 1) << endl;
         cout << best.x << "," << best.y << endl;
       }
-    }
-    else if (command == "BOARD") {
+    } else if (command == "BOARD") {
       int c;
       Pos m;
       stringstream ss;
@@ -67,13 +67,13 @@ int gomocup() {
         if (!wine.CheckXy(m.x, m.y) || (c != 1 && c != 2)) {
           cout << "ERROR" << endl;
         } else {
-          wine.MakeMove(m);
+          wine.TurnMove(m);
         }
         cin >> command;
       }
       if (c == 2) {
-        best = wine.gobang();
-        wine.MakeMove(best);
+        best = wine.TurnBest();
+        wine.TurnMove(best);
         cout << best.x << "," << best.y << endl;
       }
     } else if (command == "INFO") {
@@ -117,4 +117,3 @@ int gomocup() {
 int main() {
   gomocup();
 }
-

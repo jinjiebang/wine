@@ -1,3 +1,4 @@
+
 #include "AI.h"
 #include<ctime>
 #include<cstring>
@@ -13,7 +14,20 @@ int AI::StopTime() {
   return (timeout_turn < time_left / 7) ? timeout_turn : time_left / 7;
 }
 
+// 界面下子
+void AI::TurnMove(Pos next) {
+  next.x += 4, next.y += 4;
+  MakeMove(next);
+}
+
 // 返回最佳点
+Pos AI::TurnBest() {
+  Pos best = gobang();
+  best.x -= 4, best.y -= 4;
+  return best;
+}
+
+// 搜索最佳点
 Pos AI::gobang() {
   start = clock();
   total = 0;
@@ -21,8 +35,8 @@ Pos AI::gobang() {
 
   // 第一步下中心点
   if (step == 0) {
-    BestMove.x = size / 2;
-    BestMove.y = size / 2;
+    BestMove.x = size / 2 + 4;
+    BestMove.y = size / 2 + 4;
     return BestMove;
   }
   // 第二，三步随机
@@ -33,7 +47,7 @@ Pos AI::gobang() {
     do {
       rx = rand() % d + remMove[1].x - step;
       ry = rand() % d + remMove[1].y - step;
-    } while (!CheckXy(rx,ry) || cell[rx][ry].piece != Empty);
+    } while (!CheckXy(rx, ry) || cell[rx][ry].piece != Empty);
     BestMove.x = rx;
     BestMove.y = ry;
     return BestMove;
@@ -49,7 +63,8 @@ Pos AI::gobang() {
       break;
   }
 
-  ThinkTime = (double)(clock() - start) / CLOCKS_PER_SEC * 1000;
+  ThinkTime = GetTime();
+
   return BestMove;
 }
 
@@ -119,7 +134,6 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     if (GetTime() + 500 >= StopTime())
       stopThink = true;
   }
-
   // 对方最后一子连五
   if (CheckWin())
     return -10000;
@@ -263,7 +277,7 @@ int AI::evaluate() {
     return 10000;
   if (Htype[win] > 1)
     return -10000;
-  if (Ctype[flex4] > 0 && Htype[win]==0)
+  if (Ctype[flex4] > 0 && Htype[win] == 0)
     return 10000;
 
   int Cscore = 0;
@@ -309,4 +323,3 @@ int AI::ScoreMove(int x, int y) {
 
   return score;
 }
-
