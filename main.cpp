@@ -40,7 +40,7 @@ int gomocup() {
       cout << best.x << "," << best.y << endl;
     } else if (command == "TURN") {
       cin >> input.x >> dot >> input.y;
-      if ((input.x < 0 || input.x >= size || input.y < 0 || input.y >= size)
+      if (input.x < 0 || input.x >= size || input.y < 0 || input.y >= size
           || wine.cell[input.x + 4][input.y + 4].piece != Empty) {
         cout << "ERROR" << endl;
       } else {
@@ -64,7 +64,8 @@ int gomocup() {
         ss.clear();
         ss << command;
         ss >> m.x >> dot >> m.y >> dot >> c;
-        if (!wine.CheckXy(m.x, m.y) || (c != 1 && c != 2)) {
+        if (m.x < 0 || m.x >= size || m.y < 0 || m.y >= size
+          || wine.cell[m.x + 4][m.y + 4].piece != Empty) {
           cout << "ERROR" << endl;
         } else {
           wine.TurnMove(m);
