@@ -50,7 +50,7 @@ int gomocup() {
         cout << "MESSAGE";
         cout << " level=" << wine.MaxDepth;
         cout << " val=" << wine.BestVal;
-        cout << " NPS=" << wine.total / (wine.ThinkTime + 1) << endl;
+        cout << " NPS=" << wine.total / (wine.ThinkTime + 1) << "k" << endl;
         cout << best.x << "," << best.y << endl;
       }
     } else if (command == "BOARD") {
