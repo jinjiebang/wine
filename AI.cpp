@@ -91,8 +91,7 @@ int AI::minimax(int depth, int alpha, int beta) {
     if (i > 0 && Same(move[0], move[i]))
       continue;
 
-    Pos & m = move[i];
-    if (i > 0 && IsLose[m.x][m.y])
+    if (i > 0 && IsLose[i])
       continue;
 
     MakeMove(move[i]);
@@ -110,7 +109,7 @@ int AI::minimax(int depth, int alpha, int beta) {
       break;
 
     if (val == -10000)
-      IsLose[m.x][m.y] = true;
+      IsLose[i] = true;
 
     if (val >= beta) {
       BestMove = move[i];
