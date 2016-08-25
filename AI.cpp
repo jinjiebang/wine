@@ -33,7 +33,7 @@ Pos AI::gobang() {
     do {
       rx = rand() % d + remMove[1].x - step;
       ry = rand() % d + remMove[1].y - step;
-    } while (cell[rx][ry].piece != Empty);
+    } while (!CheckXy(rx,ry) || cell[rx][ry].piece != Empty);
     BestMove.x = rx;
     BestMove.y = ry;
     return BestMove;
