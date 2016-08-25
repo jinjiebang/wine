@@ -81,23 +81,21 @@ bool Board::IsType(Pos p, int role, int type) {
 void Board::UpdateType(int x, int y) {
   int a, b;
   int key;
-  Cell *c;
+  
   for (int i = 0; i < 4; ++i) {
     a = x + dx[i];
     b = y + dy[i];
     for (int j = 0; j < 4 && CheckXy(a, b); a += dx[i], b += dy[i], ++j) {
-      c = &cell[a][b];
       key = GetKey(a, b, i);
-      c->pattern[0][i] = patternTable[key][0];
-      c->pattern[1][i] = patternTable[key][1];
+      cell[a][b].pattern[0][i] = patternTable[key][0];
+      cell[a][b].pattern[1][i] = patternTable[key][1];
     }
     a = x - dx[i];
     b = y - dy[i];
     for (int k = 0; k < 4 && CheckXy(a, b); a -= dx[i], b -= dy[i], ++k) {
-      c = &cell[a][b];
       key = GetKey(a, b, i);
-      c->pattern[0][i] = patternTable[key][0];
-      c->pattern[1][i] = patternTable[key][1];
+      cell[a][b].pattern[0][i] = patternTable[key][0];
+      cell[a][b].pattern[1][i] = patternTable[key][1];
     }
   }
 }
@@ -135,7 +133,7 @@ int Board::GetKey(int x, int y, int i) {
     if (k == 4)
       continue;
     key <<= 2;
-    key |= cell[a][b].piece;
+    key ^= cell[a][b].piece;
   }
   return key;
 }
