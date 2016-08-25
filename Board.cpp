@@ -104,20 +104,17 @@ void Board::UpdateType(int x, int y) {
 void Board::UpdateRound(int n) {
   memset(IsCand, false, sizeof(IsCand));
   int x, y;
-  int Lx, Rx;
-  int Ly, Ry;
+  int Rx, Ry;
 
   for (int k = 1; k <= step; ++k) {
     x = remMove[k].x;
     y = remMove[k].y;
     // 边界设置
-    Lx = x - n < 0 ? 0 : x - n;
-    Ly = y - n < 0 ? 0 : y - n;
-    Rx = x + n >= size ? size - 1 : x + n;
-    Ry = y + n >= size ? size - 1 : y + n;
+    Rx = x + n;
+    Ry = y + n;
     // 设置n格以内的空点为合理着法
-    for (int i = Lx; i <= Rx; ++i) {
-      for (int j = Ly; j <= Ry; ++j) {
+    for (int i = x - n; i <= Rx; ++i) {
+      for (int j = y - n; j <= Ry; ++j) {
         IsCand[i][j] = true;
       }
     }
