@@ -42,7 +42,7 @@ class Board {
 public:
   int step = 0;                                     // 记录棋局步数
   int size = 15;                                    // 棋盘当前尺寸
-  int MaxIndex = 19;                                // 棋盘遍历的最大索引
+  int b_start, b_end;                               // 棋盘遍历的索引
   int typeTable[10][6][6][3];                       // 初级棋型表
   int patternTable[65536][2];                       // 完整棋型表
   Cell cell[MaxSize + 8][MaxSize + 8];              // 棋盘结构，记录棋子颜色和棋型
