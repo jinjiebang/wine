@@ -208,8 +208,8 @@ int AI::GetMove(Pos * move, int branch) {
   Point cand[200];
   int Csize = 0, Msize = 0;
   int val;
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < size; j++) {
+  for (int i = b_start; i < b_end; i++) {
+    for (int j = b_start; j < b_end; j++) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
         val = ScoreMove(i, j);
         if (val == 10000) {
@@ -263,8 +263,8 @@ int AI::evaluate() {
   int me = color(step + 1);
   int you = !me;
 
-  for (int i = 0; i < size; ++i) {
-    for (int j = 0; j < size; ++j) {
+  for (int i = b_start; i < b_end; ++i) {
+    for (int j = b_start; j < b_end; ++j) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
         TypeCount(i, j, me, Ctype);
         TypeCount(i, j, you, Htype);
