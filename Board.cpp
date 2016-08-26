@@ -21,7 +21,7 @@ Board::~Board() {
 //设置棋盘尺寸和边界
 void Board::SetSize(int _size) {
   size = _size;
-  MaxIndex = size + 4;
+  b_start = 4, b_end = size + 4;
   for (int i = 0; i < MaxSize + 8; i++) {
     for (int j = 0; j < MaxSize + 8; j++) {
       if (i < 4 || i >= size + 4 || j < 4 || j >= size + 4)
