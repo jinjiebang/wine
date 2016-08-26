@@ -212,11 +212,6 @@ int AI::GetMove(Pos * move, int branch) {
     for (int j = b_start; j < b_end; j++) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
         val = ScoreMove(i, j);
-        if (val == 10000) {
-          move[1].x = i;
-          move[1].y = j;
-          return 1;
-        }
         if (val > 0) {
           ++Csize;
           cand[Csize].p.x = i;
