@@ -11,7 +11,7 @@ int AI::GetTime() {
 }
 
 int AI::StopTime() {
-  return (timeout_turn < time_left / 4) ? timeout_turn : time_left / 4;
+  return (timeout_turn < time_left / 7) ? timeout_turn : time_left / 7;
 }
 
 // 界面下子
