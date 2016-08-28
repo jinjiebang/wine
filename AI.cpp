@@ -57,7 +57,7 @@ Pos AI::TurnBest() {
   return best;
 }
 
-/ 搜索最佳点
+// 搜索最佳点
 Pos AI::gobang() {
   start = clock();
   total = 0;
