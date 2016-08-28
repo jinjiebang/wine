@@ -60,7 +60,7 @@ public:
   int step = 0;                                 // 棋盘落子数
   int size = 15;                                // 棋盘当前尺寸
   int b_start, b_end;                           // 棋盘坐标索引
-  U64 zobristKey = 0;                           // 表示当前界面的zobristKey
+  U64 zobristKey = 0;                           // 表示当前局面的zobristKey
   U64 zobrist[2][MaxSize + 4][MaxSize + 4];     // zobrist键值表
   Hashe hashTable[hashSize];                    // 哈希表
   int typeTable[10][6][6][3];                   // 初级棋型表
@@ -92,7 +92,8 @@ public:
   /* 可内联成员函数 */
   int color(int step) {
     return step & 1;
-  } bool CheckXy(int x, int y) {
+  } 
+  bool CheckXy(int x, int y) {
     return cell[x][y].piece != Outside;
   }
 
@@ -109,7 +110,8 @@ public:
 
     return c->pattern[role][0] == win
       || c->pattern[role][1] == win
-      || c->pattern[role][2] == win || c->pattern[role][3] == win;
+      || c->pattern[role][2] == win 
+      || c->pattern[role][3] == win;
   }
 
 };
