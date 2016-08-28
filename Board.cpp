@@ -37,7 +37,7 @@ void Board::InitZobrist() {
 }
 
 
-// �������̳ߴ�ͱ߽�
+// 设置棋盘尺寸和边界
 void Board::SetSize(int _size) {
   size = _size;
   b_start = 4, b_end = size + 4;
@@ -52,7 +52,7 @@ void Board::SetSize(int _size) {
   }
 }
 
-// ����
+// 下子
 void Board::MakeMove(Pos next) {
   int x = next.x;
   int y = next.y;
@@ -65,7 +65,7 @@ void Board::MakeMove(Pos next) {
   UpdateType(x, y);
 }
 
-// ɾ��
+// 删子
 void Board::DelMove() {
   int x = remMove[step].x;
   int y = remMove[step].y;
@@ -76,7 +76,7 @@ void Board::DelMove() {
   UpdateType(x, y);
 }
 
-// ����
+// 悔棋
 void Board::Undo() {
   if (step >= 2) {
     DelMove();
@@ -84,7 +84,7 @@ void Board::Undo() {
   }
 }
 
-// ���¿�ʼ
+// 重新开始
 void Board::ReStart() {
   zobristKey = 0;
   memset(hashTable, 0, sizeof(hashTable));
@@ -93,7 +93,7 @@ void Board::ReStart() {
   }
 }
 
-// �жϽ�ɫrole�ڵ�p�ܷ������type
+// 判断角色role在点p是否能成棋型type
 bool Board::IsType(Pos p, int role, int type) {
   Cell *c = &cell[p.x][p.y];
   return c->pattern[role][0] == type
@@ -101,7 +101,7 @@ bool Board::IsType(Pos p, int role, int type) {
     || c->pattern[role][2] == type || c->pattern[role][3] == type;
 }
 
-// ���µ�(x,y)��Χλ�õ�����
+// 更新(x,y)附近棋型
 void Board::UpdateType(int x, int y) {
   int a, b;
   int key;
@@ -124,7 +124,7 @@ void Board::UpdateType(int x, int y) {
   }
 }
 
-// ���º����ŷ�
+// 更新合理着法
 void Board::UpdateRound(int n) {
   memset(IsCand, false, sizeof(IsCand));
   int x, y;
@@ -133,10 +133,9 @@ void Board::UpdateRound(int n) {
   for (int k = 1; k <= step; ++k) {
     x = remMove[k].x;
     y = remMove[k].y;
-    // �߽�����
     Rx = x + n;
     Ry = y + n;
-    // ����n�����ڵĿյ�Ϊ�����ŷ�
+    // 设置n格以内有棋子的点为合理着法
     for (int i = x - n; i <= Rx; ++i) {
       for (int j = y - n; j <= Ry; ++j) {
         IsCand[i][j] = true;
@@ -145,7 +144,7 @@ void Board::UpdateRound(int n) {
   }
 }
 
-// ��ȡ����key
+// 获取i线上的key
 int Board::GetKey(int x, int y, int i) {
   int key = 0;
   int a = x - dx[i] * 4;
@@ -160,7 +159,7 @@ int Board::GetKey(int x, int y, int i) {
   return key;
 }
 
-// �ж�key�����ͣ�����������ͱ�
+// 判断key的棋型
 int Board::LineType(int role, int key) {
   int line_left[8], line_right[8];
   for (int i = 0; i < 8; i++) {
@@ -168,13 +167,13 @@ int Board::LineType(int role, int key) {
     line_right[7 - i] = key & 3;
     key >>= 2;
   }
-  // ˫���жϣ�ȡ��������
+  // 双向判断
   int p1 = ShortLine(role, line_left);
   int p2 = ShortLine(role, line_right);
   return p1 > p2 ? p1 : p2;
 }
 
-// �жϵ����������
+// 单向判断棋型
 int Board::ShortLine(int role, int *line) {
   int kong = 0, block = 0;
   int len = 1, len2 = 1, count = 1;
@@ -198,7 +197,7 @@ int Board::ShortLine(int role, int *line) {
       break;
     }
   }
-  // �����м�ո�
+  // 设为中间空格数
   kong = len2 - count;
   for (k = 3; k >= 0; k--) {
     if (line[k] == role) {
@@ -221,7 +220,7 @@ int Board::ShortLine(int role, int *line) {
   return typeTable[len][len2][count][block];
 }
 
-// ��ɳ����ͱ���Ϣ
+// 生成初级棋型表
 int Board::GetType(int len, int len2, int count, int block) {
   if (len >= 5 && count > 1) {
     if (count == 5) {
@@ -250,7 +249,7 @@ int Board::GetType(int len, int len2, int count, int block) {
   return 0;
 }
 
-// �����ͱ�ĳ�ʼ��
+// 初始化初级棋型表
 void Board::InitType() {
   for (int i = 0; i < 10; ++i) {
     for (int j = 0; j < 6; ++j) {
@@ -263,7 +262,7 @@ void Board::InitType() {
   }
 }
 
-// �������ͱ�ĳ�ʼ��
+// 初始化完整棋型表
 void Board::InitPattern() {
   for (int key = 0; key < 65536; key++) {
     patternTable[key][0] = LineType(0, key);
