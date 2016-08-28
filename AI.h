@@ -5,18 +5,18 @@
 #include <ctime>
 class AI:public Board {
 private:
-  // ѡ�����ͷ�ֵ
+  // 择序棋型分值
   int MeVal[6] = { 0, 4, 10, 10, 24, 24 };
   int YouVal[6] = { 0, 2, 5, 5, 12, 12 };
-  // �������ͷ�ֵ
+  // 局面评价分值
   int Tval[8] = { 0, 1, 6, 9, 48, 72, 400, 600 };
 
 public:
-  int total = 0;                // ���������
-  int hashCount = 0;
-  int BestVal = 0;              // ��ѵ��ֵ
-  int MaxDepth = 0;             // ʵ�������������
-  int SearchDepth = 14;         // �����������
+  int total = 0;                // 搜索局面数
+  int hashCount = 0;            // hash表命中次数
+  int BestVal = 0;              // 最佳点分值
+  int MaxDepth = 0;             // 实际搜索深度
+  int SearchDepth = 14;         // 搜索深度上限
   int time_left = 10000000;
   int timeout_turn = 10000000;
   int timeout_match = 10000000;
