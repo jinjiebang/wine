@@ -27,10 +27,10 @@ int AI::ProbeHash(int depth, int alpha, int beta) {
       if ((phashe->hashf == hash_beta) && (phashe->val >= beta)) {
         return beta;
       }
-    }
-    if (phashe->best.x != -1) {
-      getHashMove = true;
-      hashMove = phashe->best;
+      if (phashe->best.x != -1) {
+        getHashMove = true;
+        hashMove = phashe->best;
+      }
     }
   }
   return unknown;
