@@ -97,7 +97,7 @@ Pos AI::gobang() {
   }
 
   ThinkTime = GetTime();
-  cout << (double)hashCount / (total + 1) * 100 << endl;
+  //cout << (double)hashCount / (total + 1) * 100 << endl;
 
   return BestMove;
 }
