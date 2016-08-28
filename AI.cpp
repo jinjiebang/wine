@@ -44,33 +44,33 @@ void AI::RecordHash(int depth, int val, int hashf) {
   phashe->hashf = hashf;
   phashe->depth = depth;
 }
-// ��������
+// 界面落子
 void AI::TurnMove(Pos next) {
   next.x += 4, next.y += 4;
   MakeMove(next);
 }
 
-// ������ѵ�
+// 返回最佳点
 Pos AI::TurnBest() {
   Pos best = gobang();
   best.x -= 4, best.y -= 4;
   return best;
 }
 
-// ������ѵ�
+/ 搜索最佳点
 Pos AI::gobang() {
   start = clock();
   total = 0;
   hashCount = 0;
   stopThink = false;
 
-  // ��һ�������ĵ�
+  // 第一步下中心点
   if (step == 0) {
     BestMove.x = size / 2 + 4;
     BestMove.y = size / 2 + 4;
     return BestMove;
   }
-  // �ڶ��������
+  // 第二三步随机
   if (step == 1 || step == 2) {
     int rx, ry;
     int d = step * 2 + 1;
@@ -83,7 +83,7 @@ Pos AI::gobang() {
     BestMove.y = ry;
     return BestMove;
   }
-  // ����������
+  // 迭代加深搜索
   memset(IsLose, false, sizeof(IsLose));
   for (int i = 2; i <= SearchDepth; i += 2) {
     if (i > 4 && GetTime() * 12 >= StopTime()) {
@@ -106,7 +106,7 @@ inline bool AI::Same(Pos a, Pos b) {
   return a.x == b.x && a.y == b.y;
 }
 
-// max����
+// 根节点搜索
 int AI::minimax(int depth, int alpha, int beta) {
   UpdateRound(2);
   Pos move[28];
@@ -120,7 +120,7 @@ int AI::minimax(int depth, int alpha, int beta) {
 
   move[0] = (depth > 2) ? BestMove : move[1];
 
-  // ���������߷�
+  // 遍历可选点
   for (int i = 0; i <= count; i++) {
     if (i > 0 && Same(move[0], move[i])) {
       continue;
@@ -162,7 +162,7 @@ int AI::minimax(int depth, int alpha, int beta) {
   return alpha;
 }
 
-// alpha-beta����
+//带pvs的搜索
 int AI::AlphaBeta(int depth, int alpha, int beta) {
   total++;
   getHashMove = false;
@@ -175,7 +175,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
       stopThink = true;
     }
   }
-  // �Է����һ�����
+  //对方已成五
   if (CheckWin()) {
     return -10000;
   }
@@ -188,7 +188,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     hashCount++;
     return val;
   }
-  // Ҷ�ڵ�
+  // 叶节点
   if (depth == 0) {
     val = evaluate();
     RecordHash(depth, val, hash_exact);
@@ -201,7 +201,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     move_start = 0;
     move[0] = hashMove;
   }
-  // ���������߷�
+  // 遍历可选点
   for (int i = move_start; i <= count; i++) {
 
     MakeMove(move[i]);
@@ -235,18 +235,16 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   return alpha;
 }
 
-// ��ȫ��֦
+// 棋型剪枝
 int AI::CutCand(Pos * move, Point * cand, int Csize) {
   int me = color(step + 1);
   int you = !me;
   int Msize = 0;
-  // ���ӷ��ܳ�������
-  // �Է��ܳ���
+
   if (cand[1].val >= 2400) {
     move[1] = cand[1].p;
     Msize = 1;
   }
-  // �Է��ܳɻ���
   else if (cand[1].val == 1200) {
     move[1] = cand[1].p;
     Msize = 1;
@@ -265,7 +263,7 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
   return Msize;
 }
 
-// ��������ŷ��������ظ���
+// 获取最好的branch个着法
 int AI::GetMove(Pos * move, int branch) {
   Point cand[200];
   int Csize = 0, Msize = 0;
@@ -283,13 +281,13 @@ int AI::GetMove(Pos * move, int branch) {
       }
     }
   }
-  // �ŷ�����
+  //排序
   sort(cand, Csize);
   Csize = (Csize < branch) ? Csize : branch;
-  // ���ͼ�֦
+  // 剪枝
   Msize = CutCand(move, cand, Csize);
 
-  // ���û�м�֦
+  // 如果没剪枝
   if (Msize == 0) {
     Msize = Csize;
     for (int k = 1; k <= Msize; ++k) {
@@ -300,7 +298,7 @@ int AI::GetMove(Pos * move, int branch) {
   return Msize;
 }
 
-// ����
+// 插入排序
 void AI::sort(Point * a, int n) {
   int i, j;
   Point key;
@@ -313,7 +311,7 @@ void AI::sort(Point * a, int n) {
   }
 }
 
-// ���͹�ֵ����
+// 局面评价
 int AI::evaluate() {
   int Ctype[Ntype] = { 0 };
   int Htype[Ntype] = { 0 };
@@ -348,7 +346,7 @@ int AI::evaluate() {
 
   return Cscore * 3 - Hscore * 2;
 }
-// �ŷ����
+// 着法打分
 int AI::ScoreMove(int x, int y) {
   int score = 0;
   int MeType[Ntype] = { 0 };
