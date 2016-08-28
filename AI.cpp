@@ -14,6 +14,7 @@ int AI::StopTime() {
   return (timeout_turn < time_left / 7) ? timeout_turn : time_left / 7;
 }
 
+// 查询置换表
 int AI::ProbeHash(int depth, int alpha, int beta) {
   Hashe *phashe = &hashTable[zobristKey % hashSize];
   if (phashe->key == zobristKey) {
@@ -36,6 +37,7 @@ int AI::ProbeHash(int depth, int alpha, int beta) {
   return unknown;
 }
 
+// 写入置换表
 void AI::RecordHash(int depth, int val, int hashf) {
   Hashe *phashe = &hashTable[zobristKey % hashSize];
   phashe->key = zobristKey;
@@ -195,14 +197,14 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   
   Pos move[28];
   int hashf = hash_alpha;
-  int count = GetMove(move, 27);
+  int move_count = GetMove(move, 27);
   int move_start = 1;
   if (getHashMove) {
     move_start = 0;
     move[0] = hashMove;
   }
   // 遍历可选点
-  for (int i = move_start; i <= count; i++) {
+  for (int i = move_start; i <= move_count; i++) {
 
     if (i > move_start && Same(move[move_start], move[i])) {
       continue;
