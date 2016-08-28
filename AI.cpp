@@ -197,7 +197,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   int hashf = hash_alpha;
   int count = GetMove(move, 27);
   int move_start = 1;
-  int curBest = move[1];
+  curBest = move[1];
   if (getHashMove) {
     move_start = 0;
     move[0] = hashMove;
