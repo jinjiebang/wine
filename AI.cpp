@@ -204,6 +204,8 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   // 遍历可选点
   for (int i = move_start; i <= count; i++) {
 
+    if (i > move_start && Same(move[move_start], move[i]));
+      continue;
     MakeMove(move[i]);
     do {
       if (i > 1 && alpha + 1 < beta) {
