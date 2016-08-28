@@ -11,7 +11,7 @@ int gomocup() {
   string command;
   Pos input, best;
   char dot;
-  int size;
+  int size = 15;
   while (1) {
     cin >> command;
     for (size_t i = 0; i < command.size(); i++) {
