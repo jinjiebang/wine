@@ -181,10 +181,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     return -10000;
   }
 
-
-  Pos move[28];
   int val;
-  int hashf = hash_alpha;
   if ((val = ProbeHash(depth, alpha, beta)) != unknown) {
     hashCount++;
     return val;
@@ -195,7 +192,9 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     RecordHash(depth, val, hash_exact);
     return val;
   }
-
+  
+  Pos move[28];
+  int hashf = hash_alpha;
   int count = GetMove(move, 27);
   int move_start = 1;
   int curBest = move[1];
