@@ -1,7 +1,7 @@
 
 #ifndef  _BOARD
 #define  _BOARD
-typedef long long U64;
+typedef unsigned long long U64;
 const int win = 7;              // 连五
 const int flex4 = 6;            // 活四
 const int block4 = 5;           // 冲四
