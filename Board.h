@@ -1,59 +1,79 @@
 
 #ifndef  _BOARD
 #define  _BOARD
-const int win = 7;              // 连五
-const int flex4 = 6;            // 活四
-const int block4 = 5;           // 冲四
-const int flex3 = 4;            // 活三
-const int block3 = 3;           // 眠三
-const int flex2 = 2;            // 活二
-const int block2 = 1;           // 眠二
-const int Ntype = 8;            // 棋型数量
-const int MaxSize = 20;         // 最大尺寸
+typedef unsigned long long U64;
+const int win = 7;              // ���
+const int flex4 = 6;            // ����
+const int block4 = 5;           // ����
+const int flex3 = 4;            // ����
+const int block3 = 3;           // ����
+const int flex2 = 2;            // ���
+const int block2 = 1;           // �߶�
+const int Ntype = 8;            // �������
+const int MaxSize = 20;         // ���ߴ�
+const int hashSize = 1 << 16;
 
-// 棋子
+// hash��־
+const int hash_exact = 0;
+const int hash_alpha = 1;
+const int hash_beta = 2;
+const int unknown = -20000;
+
+// ����
 const int Outside = 3;
 const int Empty = 2;
 const int Black = 1;
 const int White = 0;
-// 方向向量
+// �������
 const int dx[4] = { 1, 0, 1, 1 };
 const int dy[4] = { 0, 1, 1, -1 };
 
-// 坐标
+// ���
 struct Pos {
   int x;
   int y;
 };
 
-// 着法
+// �ŷ�
 struct Point {
   Pos p;
   int val;
 };
 
-// 棋子状态
+// ����״̬
 struct Cell {
   int piece;
   int pattern[2][4];
 };
 
+struct Hashe {
+  U64 key;
+  int depth;
+  int hashf;
+  int val;
+  Pos best;
+};
+
 class Board {
 public:
-  int step = 0;                                     // 记录棋局步数
-  int size = 15;                                    // 棋盘当前尺寸
-  int b_start, b_end;                               // 棋盘遍历的索引
-  int typeTable[10][6][6][3];                       // 初级棋型表
-  int patternTable[65536][2];                       // 完整棋型表
-  Cell cell[MaxSize + 8][MaxSize + 8];              // 棋盘结构，记录棋子颜色和棋型
-  Pos remMove[MaxSize * MaxSize];                   // 记录每步棋的坐标
-  bool IsCand[MaxSize + 8][MaxSize + 8];            // 记录每个位置是否合理着法（两格内有棋子）
-  bool IsLose[51];                                  // 记录根节点的必败点
+  int step = 0;                 // ��¼��ֲ���
+  int size = 15;                // ���̵�ǰ�ߴ�
+  int b_start, b_end;           // ���̱��������
+  U64 zobristKey = 0;
+  U64 zobrist[2][MaxSize + 4][MaxSize + 4];
+  Hashe hashTable[hashSize];
+  int typeTable[10][6][6][3];   // �����ͱ�
+  int patternTable[65536][2];   // �������ͱ�
+  Cell cell[MaxSize + 8][MaxSize + 8]; // ���̽ṹ����¼������ɫ������
+  Pos remMove[MaxSize * MaxSize]; // ��¼ÿ��������
+  bool IsCand[MaxSize + 8][MaxSize + 8]; // ��¼ÿ��λ���Ƿ�����ŷ�������������ӣ�
+  bool IsLose[25];              // ��¼��ڵ�ıذܵ�
 
     Board();
    ~Board();
   void InitType();
   void InitPattern();
+  void InitZobrist();
   void SetSize(int _size);
   void MakeMove(Pos next);
   void DelMove();
@@ -62,16 +82,16 @@ public:
   void UpdateRound(int n);
   void UpdateType(int x, int y);
   bool IsType(Pos p, int role, int type);
+  U64 Rand64();
   int GetKey(int x, int y, int i);
   int LineType(int role, int key);
   int ShortLine(int role, int *line);
   int GetType(int len, int len2, int count, int block);
 
-  /* 以下为可内联函数 */
+  /* ����Ϊ��������� */
   int color(int step) {
     return step & 1;
-  } 
-  bool CheckXy(int x, int y) {
+  } bool CheckXy(int x, int y) {
     return cell[x][y].piece != Outside;
   }
 
@@ -88,8 +108,7 @@ public:
 
     return c->pattern[role][0] == win
       || c->pattern[role][1] == win
-      || c->pattern[role][2] == win 
-      || c->pattern[role][3] == win;
+      || c->pattern[role][2] == win || c->pattern[role][3] == win;
   }
 
 };
