@@ -237,7 +237,8 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
       alpha = val;
     }
   }
-  RecordHash(depth, alpha, hashf);
+  if (!stopThink)
+    RecordHash(depth, alpha, hashf);
   return alpha;
 }
 
