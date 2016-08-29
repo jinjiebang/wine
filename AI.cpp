@@ -265,7 +265,7 @@ int AI::evaluate() {
         TypeCount(i, j, me, Ctype);
         TypeCount(i, j, you, Htype);
 
-        int p[2][8] = { 0 };
+        /*int p[2][8] = { 0 };
         TypeCount(i, j, me, p[me]);
         TypeCount(i, j, you, p[you]);
 
@@ -274,7 +274,7 @@ int AI::evaluate() {
         if (p[you][block4] > 1)
           ++Htype[flex4];
 
-        /*if (p[me][block4] > 0 && p[me][flex3] > 0)
+        if (p[me][block4] > 0 && p[me][flex3] > 0)
           Cscore += 200;
         if (p[me][flex3] > 1)
           Cscore += 120;
