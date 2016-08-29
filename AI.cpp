@@ -176,7 +176,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
 // 安全剪枝
 int AI::CutCand(Pos * move, Point * cand, int Csize) {
   int me = color(step + 1);
-  int you = !me;
+  int you = color(step);
   int Msize = 0;
   // 下子方能成五或活四
   // 对方能成五
