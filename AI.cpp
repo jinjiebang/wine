@@ -257,7 +257,7 @@ int AI::evaluate() {
   int Htype[Ntype] = { 0 };
   int Cscore = 0, Hscore = 0;
   int me = color(step + 1);
-  int you =color(step);
+  int you = color(step);
   Cell *c;
 
   for (int i = b_start; i < b_end; ++i) {
