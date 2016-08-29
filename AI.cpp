@@ -251,7 +251,7 @@ void AI::sort(Point * a, int n) {
   }
 }
 
-// 棋型估值函数
+// 局势评价函数
 int AI::evaluate() {
   int Ctype[Ntype] = { 0 };      // 先手方棋型个数
   int Htype[Ntype] = { 0 };      // 后手方棋型个数
