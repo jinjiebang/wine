@@ -257,7 +257,7 @@ int AI::evaluate() {
   int Htype[Ntype] = { 0 };
   int Cscore = 0, Hscore = 0;
   int me = color(step + 1);
-  int you = !me;
+  int you =color(step);
   Cell *c;
 
   for (int i = b_start; i < b_end; ++i) {
@@ -291,7 +291,7 @@ int AI::ScoreMove(int x, int y) {
   int MeType[Ntype] = { 0 };
   int YouType[Ntype] = { 0 };
   int me = color(step + 1);
-  int you = !me;
+  int you = color(step);
   Cell *c = &cell[x][y];
 
   TypeCount(c, me, you, MeType, YouType);
