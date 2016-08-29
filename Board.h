@@ -75,11 +75,15 @@ public:
     return cell[x][y].piece != Outside;
   }
 
-  void TypeCount(int x, int y, int role, int *type) {
-    ++type[cell[x][y].pattern[role][0]];
-    ++type[cell[x][y].pattern[role][1]];
-    ++type[cell[x][y].pattern[role][2]];
-    ++type[cell[x][y].pattern[role][3]];
+  void TypeCount(Cell *c, int me, int you, int *MeType, int *YouType) {
+    ++MeType[c->pattern[me][0]];
+    ++MeType[c->pattern[me][1]];
+    ++MeType[c->pattern[me][2]];
+    ++MeType[c->pattern[me][3]];
+    ++YouType[c->pattern[you][0]];
+    ++YouType[c->pattern[you][1]];
+    ++YouType[c->pattern[you][2]];
+    ++YouType[c->pattern[you][3]];
   }
 
   bool CheckWin() {
