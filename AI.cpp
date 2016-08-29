@@ -258,31 +258,15 @@ int AI::evaluate() {
   int Cscore = 0, Hscore = 0;
   int me = color(step + 1);
   int you = !me;
+  Cell *c;
 
   for (int i = b_start; i < b_end; ++i) {
     for (int j = b_start; j < b_end; ++j) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
-        TypeCount(i, j, me, Ctype);
-        TypeCount(i, j, you, Htype);
-
-        /*int p[2][8] = { 0 };
-        TypeCount(i, j, me, p[me]);
-        TypeCount(i, j, you, p[you]);
-
-        if (p[me][block4] > 1)
-          ++Ctype[flex4];
-        if (p[you][block4] > 1)
-          ++Htype[flex4];
-
-        if (p[me][block4] > 0 && p[me][flex3] > 0)
-          Cscore += 200;
-        if (p[me][flex3] > 1)
-          Cscore += 120;
-        if (p[you][block4] > 0 && p[you][flex3] > 0)
-          Hscore += 100;
-        if (p[you][flex3] > 1)
-          Hscore += 60;
-        */
+        
+        c = &cell[i][j];
+        TypeCount(c, me, you, Ctype, Htype);
+        
       }
     }
   }
@@ -307,9 +291,10 @@ int AI::ScoreMove(int x, int y) {
   int MeType[Ntype] = { 0 };
   int YouType[Ntype] = { 0 };
   int me = color(step + 1);
+  int you = !me;
+  Cell *c = &cell[x][y];
 
-  TypeCount(x, y, me, MeType);
-  TypeCount(x, y, !me, YouType);
+  TypeCount(c, me, you, MeType, YouType);
 
   if (MeType[win] > 0)
     return 10000;
