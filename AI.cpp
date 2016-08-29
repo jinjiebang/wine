@@ -255,6 +255,7 @@ void AI::sort(Point * a, int n) {
 int AI::evaluate() {
   int Ctype[Ntype] = { 0 };
   int Htype[Ntype] = { 0 };
+  int Cscore = 0, Hscore = 0;
   int me = color(step + 1);
   int you = !me;
 
@@ -263,6 +264,25 @@ int AI::evaluate() {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
         TypeCount(i, j, me, Ctype);
         TypeCount(i, j, you, Htype);
+
+        
+        int p[2][8] = { 0 };
+        TypeCount(i, j, me, p[me]);
+        TypeCount(i, j, you, p[you]);
+
+        if (p[me][block4] > 1)
+          ++Ctype[flex4];
+        if (p[you][block4] > 1)
+          ++Htype[flex4];
+
+        if (p[me][block4] > 0 && p[me][flex3] > 0)
+          Cscore += 200;
+        if (p[me][flex3] > 1)
+          Cscore += 120;
+        if (p[you][block4] > 0 && p[you][flex3] > 0)
+          Hscore += 100;
+        if (p[you][flex3] > 1)
+          Hscore += 60;
       }
     }
   }
@@ -274,8 +294,6 @@ int AI::evaluate() {
   if (Ctype[flex4] > 0 && Htype[win] == 0)
     return 10000;
 
-  int Cscore = 0;
-  int Hscore = 0;
   for (int i = 1; i < Ntype; ++i) {
     Cscore += Ctype[i] * Tval[i];
     Hscore += Htype[i] * Tval[i];
