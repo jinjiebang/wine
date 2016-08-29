@@ -173,7 +173,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   return alpha;
 }
 
-// 安全剪枝
+// 剪枝 (如冲四只有一个防点)
 int AI::CutCand(Pos * move, Point * cand, int Csize) {
   int me = color(step + 1);
   int you = color(step);
@@ -253,17 +253,18 @@ void AI::sort(Point * a, int n) {
 
 // 棋型估值函数
 int AI::evaluate() {
-  int Ctype[Ntype] = { 0 };
-  int Htype[Ntype] = { 0 };
-  int Cscore = 0, Hscore = 0;
-  int me = color(step + 1);
-  int you = color(step);
+  int Ctype[Ntype] = { 0 };      // 先手方棋型个数
+  int Htype[Ntype] = { 0 };      // 后手方棋型个数
+  int Cscore = 0, Hscore = 0;    // 双方分值
+  int me = color(step + 1);      // 先手方
+  int you = color(step);         // 后手方
   Cell *c;
-
+  
+  // 统计棋型
   for (int i = b_start; i < b_end; ++i) {
     for (int j = b_start; j < b_end; ++j) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
-        
+        // 加上该点棋型
         c = &cell[i][j];
         TypeCount(c, me, you, Ctype, Htype);
         
@@ -278,6 +279,7 @@ int AI::evaluate() {
   if (Ctype[flex4] > 0 && Htype[win] == 0)
     return 10000;
 
+  // 计算分值
   for (int i = 1; i < Ntype; ++i) {
     Cscore += Ctype[i] * Tval[i];
     Hscore += Htype[i] * Tval[i];
