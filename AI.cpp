@@ -323,9 +323,9 @@ int AI::ScoreMove(int x, int y) {
   
   if (score) {
     if (abs(remMove[step].x - x) <= 4 && (abs(remMove[step].y - y) <= 4)
-      score += 3;
+      score += 5;
     if (abs(remMove[step - 1].x - x) <= 4 && (abs(remMove[step - 1].y - y) <= 4)
-      score += 3;
+      score += 7;
   }
     
 
