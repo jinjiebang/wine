@@ -1,6 +1,7 @@
 
 #include "AI.h"
 #include<ctime>
+#include<cmath>
 #include<cstring>
 #include<cstdlib>
 #include<iostream>
@@ -319,6 +320,12 @@ int AI::ScoreMove(int x, int y) {
     score += MeVal[i] * MeType[i];
     score += YouVal[i] * YouType[i];
   }
+  
+  if (score) {
+    if (abs(remMove[step].x - x) <= 4 && (abs(remove[step].y - y) <= 4)
+      score += 7;
+  }
+    
 
   return score;
 }
