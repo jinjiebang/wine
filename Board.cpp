@@ -147,7 +147,9 @@ int Board::LineType(int role, int key) {
   // 双向判断，取最大的棋型
   int p1 = ShortLine(role, line_left);
   int p2 = ShortLine(role, line_right);
-  return p1 > p2 ? p1 : p2;
+  // 同线双四特判
+  if (p1 == block4 && p2 ==block4) return CheckFlex4(role, key);
+  return p1 > p2 ? p1: p2;
 }
 
 // 判断单个方向的棋型
@@ -191,6 +193,34 @@ int Board::ShortLine(int role, int *line) {
     }
   }
   return typeTable[len][len2][count][block];
+}
+
+// 同线双四特判
+int CheckFlex4(int role, int key) {
+  int line[9];
+  int i, j, count;
+
+  for (i = 0; i < 9; i++) {
+    if (i == 4) {
+      line[i] = role;
+    } else {
+      line[i] = key & 3;
+      key >>= 2;
+    }
+  }
+  int five = 0;
+  for (i = 0; i < 9; i++) {
+    if (line[i] == Empty) {
+      count = 0;
+      for (j = i - 1; j >= 0 && line[j] == role; j--)
+        count++;
+      for (j = i + 1; j <= 8 && line[j] == role; j++)
+        count++;
+      if (count >= 4)
+        five++;
+    }
+  }
+  return five >= 2 ? flex4 : block4;
 }
 
 // 生成初级棋型表信息
