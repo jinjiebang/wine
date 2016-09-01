@@ -1,7 +1,6 @@
 
 #include "AI.h"
 #include<ctime>
-#include<cmath>
 #include<cstring>
 #include<cstdlib>
 #include<iostream>
