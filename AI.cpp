@@ -76,9 +76,9 @@ inline bool AI::Same(Pos a, Pos b) {
   // max函数
 int AI::minimax(int depth, int alpha, int beta) {
   UpdateRound(2);
-  Pos move[32];
+  Pos move[28];
   int val;
-  int count = GetMove(move, 30);
+  int count = GetMove(move, 27);
 
   if (count == 1) {
     BestMove = move[1];
@@ -142,7 +142,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   if (depth == 0)
     return evaluate();
 
-  Pos move[32];
+  Pos move[28];
   int count = GetMove(move, 27);
 
 
@@ -320,14 +320,6 @@ int AI::ScoreMove(int x, int y) {
     score += MeVal[i] * MeType[i];
     score += YouVal[i] * YouType[i];
   }
-  
-  if (score) {
-    if (abs(remMove[step].x - x) <= 4 && abs(remMove[step].y - y) <= 4)
-      score += 5;
-    if (abs(remMove[step - 1].x - x) <= 4 && abs(remMove[step - 1].y - y) <= 4)
-      score += 7;
-  }
-    
 
   return score;
 }
