@@ -9,7 +9,7 @@ const int block3 = 3;           // 眠三
 const int flex2 = 2;            // 活二
 const int block2 = 1;           // 眠二
 const int Ntype = 8;            // 棋型数量
-const int MaxSize = 24;         // 最大尺寸
+const int MaxSize = 20;         // 最大尺寸
 
 // 棋子
 const int Outside = 3;
