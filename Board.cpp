@@ -196,7 +196,7 @@ int Board::ShortLine(int role, int *line) {
 }
 
 // 同线双四特判
-int CheckFlex4(int role, int key) {
+int Board::CheckFlex4(int role, int key) {
   int line[9];
   int i, j, count;
 
