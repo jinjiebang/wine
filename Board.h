@@ -65,6 +65,7 @@ public:
   int GetKey(int x, int y, int i);
   int LineType(int role, int key);
   int ShortLine(int role, int *line);
+  int CheckFlex4(int role, int key);
   int GetType(int len, int len2, int count, int block);
 
   /* 以下为可内联函数 */
