@@ -6,8 +6,9 @@
 #include "AI.h"
   using namespace std;
 
-int gomocup() {
-  AI wine;
+AI wine;
+
+int gomocup() 
   string command;
   Pos input, best;
   char dot;
