@@ -345,12 +345,5 @@ int AI::ScoreMove(int x, int y) {
     score += YouVal[i] * YouType[i];
   }
 
-  if (score) {
-    if (abs(x - remMove[step - 1].x) <= 4 && abs(y - remMove[step - 1].y) <= 4)
-      score += 7;
-    else if (abs(x - remMove[step].x) <= 4 && abs(y - remMove[step].y) <= 4)
-      score += 5;
-  }
-
   return score;
 }
