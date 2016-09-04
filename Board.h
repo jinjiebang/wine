@@ -40,15 +40,15 @@ struct Cell {
 
 class Board {
 public:
-  int step = 0;                                     // 记录棋局步数
-  int size = 15;                                    // 棋盘当前尺寸
-  int b_start, b_end;                               // 棋盘遍历的索引
-  int typeTable[10][6][6][3];                       // 初级棋型表
-  int patternTable[65536][2];                       // 完整棋型表
-  Cell cell[MaxSize + 8][MaxSize + 8];              // 棋盘结构，记录棋子颜色和棋型
-  Pos remMove[MaxSize * MaxSize];                   // 记录每步棋的坐标
-  bool IsCand[MaxSize + 8][MaxSize + 8];            // 记录每个位置是否合理着法（两格内有棋子）
-  bool IsLose[51];                                  // 记录根节点的必败点
+  int step = 0;                 // 记录棋局步数
+  int size = 15;                // 棋盘当前尺寸
+  int b_start, b_end;           // 棋盘遍历的索引
+  int typeTable[10][6][6][3];   // 初级棋型表
+  int patternTable[65536][2];   // 完整棋型表
+  Cell cell[MaxSize + 8][MaxSize + 8]; // 棋盘结构，记录棋子颜色和棋型
+  Pos remMove[MaxSize * MaxSize]; // 记录每步棋的坐标
+  bool IsCand[MaxSize + 8][MaxSize + 8]; // 记录每个位置是否合理着法（两格内有棋子）
+  bool IsLose[51];              // 记录根节点的必败点
 
     Board();
    ~Board();
@@ -71,20 +71,15 @@ public:
   /* 以下为可内联函数 */
   int color(int step) {
     return step & 1;
-  } 
-  bool CheckXy(int x, int y) {
+  } bool CheckXy(int x, int y) {
     return cell[x][y].piece != Outside;
   }
 
-  void TypeCount(Cell *c, int me, int you, int *MeType, int *YouType) {
-    ++MeType[c->pattern[me][0]];
-    ++MeType[c->pattern[me][1]];
-    ++MeType[c->pattern[me][2]];
-    ++MeType[c->pattern[me][3]];
-    ++YouType[c->pattern[you][0]];
-    ++YouType[c->pattern[you][1]];
-    ++YouType[c->pattern[you][2]];
-    ++YouType[c->pattern[you][3]];
+  void TypeCount(Cell * c, int role, int *type) {
+    ++type[c->pattern[role][0]];
+    ++type[c->pattern[role][1]];
+    ++type[c->pattern[role][2]];
+    ++type[c->pattern[role][3]];
   }
 
   bool CheckWin() {

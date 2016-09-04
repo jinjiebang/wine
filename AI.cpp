@@ -1,6 +1,7 @@
 
 #include "AI.h"
 #include<ctime>
+#include<cmath>
 #include<cstring>
 #include<cstdlib>
 #include<iostream>
@@ -72,7 +73,7 @@ inline bool AI::Same(Pos a, Pos b) {
   return a.x == b.x && a.y == b.y;
 }
 
-  // max函数
+  // 根节点搜索
 int AI::minimax(int depth, int alpha, int beta) {
   UpdateRound(2);
   Pos move[28];
@@ -105,8 +106,9 @@ int AI::minimax(int depth, int alpha, int beta) {
     } while (0);
     DelMove();
 
-    if (stopThink)
-      break;
+    if (stopThink) {
+      return i > 0 ? alpha : BestVal;
+    }
 
     if (val == -10000)
       IsLose[i] = true;
@@ -120,10 +122,10 @@ int AI::minimax(int depth, int alpha, int beta) {
       BestMove = move[i];
     }
   }
-  return alpha == -10001 ? BestVal : alpha;
+  return alpha;
 }
 
-// alpha-beta搜索
+// 带pvs的搜索
 int AI::AlphaBeta(int depth, int alpha, int beta) {
   total++;
 
@@ -145,7 +147,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   int count = GetMove(move, 27);
 
 
-  // 遍历所有走法
+  // 遍历所有move
   int val;
   for (int i = 1; i <= count; i++) {
 
@@ -251,23 +253,44 @@ void AI::sort(Point * a, int n) {
   }
 }
 
+int AI::ScorePoint(Cell * c, int role, int *b_type) {
+  int type[8] = { 0 };
+  int score = 0;
+
+  TypeCount(c, role, type);
+  if (type[block4] > 1) {
+    b_type[flex4]++;
+  }
+
+  if (type[block4] > 0 && type[flex3] > 0)
+    score += 100;
+  else if (type[flex3] > 1)
+    score += 60;
+  else if (type[block3] + type[flex2] > 1)
+    score += 8;
+
+  return score;
+}
+
 // 局势评价函数
 int AI::evaluate() {
-  int Ctype[Ntype] = { 0 };      // 先手方棋型个数
-  int Htype[Ntype] = { 0 };      // 后手方棋型个数
-  int Cscore = 0, Hscore = 0;    // 双方分值
-  int me = color(step + 1);      // 先手方
-  int you = color(step);         // 后手方
+  int Ctype[Ntype] = { 0 };     // 先手方棋型个数
+  int Htype[Ntype] = { 0 };     // 后手方棋型个数
+  int Cscore = 0, Hscore = 0;   // 双方分值
+  int me = color(step + 1);     // 先手方
+  int you = color(step);        // 后手方
   Cell *c;
-  
+
   // 统计棋型
   for (int i = b_start; i < b_end; ++i) {
     for (int j = b_start; j < b_end; ++j) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
         // 加上该点棋型
         c = &cell[i][j];
-        TypeCount(c, me, you, Ctype, Htype);
-        
+        TypeCount(c, me, Ctype);
+        TypeCount(c, you, Htype);
+        Cscore += ScorePoint(c, me, Ctype);
+        Hscore += ScorePoint(c, you, Htype);
       }
     }
   }
@@ -287,6 +310,7 @@ int AI::evaluate() {
 
   return Cscore * 3 - Hscore * 2;
 }
+
 // 着法打分
 int AI::ScoreMove(int x, int y) {
   int score = 0;
@@ -296,7 +320,8 @@ int AI::ScoreMove(int x, int y) {
   int you = color(step);
   Cell *c = &cell[x][y];
 
-  TypeCount(c, me, you, MeType, YouType);
+  TypeCount(c, me, MeType);
+  TypeCount(c, you, YouType);
 
   if (MeType[win] > 0)
     return 10000;
@@ -318,6 +343,13 @@ int AI::ScoreMove(int x, int y) {
   for (int i = 1; i <= block4; i++) {
     score += MeVal[i] * MeType[i];
     score += YouVal[i] * YouType[i];
+  }
+
+  if (score) {
+    if (abs(x - remMove[step - 1].x) <= 4 && abs(y - remMove[step - 1].y) <= 4)
+      score += 7;
+    else if (abs(x - remMove[step].x) <= 4 && abs(y - remMove[step].y) <= 4)
+      score += 5;
   }
 
   return score;
