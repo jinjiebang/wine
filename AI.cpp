@@ -266,8 +266,6 @@ int AI::ScorePoint(Cell * c, int role, int *b_type) {
     score += 100;
   else if (type[flex3] > 1)
     score += 60;
-  else if (type[block4] + type[flex3] > 0 && type[block3] + type[flex2] > 1)
-    score += 30;
   else if (type[block3] + type[flex2] > 1)
     score += 8;
   return score;
