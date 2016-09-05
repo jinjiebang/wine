@@ -106,9 +106,8 @@ int AI::minimax(int depth, int alpha, int beta) {
     } while (0);
     DelMove();
 
-    if (stopThink) {
-      return i > 0 ? alpha : BestVal;
-    }
+    if (stopThink)
+      break;
 
     if (val == -10000)
       IsLose[i] = true;
@@ -122,7 +121,7 @@ int AI::minimax(int depth, int alpha, int beta) {
       BestMove = move[i];
     }
   }
-  return alpha;
+  return alpha == -10001 ? BestVal : alpha;
 }
 
 // 带pvs的搜索
