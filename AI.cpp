@@ -131,7 +131,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   static int cnt = 1000;
   if (--cnt <= 0) {
     cnt = 1000;
-    if (GetTime() + 200 >= StopTime())
+    if (MaxDepth > 4 && GetTime() + 200 >= StopTime())
       stopThink = true;
   }
   // 对方最后一子连五
