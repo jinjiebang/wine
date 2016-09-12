@@ -252,23 +252,6 @@ void AI::sort(Point * a, int n) {
   }
 }
 
-int AI::ScorePoint(Cell * c, int role, int *b_type) {
-  int type[8] = { 0 };
-  int score = 0;
-
-  TypeCount(c, role, type);
-  if (type[block4] > 1) {
-    b_type[flex4]++;
-  }
-
-  if (type[block4] > 0 && type[flex3] > 0)
-    score += 100;
-  else if (type[flex3] > 1)
-    score += 60;
-  else if (type[block3] + type[flex2] > 1)
-    score += 8;
-  return score;
-}
 
 // 局势评价函数
 int AI::evaluate() {
@@ -287,8 +270,6 @@ int AI::evaluate() {
         c = &cell[i][j];
         TypeCount(c, me, Ctype);
         TypeCount(c, you, Htype);
-        Cscore += ScorePoint(c, me, Ctype);
-        Hscore += ScorePoint(c, you, Htype);
       }
     }
   }
