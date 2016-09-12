@@ -31,7 +31,6 @@ public:
   int GetTime();
   int StopTime();
   int ScoreMove(int x, int y);
-  int ScorePoint(Cell * c, int role, int *b_type);
   int minimax(int depth, int alpha, int beta);
   int AlphaBeta(int depth, int alpha, int beta);
   int CutCand(Pos * move, Point * cand, int Csize);
