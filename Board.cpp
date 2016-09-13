@@ -170,13 +170,14 @@ int Board::LineType(int role, int key) {
 // 同线双三特判
 int Board::CheckFlex3(int *line) {
   int role = line[4];
+  int type;
   for (int i = 0; i < 9; i++) {
     if (line[i] == Empty) {
       line[i] = role;
-      if (CheckFlex4(line) == flex4) {
-        return flex3;
-      }
+      type = CheckFlex4(line);
       line[i] = Empty;
+      if (type == flex4)
+        return flex3;
     }
   }
   return block3;
