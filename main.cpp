@@ -8,7 +8,7 @@
 
 AI wine;
 
-int gomocup() 
+int gomocup() {
   string command;
   Pos input, best;
   char dot;
