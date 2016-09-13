@@ -98,7 +98,8 @@ bool Board::IsType(Pos p, int role, int type) {
   Cell *c = &cell[p.x][p.y];
   return c->pattern[role][0] == type
     || c->pattern[role][1] == type
-    || c->pattern[role][2] == type || c->pattern[role][3] == type;
+    || c->pattern[role][2] == type 
+    || c->pattern[role][3] == type;
 }
 
 // 更新(x,y)附近棋型
