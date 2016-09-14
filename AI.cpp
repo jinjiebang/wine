@@ -287,7 +287,7 @@ int AI::evaluate() {
     Hscore += Htype[i] * Tval[i];
   }
 
-  return Cscore * 3 - Hscore * 2;
+  return Cscore - Hscore + Cscore >> 2;
 }
 
 // 着法打分
