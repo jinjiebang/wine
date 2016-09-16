@@ -174,34 +174,43 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   return alpha;
 }
 
-// 剪枝 (如冲四只有一个防点)
+// 剪枝
+// 下子方有成五点或活四点
+// 对方有成五点(冲四或活四),此时只有一个着法
+// 对方有活四点(活三),则有多个防点
 int AI::CutCand(Pos * move, Point * cand, int Csize) {
   int me = color(step + 1);
   int you = color(step);
-  int Msize = 0;
-  // 下子方能成五或活四
-  // 对方能成五
+  int moveLen = 0, candLen = 0;
+  
   if (cand[1].val >= 2400) {
-    move[1] = cand[1].p;
-    Msize = 1;
-  }
-  // 对方能成活四
+    move[++moveLen] = cand[++candLen].p;
+  } 
   else if (cand[1].val == 1200) {
-    move[1] = cand[1].p;
-    Msize = 1;
+    move[++moveLen] = cand[++candLen].p;
     if (cand[2].val == 1200) {
-      move[2] = cand[2].p;
-      Msize = 2;
+      move[++moveLen] = cand[++candLen].p;
     }
-    for (int i = Msize + 1; i <= Csize; ++i) {
-      if (IsType(cand[i].p, me, block4)
-          || IsType(cand[i].p, you, block4)) {
-        ++Msize;
-        move[Msize] = cand[i].p;
+
+    int i, j;
+    for (i = 0; i < 4; ++i) {
+      Pos m = remMove[step];
+      if (cell[m.x][m.y].pattern[you][i] == flex3) {
+        m.x -= (dx[i] * 4), m.y -= (dy[i] * 4);
+        for (j = 0; j < 9; ++j) {
+          if (cell[m.x][m.y].piece == Empty && IsType(m, you, block4) {
+            move[++moveLen] = m;
+          }
+          m.x += dx[i], m.y += dy[i];
+        }
       }
     }
+    for (i = candLen + 1; i <= Csize; ++i) {
+      if (IsType(cand[i].p, me, block4))
+        move[++moveLen] = cand[i].p;
+    }
   }
-  return Msize;
+  return moveLen;
 }
 
 // 生成所有着法，并返回个数
