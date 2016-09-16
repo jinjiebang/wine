@@ -192,9 +192,13 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
       move[++moveLen] = cand[++candLen].p;
     }
 
-    int i, j;
+    int i, j, k;
+    for (k = step; k > 0; k -= 2) {
+      if (IsType(remMove[k], you, flex3))
+        break;
+    }
     for (i = 0; i < 4; ++i) {
-      Pos m = remMove[step];
+      Pos m = remMove[k];
       if (cell[m.x][m.y].pattern[you][i] == flex3) {
         m.x -= (dx[i] * 4), m.y -= (dy[i] * 4);
         for (j = 0; j < 9; ++j) {
