@@ -181,36 +181,23 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
 int AI::CutCand(Pos * move, Point * cand, int Csize) {
   int me = color(step + 1);
   int you = color(step);
-  int moveLen = 0, candLen = 0;
+  int moveLen = 0;
   
   if (cand[1].val >= 2400) {
-    move[++moveLen] = cand[++candLen].p;
+    moveLen = 1;
+    move[1] = cand[1].p;
   } 
   else if (cand[1].val == 1200) {
-    move[++moveLen] = cand[++candLen].p;
+    moveLen = 1;
+    move[1] = cand[1].p;
     if (cand[2].val == 1200) {
-      move[++moveLen] = cand[++candLen].p;
+      moveLen = 2;
+      move[2] = cand[2].p;
     }
 
-    int i, j, k;
-    for (k = step; k > 0; k -= 2) {
-      if (IsType(remMove[k], you, flex3))
-        break;
-    }
-    for (i = 0; i < 4; ++i) {
-      Pos m = remMove[k];
-      if (cell[m.x][m.y].pattern[you][i] == flex3) {
-        m.x -= (dx[i] * 4), m.y -= (dy[i] * 4);
-        for (j = 0; j < 9; ++j) {
-          if (cell[m.x][m.y].piece == Empty && cell[m.x][m.y].pattern[you][i] == block4) {
-            move[++moveLen] = m;
-          }
-          m.x += dx[i], m.y += dy[i];
-        }
-      }
-    }
-    for (i = candLen + 1; i <= Csize; ++i) {
-      if (IsType(cand[i].p, me, block4))
+    for (int i = moveLen + 1; i <= Csize; ++i) {
+      if (IsType(cand[i].p, me, block4)
+          || IsType(cand[i].p, you, block4))
         move[++moveLen] = cand[i].p;
     }
   }
