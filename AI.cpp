@@ -283,11 +283,11 @@ int AI::evaluate() {
 
   // 计算分值
   for (int i = 1; i < Ntype; ++i) {
-    Cscore += Ctype[i] * Tval[i];
-    Hscore += Htype[i] * Tval[i];
+    Cscore += Ctype[i] * Cval[i];
+    Hscore += Htype[i] * Hval[i];
   }
 
-  return Cscore - Hscore + Cscore >> 2;
+  return Cscore - Hscore;
 }
 
 // 着法打分
