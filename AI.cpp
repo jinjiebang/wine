@@ -202,7 +202,7 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
       if (cell[m.x][m.y].pattern[you][i] == flex3) {
         m.x -= (dx[i] * 4), m.y -= (dy[i] * 4);
         for (j = 0; j < 9; ++j) {
-          if (cell[m.x][m.y].piece == Empty && IsType(m, you, block4)) {
+          if (cell[m.x][m.y].piece == Empty && cell[m.x][m.y].pattern[you][i] == block4) {
             move[++moveLen] = m;
           }
           m.x += dx[i], m.y += dy[i];
