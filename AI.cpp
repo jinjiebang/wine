@@ -75,7 +75,7 @@ inline bool AI::Same(Pos a, Pos b) {
 
   // 根节点搜索
 int AI::minimax(int depth, int alpha, int beta) {
-  UpdateRound(2);
+  UpdateRound(3);
   Pos move[28];
   int val;
   int count = GetMove(move, 27);
@@ -263,6 +263,7 @@ int AI::evaluate() {
   Cell *c;
 
   // 统计棋型
+  UpdateRound(4);
   for (int i = b_start; i < b_end; ++i) {
     for (int j = b_start; j < b_end; ++j) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
