@@ -263,6 +263,7 @@ int AI::evaluate() {
   Cell *c;
 
   // 统计棋型
+  UpdateRound(4);
   for (int i = b_start; i < b_end; ++i) {
     for (int j = b_start; j < b_end; ++j) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
