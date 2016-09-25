@@ -206,7 +206,7 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
 
 // 生成所有着法，并返回个数
 int AI::GetMove(Pos * move, int branch) {
-  Point cand[200];
+  Point cand[256];
   int Csize = 0, Msize = 0;
   int val;
   for (int i = b_start; i < b_end; i++) {
