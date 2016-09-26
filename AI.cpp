@@ -76,9 +76,9 @@ inline bool AI::Same(Pos a, Pos b) {
   // 根节点搜索
 int AI::minimax(int depth, int alpha, int beta) {
   UpdateRound(3);
-  Pos move[28];
+  Pos move[32];
   int val;
-  int count = GetMove(move, 27);
+  int count = GetMove(move, 30);
 
   if (count == 1) {
     BestMove = move[1];
@@ -206,7 +206,6 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
 
 // 生成所有着法，并返回个数
 int AI::GetMove(Pos * move, int branch) {
-  Point cand[256];
   int Csize = 0, Msize = 0;
   int val;
   for (int i = b_start; i < b_end; i++) {
