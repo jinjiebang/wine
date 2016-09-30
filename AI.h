@@ -6,7 +6,7 @@
 class AI:public Board {
 private:
   // 选点棋型分值
-  int MeVal[6] = { 0, 4, 10, 10, 24, 24 };
+  int MeVal[6] = { 0, 3, 7, 7, 18, 18 };
   int YouVal[6] = { 0, 2, 5, 5, 12, 12 };
   // 局势棋型分值
   int Cval[8] = { 0, 3, 18, 27, 144, 216, 1200, 1800 };
