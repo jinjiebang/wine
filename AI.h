@@ -15,7 +15,7 @@ public:
   int total = 0;                // 搜索局面数
   int BestVal = 0;              // 最佳点分值
   int MaxDepth = 0;             // 实际搜索的最大深度
-  int SearchDepth = 14;         // 搜索深度上限
+  int SearchDepth = 12;         // 搜索深度上限
   int time_left = 10000000;
   int timeout_turn = 500000;
   int timeout_match = 10000000;
