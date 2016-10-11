@@ -75,9 +75,9 @@ inline bool AI::Same(Pos a, Pos b) {
 
   // 根节点搜索
 int AI::minimax(int depth, int alpha, int beta) {
-  UpdateRound(2);
+  UpdateRound(3);
+  
   Pos move[28];
-  int val;
   int count = GetMove(move, 27);
 
   if (count == 1) {
@@ -88,6 +88,7 @@ int AI::minimax(int depth, int alpha, int beta) {
   move[0] = (depth > 2) ? BestMove : move[1];
 
   // 遍历所有走法
+  int val;
   for (int i = 0; i <= count; i++) {
     if (i > 0 && Same(move[0], move[i]))
       continue;
@@ -128,6 +129,7 @@ int AI::minimax(int depth, int alpha, int beta) {
 int AI::AlphaBeta(int depth, int alpha, int beta) {
   total++;
 
+  // 每1000个局面检测一次超时
   static int cnt = 1000;
   if (--cnt <= 0) {
     cnt = 1000;
