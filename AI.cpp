@@ -269,8 +269,16 @@ int AI::evaluate() {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
         // 加上该点棋型
         c = &cell[i][j];
-        TypeCount(c, me, Ctype);
         TypeCount(c, you, Htype);
+        TypeCount(c, me, Ctype);
+        int p[8] = { 0 };
+        p[c->pattern[me][0]]++;
+        p[c->pattern[me][1]]++;
+        p[c->pattern[me][2]]++;
+        p[c->pattern[me][3]]++;
+        if (p[block4] > 1)
+          Ctype[flex4]++;
+        
       }
     }
   }
