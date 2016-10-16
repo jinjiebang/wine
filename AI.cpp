@@ -261,6 +261,7 @@ int AI::evaluate() {
   int Cscore = 0, Hscore = 0;   // 双方分值
   int me = color(step + 1);     // 先手方
   int you = color(step);        // 后手方
+  int remBlock4;
   Cell *c;
 
   // 统计棋型
@@ -269,15 +270,11 @@ int AI::evaluate() {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
         // 加上该点棋型
         c = &cell[i][j];
-        TypeCount(c, you, Htype);
+        remBlock4 = Ctype[block4];
         TypeCount(c, me, Ctype);
-        int p[8] = { 0 };
-        p[c->pattern[me][0]]++;
-        p[c->pattern[me][1]]++;
-        p[c->pattern[me][2]]++;
-        p[c->pattern[me][3]]++;
-        if (p[block4] > 1)
+        if (Ctype[block4] - remBlock4 >= 2)
           Ctype[flex4]++;
+        TypeCount(c, you, Htype);
         
       }
     }
