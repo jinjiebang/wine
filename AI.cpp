@@ -268,14 +268,14 @@ int AI::evaluate() {
   for (int i = b_start; i < b_end; ++i) {
     for (int j = b_start; j < b_end; ++j) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
+        remBlock4 = Ctype[block4];
         // 加上该点棋型
         c = &cell[i][j];
-        remBlock4 = Ctype[block4];
         TypeCount(c, me, Ctype);
-        if (Ctype[block4] - remBlock4 >= 2)
-          Ctype[flex4]++;
         TypeCount(c, you, Htype);
-        
+        // 若该点有两个以上冲四则与活四等价
+        if (Ctype[block4] - remBlock4 >= 2)
+          Ctype[flex4]++;        
       }
     }
   }
