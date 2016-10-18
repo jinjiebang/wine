@@ -77,8 +77,8 @@ inline bool AI::Same(Pos a, Pos b) {
 int AI::minimax(int depth, int alpha, int beta) {
   UpdateRound(2);
   
-  Pos move[32];
-  int count = GetMove(move, 30);
+  Pos move[28];
+  int count = GetMove(move, 27);
 
   if (count == 1) {
     BestMove = move[1];
@@ -144,8 +144,8 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   if (depth == 0)
     return evaluate();
 
-  Pos move[32];
-  int count = GetMove(move, 30);
+  Pos move[28];
+  int count = GetMove(move, 27);
 
 
   // 遍历所有move
