@@ -15,7 +15,7 @@ int AI::StopTime() {
 }
 
 // 查询置换表
-int AI::ProbeHash(int depth, int alpha, int beta) {
+int AI::ProbeHash(int depth, int alpha, int beta,Pos &hashMove) {
   Hashe *phashe = &hashTable[zobristKey % hashSize];
   if (phashe->key == zobristKey) {
     if (phashe->depth >= depth) {
@@ -29,16 +29,13 @@ int AI::ProbeHash(int depth, int alpha, int beta) {
         return beta;
       }
     }
-    if (phashe->best.x != -1) {
-        getHashMove = true;
-        hashMove = phashe->best;
-    }  
+    hashMove = phashe->best;
   }
   return unknown;
 }
 
 // 写入置换表
-void AI::RecordHash(int depth, int val, int hashf) {
+void AI::RecordHash(int depth, int val, int hashf, Pos curBest) {
   Hashe *phashe = &hashTable[zobristKey % hashSize];
   phashe->key = zobristKey;
   phashe->best = curBest;
@@ -168,13 +165,12 @@ int AI::minimax(int depth, int alpha, int beta) {
 //带pvs的搜索
 int AI::AlphaBeta(int depth, int alpha, int beta) {
   total++;
-  getHashMove = false;
   curBest.x = -1;
 
   static int cnt = 1000;
   if (--cnt <= 0) {
     cnt = 1000;
-    if (GetTime() + 500 >= StopTime()) {
+    if (GetTime() + 200 >= StopTime()) {
       stopThink = true;
     }
   }
@@ -184,35 +180,32 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   }
 
   int val;
-  if ((val = ProbeHash(depth, alpha, beta)) != unknown) {
+  Pos hashMove;
+  if ((val = ProbeHash(depth, alpha, beta, hashMove)) != unknown) {
     hashCount++;
     return val;
   }
   // 叶节点
   if (depth == 0) {
     val = evaluate();
-    RecordHash(depth, val, hash_exact);
+    RecordHash(depth, val, hash_exact, curBest);
     return val;
   }
   
   Pos move[28];
   int hashf = hash_alpha;
   int move_count = GetMove(move, 27);
-  int move_start = 1;
-  if (getHashMove) {
-    move_start = 0;
-    move[0] = hashMove;
-  }
+  move[0] = hashMove.x == -1 ? move[1] : hashMove;
   // 遍历可选点
-  for (int i = move_start; i <= move_count; i++) {
+  for (int i = 0; i <= move_count; i++) {
 
-    if (i > move_start && Same(move[move_start], move[i])) {
+    if (i > 0 && Same(move[0], move[i])) {
       continue;
     }
 
     MakeMove(move[i]);
     do {
-      if (i > move_start && alpha + 1 < beta) {
+      if (i > 0 && alpha + 1 < beta) {
         val = -AlphaBeta(depth - 1, -alpha - 1, -alpha);
         if (val <= alpha || val >= beta) {
           break;
@@ -228,7 +221,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
 
     if (val >= beta) {
       curBest = move[i];
-      RecordHash(depth, beta, hash_beta);
+      RecordHash(depth, beta, hash_beta,curBest);
       return val;
     }
     if (val > alpha) {
@@ -237,8 +230,9 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
       alpha = val;
     }
   }
-  if (!stopThink)
-    RecordHash(depth, alpha, hashf);
+  if (!stopThink) {
+    RecordHash(depth, alpha, hashf, curBest);
+  }
   return alpha;
 }
 
