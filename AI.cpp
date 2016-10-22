@@ -15,7 +15,7 @@ int AI::StopTime() {
 }
 
 // 查询置换表
-int AI::ProbeHash(int depth, int alpha, int beta,Pos &hashMove) {
+int AI::ProbeHash(int depth, int alpha, int beta) {
   Hashe *phashe = &hashTable[zobristKey % hashSize];
   if (phashe->key == zobristKey) {
     if (phashe->depth >= depth) {
@@ -29,16 +29,14 @@ int AI::ProbeHash(int depth, int alpha, int beta,Pos &hashMove) {
         return beta;
       }
     }
-    hashMove = phashe->best;
   }
   return unknown;
 }
 
 // 写入置换表
-void AI::RecordHash(int depth, int val, int hashf, Pos curBest) {
+void AI::RecordHash(int depth, int val, int hashf) {
   Hashe *phashe = &hashTable[zobristKey % hashSize];
   phashe->key = zobristKey;
-  phashe->best = curBest;
   phashe->val = val;
   phashe->hashf = hashf;
   phashe->depth = depth;
@@ -165,7 +163,6 @@ int AI::minimax(int depth, int alpha, int beta) {
 //带pvs的搜索
 int AI::AlphaBeta(int depth, int alpha, int beta) {
   total++;
-  curBest.x = -1;
 
   static int cnt = 1000;
   if (--cnt <= 0) {
@@ -180,7 +177,6 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   }
 
   int val;
-  Pos hashMove;
   if ((val = ProbeHash(depth, alpha, beta, hashMove)) != unknown) {
     hashCount++;
     return val;
@@ -188,24 +184,18 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   // 叶节点
   if (depth == 0) {
     val = evaluate();
-    RecordHash(depth, val, hash_exact, curBest);
+    RecordHash(depth, val, hash_exact);
     return val;
   }
-  
   Pos move[28];
   int hashf = hash_alpha;
   int move_count = GetMove(move, 27);
-  move[0] = hashMove.x == -1 ? move[1] : hashMove;
   // 遍历可选点
-  for (int i = 0; i <= move_count; i++) {
-
-    if (i > 0 && Same(move[0], move[i])) {
-      continue;
-    }
+  for (int i = 1; i <= move_count; i++) {
 
     MakeMove(move[i]);
     do {
-      if (i > 0 && alpha + 1 < beta) {
+      if (i > 1 && alpha + 1 < beta) {
         val = -AlphaBeta(depth - 1, -alpha - 1, -alpha);
         if (val <= alpha || val >= beta) {
           break;
