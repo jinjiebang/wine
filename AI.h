@@ -17,9 +17,9 @@ public:
   int hashCount = 0;            // hash表命中次数
   int BestVal = 0;              // 最佳点分值
   int MaxDepth = 0;             // 实际搜索深度
-  int SearchDepth = 14;         // 搜索深度上限
+  int SearchDepth = 12;         // 搜索深度上限
   int time_left = 10000000;
-  int timeout_turn = 10000000;
+  int timeout_turn = 30000;
   int timeout_match = 10000000;
   int ThinkTime = 0;
   bool stopThink = false;
@@ -34,7 +34,7 @@ public:
   int ProbeHash(int depth, int alpha, int beta);
   int GetTime();
   int StopTime();
-  int ScoreMove(int x, int y);
+  int ScoreMove(Cell * c);
   int minimax(int depth, int alpha, int beta);
   int AlphaBeta(int depth, int alpha, int beta);
   int CutCand(Pos * move, Point * cand, int Csize);
