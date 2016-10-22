@@ -307,13 +307,19 @@ int AI::evaluate() {
   int Ctype[Ntype] = { 0 };
   int Htype[Ntype] = { 0 };
   int me = color(step + 1);
-  int you = !me;
+  int you = color(step);
+  int p_block4;
+  Cell *c;
 
   for (int i = b_start; i < b_end; ++i) {
     for (int j = b_start; j < b_end; ++j) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
-        TypeCount(i, j, me, Ctype);
-        TypeCount(i, j, you, Htype);
+        p_block4 = Ctype[block4];
+        c = cell[i][j];
+        TypeCount(c, me, Ctype);
+        TypeCount(c, you, Htype);
+        if (Ctype[block4] - p_block4 > 1)
+          Ctype[flex4]++;
       }
     }
   }
@@ -328,8 +334,7 @@ int AI::evaluate() {
     return 10000;
   }
 
-  int Cscore = 0;
-  int Hscore = 0;
+  int Cscore = 0, Hscore = 0;
   for (int i = 1; i < Ntype; ++i) {
     Cscore += Ctype[i] * Tval[i];
     Hscore += Htype[i] * Tval[i];
@@ -338,14 +343,14 @@ int AI::evaluate() {
   return Cscore * 3 - Hscore * 2;
 }
 // 着法打分
-int AI::ScoreMove(int x, int y) {
+int AI::ScoreMove(Cell *c) {
   int score = 0;
   int MeType[Ntype] = { 0 };
   int YouType[Ntype] = { 0 };
   int me = color(step + 1);
 
-  TypeCount(x, y, me, MeType);
-  TypeCount(x, y, !me, YouType);
+  TypeCount(c, me, MeType);
+  TypeCount(c, me ^ 1, YouType);
 
   if (MeType[win] > 0) {
     return 10000;
