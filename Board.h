@@ -52,7 +52,6 @@ struct Hashe {
   int depth;
   int hashf;
   int val;
-  Pos best;
 };
 
 class Board {
@@ -86,7 +85,9 @@ public:
   U64 Rand64();
   int GetKey(int x, int y, int i);
   int LineType(int role, int key);
-  int ShortLine(int role, int *line);
+  int ShortLine(int *line);
+  int CheckFlex3(int *line);
+  int CheckFlex4(int *line);
   int GetType(int len, int len2, int count, int block);
 
   /* 可内联成员函数 */
@@ -97,11 +98,11 @@ public:
     return cell[x][y].piece != Outside;
   }
 
-  void TypeCount(int x, int y, int role, int *type) {
-    ++type[cell[x][y].pattern[role][0]];
-    ++type[cell[x][y].pattern[role][1]];
-    ++type[cell[x][y].pattern[role][2]];
-    ++type[cell[x][y].pattern[role][3]];
+  void TypeCount(Cell *c, int role, int *type) {
+    ++type[c->pattern[role][0]];
+    ++type[c->pattern[role][1]];
+    ++type[c->pattern[role][2]];
+    ++type[c->pattern[role][3]];
   }
 
   bool CheckWin() {
