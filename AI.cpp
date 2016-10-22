@@ -59,6 +59,7 @@ Pos AI::TurnBest() {
 Pos AI::gobang() {
   start = clock();
   total = 0;
+  BestVal = 0;
   hashCount = 0;
   stopThink = false;
 
@@ -83,15 +84,12 @@ Pos AI::gobang() {
   }
   // 迭代加深搜索
   memset(IsLose, false, sizeof(IsLose));
-  for (int i = 2; i <= SearchDepth; i += 2) {
-    if (i > 4 && GetTime() * 12 >= StopTime()) {
+  for (int i = 2; i <= SearchDepth && BestVal != 10000; i += 2) {
+    if (i > 8 && GetTime() * 12 >= StopTime()) {
       break;
     }
     MaxDepth = i;
     BestVal = minimax(i, -10001, 10000);
-    if (BestVal == 10000) {
-      break;
-    }
   }
 
   ThinkTime = GetTime();
