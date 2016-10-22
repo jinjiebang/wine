@@ -107,9 +107,9 @@ int AI::minimax(int depth, int alpha, int beta) {
   UpdateRound(2);
 
   Pos move[32];
-  int count = GetMove(move, 30);
+  int move_count = GetMove(move, 30);
 
-  if (count == 1) {
+  if (move_count == 1) {
     BestMove = move[1];
     return BestVal;
   }
@@ -118,7 +118,7 @@ int AI::minimax(int depth, int alpha, int beta) {
 
   // 遍历可选点
   int val;
-  for (int i = 0; i <= count; i++) {
+  for (int i = 0; i <= move_count; i++) {
     if ((i > 0 && Same(move[0], move[i])) || IsLose[i])
       continue;
     MakeMove(move[i]);
