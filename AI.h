@@ -38,7 +38,7 @@ public:
   int minimax(int depth, int alpha, int beta);
   int AlphaBeta(int depth, int alpha, int beta);
   int CutCand(Pos * move, Point * cand, int Csize);
-  int GetMove(Pos * move, int MaxMove);
+  int GetMove(Pos * move, int MaxMoves);
   int evaluate();
   bool Same(Pos a, Pos b);
 };
