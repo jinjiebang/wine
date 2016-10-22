@@ -9,7 +9,8 @@ private:
   int MeVal[6] = { 0, 4, 10, 10, 24, 24 };
   int YouVal[6] = { 0, 2, 5, 5, 12, 12 };
   // 局面评价分值
-  int Tval[8] = { 0, 1, 6, 9, 48, 72, 400, 600 };
+  int Cval[8] = { 0, 3, 18, 27, 144, 216, 1200, 1800 };
+  int Hval[8] = { 0, 2, 12, 18, 96, 144, 800, 1200 };
 
 public:
   int total = 0;                // 搜索局面数
@@ -22,9 +23,6 @@ public:
   int timeout_match = 10000000;
   int ThinkTime = 0;
   bool stopThink = false;
-  bool getHashMove = false;
-  Pos hashMove;
-  Pos curBest;
   clock_t start;
   Pos BestMove;
 
