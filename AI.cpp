@@ -171,7 +171,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     }
   }
 
-  int val = ProbeHash(depth, alpha, beta, hashMove);
+  int val = ProbeHash(depth, alpha, beta);
   if (val != unknown) {
     hashCount++;
     return val;
