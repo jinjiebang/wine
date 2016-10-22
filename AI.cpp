@@ -251,8 +251,8 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
   return Msize;
 }
 
-// 获取最好的branch个着法
-int AI::GetMove(Pos * move, int branch) {
+// 获取最好的MaxMoves个着法
+int AI::GetMove(Pos * move, int MaxMoves) {
   int Csize = 0, Msize = 0;
   int me = color(step + 1);
   int val;
@@ -271,7 +271,7 @@ int AI::GetMove(Pos * move, int branch) {
   }
   //排序
   sort(cand, Csize);
-  Csize = (Csize < branch) ? Csize : branch;
+  Csize = (Csize < MaxMoves) ? Csize : MaxMoves;
   // 剪枝
   Msize = CutCand(move, cand, Csize);
 
