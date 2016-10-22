@@ -303,10 +303,8 @@ void AI::sort(Point * a, int n) {
 
 // 局面评价
 int AI::evaluate() {
-  int Ctype[8] = { 0 };
-  int Htype[8] = { 0 };
-  int you = color(step);
-  int me = you ^ 1;
+  int Ctype[8] = { 0 }, Htype[8] = { 0 };
+  int you = color(step), me = you ^ 1;
   int p_block4;
 
   for (int i = b_start; i < b_end; ++i) {
@@ -333,11 +331,11 @@ int AI::evaluate() {
 
   int Cscore = 0, Hscore = 0;
   for (int i = 1; i < Ntype; ++i) {
-    Cscore += Ctype[i] * Tval[i];
-    Hscore += Htype[i] * Tval[i];
+    Cscore += Ctype[i] * Cval[i];
+    Hscore += Htype[i] * Hval[i];
   }
 
-  return Cscore * 3 - Hscore * 2;
+  return Cscore - Hscore;
 }
 // 着法打分
 int AI::ScoreMove(Cell *c, int me) {
