@@ -209,18 +209,16 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     }
 
     if (val >= beta) {
-      curBest = move[i];
-      RecordHash(depth, beta, hash_beta,curBest);
+      RecordHash(depth, beta, hash_beta);
       return val;
     }
     if (val > alpha) {
-      curBest = move[i];
       hashf = hash_exact;
       alpha = val;
     }
   }
   if (!stopThink) {
-    RecordHash(depth, alpha, hashf, curBest);
+    RecordHash(depth, alpha, hashf);
   }
   return alpha;
 }
