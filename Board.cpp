@@ -129,16 +129,13 @@ void Board::UpdateType(int x, int y) {
 void Board::UpdateRound(int n) {
   memset(IsCand, false, sizeof(IsCand));
   int x, y;
-  int Rx, Ry;
 
   for (int k = 1; k <= step; ++k) {
     x = remMove[k].x;
     y = remMove[k].y;
-    Rx = x + n;
-    Ry = y + n;
     // 设置n格以内有棋子的点为合理着法
-    for (int i = x - n; i <= Rx; ++i) {
-      for (int j = y - n; j <= Ry; ++j) {
+    for (int i = x - n; i <= x + n; ++i) {
+      for (int j = y - n; j <= y + n; ++j) {
         IsCand[i][j] = true;
       }
     }
