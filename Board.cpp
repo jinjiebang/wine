@@ -160,31 +160,84 @@ int Board::GetKey(int x, int y, int i) {
   return key;
 }
 
-// 判断key的棋型
+// 判断key的棋型，用于填充棋型表
 int Board::LineType(int role, int key) {
-  int line_left[8], line_right[8];
-  for (int i = 0; i < 8; i++) {
-    line_left[i] = key & 3;
-    line_right[7 - i] = key & 3;
-    key >>= 2;
+  int line_left[9];
+  int line_right[9];
+  int i;
+
+  for (i = 0; i < 9; i++) {
+    if (i == 4) {
+      line_left[i] = role;
+      line_right[i] = role;
+    } else {
+      line_left[i] = key & 3;
+      line_right[8 - i] = key & 3;
+      key >>= 2;
+    }
   }
-  // 双向判断
-  int p1 = ShortLine(role, line_left);
-  int p2 = ShortLine(role, line_right);
+
+  // 双向判断，取最大的棋型
+  int p1 = ShortLine(line_left);
+  int p2 = ShortLine(line_right);
+
+  // 同线双四,双三特判
+  if (p1 == block3 && p2 == block3)
+    return CheckFlex3(line_left);
+
+  if (p1 == block4 && p2 == block4)
+    return CheckFlex4(line_left);
+
   return p1 > p2 ? p1 : p2;
 }
 
-// 单向判断棋型
-int Board::ShortLine(int role, int *line) {
+// 同线双三特判
+int Board::CheckFlex3(int *line) {
+  int role = line[4];
+  int type;
+  for (int i = 0; i < 9; i++) {
+    if (line[i] == Empty) {
+      line[i] = role;
+      type = CheckFlex4(line);
+      line[i] = Empty;
+      if (type == flex4)
+        return flex3;
+    }
+  }
+  return block3;
+}
+
+// 同线双四特判
+int Board::CheckFlex4(int *line) {
+  int i, j, count;
+
+  int five = 0;
+  int role = line[4];
+  for (i = 0; i < 9; i++) {
+    if (line[i] == Empty) {
+      count = 0;
+      for (j = i - 1; j >= 0 && line[j] == role; j--)
+        count++;
+      for (j = i + 1; j <= 8 && line[j] == role; j++)
+        count++;
+      if (count >= 4)
+        five++;
+    }
+  }
+  return five >= 2 ? flex4 : block4;
+}
+
+// 判断单个方向的棋型
+int Board::ShortLine(int *line) {
   int kong = 0, block = 0;
   int len = 1, len2 = 1, count = 1;
   int k;
 
-  for (k = 4; k <= 7; k++) {
+  int role = line[4];
+  for (k = 5; k <= 8; k++) {
     if (line[k] == role) {
-      if (kong + count > 4) {
+      if (kong + count > 4)
         break;
-      }
       ++count;
       ++len;
       len2 = kong + count;
@@ -192,19 +245,17 @@ int Board::ShortLine(int role, int *line) {
       ++len;
       ++kong;
     } else {
-      if (len2 == kong + count) {
+      if (len2 == kong + count)
         ++block;
-      }
       break;
     }
   }
-  // 设为中间空格数
+  // 计算中间空格
   kong = len2 - count;
   for (k = 3; k >= 0; k--) {
     if (line[k] == role) {
-      if (kong + count > 4) {
+      if (kong + count > 4)
         break;
-      }
       ++count;
       ++len;
       len2 = kong + count;
@@ -212,15 +263,13 @@ int Board::ShortLine(int role, int *line) {
       ++len;
       ++kong;
     } else {
-      if (len2 == kong + count) {
+      if (len2 == kong + count)
         ++block;
-      }
       break;
     }
   }
   return typeTable[len][len2][count][block];
 }
-
 // 生成初级棋型表
 int Board::GetType(int len, int len2, int count, int block) {
   if (len >= 5 && count > 1) {
