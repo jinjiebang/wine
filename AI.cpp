@@ -170,15 +170,15 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
       stopThink = true;
     }
   }
-  //对方已成五
-  if (CheckWin()) {
-    return -10000;
-  }
 
   int val = ProbeHash(depth, alpha, beta, hashMove);
   if (val != unknown) {
     hashCount++;
     return val;
+  }
+  //对方已成五
+  if (CheckWin()) {
+    return -10000;
   }
   // 叶节点
   if (depth == 0) {
@@ -186,10 +186,10 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     RecordHash(depth, val, hash_exact);
     return val;
   }
-  int hashf = hash_alpha;
+  
   Pos move[28];
   int move_count = GetMove(move, 27);
-  // 遍历可选点
+  int hashf = hash_alpha;
   for (int i = 1; i <= move_count; i++) {
 
     MakeMove(move[i]);
@@ -330,7 +330,7 @@ int AI::evaluate() {
   }
 
   int Cscore = 0, Hscore = 0;
-  for (int i = 1; i < Ntype; ++i) {
+  for (int i = 1; i < 8; ++i) {
     Cscore += Ctype[i] * Cval[i];
     Hscore += Htype[i] * Hval[i];
   }
