@@ -107,9 +107,9 @@ inline bool AI::Same(Pos a, Pos b) {
 // 根节点搜索
 int AI::minimax(int depth, int alpha, int beta) {
   UpdateRound(2);
-  Pos move[28];
-  int val;
-  int count = GetMove(move, 27);
+
+  Pos move[32];
+  int count = GetMove(move, 30);
 
   if (count == 1) {
     BestMove = move[1];
@@ -119,6 +119,7 @@ int AI::minimax(int depth, int alpha, int beta) {
   move[0] = (depth > 2) ? BestMove : move[1];
 
   // 遍历可选点
+  int val;
   for (int i = 0; i <= count; i++) {
     if (i > 0 && Same(move[0], move[i])) {
       continue;
@@ -176,8 +177,8 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     return -10000;
   }
 
-  int val;
-  if ((val = ProbeHash(depth, alpha, beta, hashMove)) != unknown) {
+  int val = ProbeHash(depth, alpha, beta, hashMove);
+  if (val != unknown) {
     hashCount++;
     return val;
   }
@@ -187,8 +188,8 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     RecordHash(depth, val, hash_exact);
     return val;
   }
-  Pos move[28];
   int hashf = hash_alpha;
+  Pos move[28];
   int move_count = GetMove(move, 27);
   // 遍历可选点
   for (int i = 1; i <= move_count; i++) {
@@ -228,8 +229,8 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
 
 // 棋型剪枝
 int AI::CutCand(Pos * move, Point * cand, int Csize) {
-  int me = color(step + 1);
-  int you = !me;
+  int you = color(step);
+  int me = you ^ 1;
   int Msize = 0;
 
   if (cand[1].val >= 2400) {
@@ -256,13 +257,13 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
 
 // 获取最好的branch个着法
 int AI::GetMove(Pos * move, int branch) {
-  Point cand[200];
   int Csize = 0, Msize = 0;
+  int me = color(step + 1);
   int val;
   for (int i = b_start; i < b_end; i++) {
     for (int j = b_start; j < b_end; j++) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
-        val = ScoreMove(i, j);
+        val = ScoreMove(&cell[i][j], me);
         if (val > 0) {
           ++Csize;
           cand[Csize].p.x = i;
@@ -304,20 +305,18 @@ void AI::sort(Point * a, int n) {
 
 // 局面评价
 int AI::evaluate() {
-  int Ctype[Ntype] = { 0 };
-  int Htype[Ntype] = { 0 };
-  int me = color(step + 1);
+  int Ctype[8] = { 0 };
+  int Htype[8] = { 0 };
   int you = color(step);
+  int me = you ^ 1;
   int p_block4;
-  Cell *c;
 
   for (int i = b_start; i < b_end; ++i) {
     for (int j = b_start; j < b_end; ++j) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
         p_block4 = Ctype[block4];
-        c = cell[i][j];
-        TypeCount(c, me, Ctype);
-        TypeCount(c, you, Htype);
+        TypeCount(&cell[i][j], me, Ctype);
+        TypeCount(&cell[i][j], you, Htype);
         if (Ctype[block4] - p_block4 > 1)
           Ctype[flex4]++;
       }
@@ -343,40 +342,38 @@ int AI::evaluate() {
   return Cscore * 3 - Hscore * 2;
 }
 // 着法打分
-int AI::ScoreMove(Cell *c) {
-  int score = 0;
-  int MeType[Ntype] = { 0 };
-  int YouType[Ntype] = { 0 };
-  int me = color(step + 1);
+int AI::ScoreMove(Cell *c, int me) {
+  int MeType[8] = { 0 };
+  int YouType[8] = { 0 };
 
   TypeCount(c, me, MeType);
   TypeCount(c, me ^ 1, YouType);
 
-  if (MeType[win] > 0) {
+  if (MeType[win] > 0)
     return 10000;
-  }
-  if (YouType[win] > 0) {
+  
+  if (YouType[win] > 0)
     return 5000;
-  }
-  if (MeType[flex4] > 0 || MeType[block4] > 1) {
+  
+  if (MeType[flex4] > 0 || MeType[block4] > 1)
     return 2400;
-  }
-  if (MeType[block4] > 0 && MeType[flex3] > 0) {
+  
+  if (MeType[block4] > 0 && MeType[flex3] > 0)
     return 2000;
-  }
-  if (YouType[flex4] > 0 || YouType[block4] > 1) {
+  
+  if (YouType[flex4] > 0 || YouType[block4] > 1)
     return 1200;
-  }
-  if (YouType[block4] > 0 && YouType[flex3] > 0) {
+  
+  if (YouType[block4] > 0 && YouType[flex3] > 0)
     return 1000;
-  }
-  if (MeType[flex3] > 1) {
+  
+  if (MeType[flex3] > 1)
     return 400;
-  }
-  if (YouType[flex3] > 1) {
+  
+  if (YouType[flex3] > 1)
     return 200;
-  }
-
+  
+  int score = 0;
   for (int i = 1; i <= block4; i++) {
     score += MeVal[i] * MeType[i];
     score += YouVal[i] * YouType[i];
