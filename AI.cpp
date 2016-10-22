@@ -302,11 +302,10 @@ int AI::ScoreMove(int x, int y) {
   int MeType[Ntype] = { 0 };
   int YouType[Ntype] = { 0 };
   int me = color(step + 1);
-  int you = color(step);
   Cell *c = &cell[x][y];
 
   TypeCount(c, me, MeType);
-  TypeCount(c, you, YouType);
+  TypeCount(c, me ^ 1, YouType);
 
   if (MeType[win] > 0)
     return 10000;
