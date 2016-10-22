@@ -187,8 +187,8 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     return val;
   }
   
-  Pos move[28];
-  int move_count = GetMove(move, 27);
+  Pos move[32];
+  int move_count = GetMove(move, 30);
   int hashf = hash_alpha;
   for (int i = 1; i <= move_count; i++) {
 
