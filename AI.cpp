@@ -19,14 +19,15 @@ int AI::ProbeHash(int depth, int alpha, int beta) {
   Hashe *phashe = &hashTable[zobristKey % hashSize];
   if (phashe->key == zobristKey) {
     if (phashe->depth >= depth) {
-      if (phashe->hashf == hash_exact) {
+      switch (phashe->hashf) {
+      case hash_exact:
         return phashe->val;
-      }
-      if ((phashe->hashf == hash_alpha) && (phashe->val <= alpha)) {
-        return alpha;
-      }
-      if ((phashe->hashf == hash_beta) && (phashe->val >= beta)) {
-        return beta;
+      case hash_alpha:
+        if (phashe->val <= alpha) return alpha;
+        break;
+      case hash_beta:
+        if (phashe->val >= beta) return beta;
+        break;
       }
     }
   }
