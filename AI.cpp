@@ -161,19 +161,14 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
       stopThink = true;
     }
   }
+  //对方已成五
+  if (CheckWin()) return -10000;
+  // 叶节点
+  if (depth == 0) return evaluate();
 
   int val = ProbeHash(depth, alpha, beta);
   if (val != unknown) {
     hashCount++;
-    return val;
-  }
-  //对方已成五
-  if (CheckWin()) return -10000;
-
-  // 叶节点
-  if (depth == 0) {
-    val = evaluate();
-    RecordHash(depth, val, hash_exact);
     return val;
   }
 
