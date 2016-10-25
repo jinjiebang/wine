@@ -1,16 +1,20 @@
 
 #include "Board.h"
 #include <cstring>
+#include <ctime>
+#include <cstdlib>
 #include <iostream>
   using namespace std;
 
 Board::Board() {
   InitType();
   InitPattern();
+  InitZobrist();
   memset(cell, 0, sizeof(cell));
   memset(IsLose, 0, sizeof(IsLose));
   memset(IsCand, 0, sizeof(IsCand));
   memset(remMove, 0, sizeof(remMove));
+  memset(hashTable, 0, sizeof(hashTable));
   SetSize(15);
 }
 
@@ -18,16 +22,32 @@ Board::~Board() {
 
 }
 
+U64 Board::Rand64() {
+  return rand() ^ ((U64) rand() << 15) ^ ((U64) rand() << 30) ^ ((U64) rand() << 45) ^ ((U64) rand() << 60);
+}
+
+void Board::InitZobrist() {
+  srand(time(NULL));
+  for (int i = 0; i < MaxSize + 4; i++) {
+    for (int j = 0; j < MaxSize + 4; j++) {
+      zobrist[0][i][j] = Rand64();
+      zobrist[1][i][j] = Rand64();
+    }
+  }
+}
+
+
 // 设置棋盘尺寸和边界
 void Board::SetSize(int _size) {
   size = _size;
   b_start = 4, b_end = size + 4;
   for (int i = 0; i < MaxSize + 8; i++) {
     for (int j = 0; j < MaxSize + 8; j++) {
-      if (i < 4 || i >= size + 4 || j < 4 || j >= size + 4)
+      if (i < 4 || i >= size + 4 || j < 4 || j >= size + 4) {
         cell[i][j].piece = Outside;
-      else
+      } else {
         cell[i][j].piece = Empty;
+      }
     }
   }
 }
@@ -39,6 +59,7 @@ void Board::MakeMove(Pos next) {
 
   ++step;
   cell[x][y].piece = color(step);
+  zobristKey ^= zobrist[step & 1][x][y];
   remMove[step] = next;
   UpdateRound(2);
   UpdateType(x, y);
@@ -49,6 +70,7 @@ void Board::DelMove() {
   int x = remMove[step].x;
   int y = remMove[step].y;
 
+  zobristKey ^= zobrist[step & 1][x][y];
   --step;
   cell[x][y].piece = Empty;
   UpdateType(x, y);
@@ -64,21 +86,14 @@ void Board::Undo() {
 
 // 重新开始
 void Board::ReStart() {
+  zobristKey = 0;
+  memset(hashTable, 0, sizeof(hashTable));
   while (step) {
     DelMove();
   }
 }
 
-// 判断角色role在点p能否成棋型type
-bool Board::IsType(Pos p, int role, int type) {
-  Cell *c = &cell[p.x][p.y];
-  return c->pattern[role][0] == type
-    || c->pattern[role][1] == type
-    || c->pattern[role][2] == type
-    || c->pattern[role][3] == type;
-}
-
-// 更新点(x,y)周围位置的棋型
+// 更新(x,y)附近棋型
 void Board::UpdateType(int x, int y) {
   int a, b;
   int key;
@@ -105,38 +120,35 @@ void Board::UpdateType(int x, int y) {
 void Board::UpdateRound(int n) {
   memset(IsCand, false, sizeof(IsCand));
   int x, y;
-  int Rx, Ry;
 
   for (int k = 1; k <= step; ++k) {
     x = remMove[k].x;
     y = remMove[k].y;
-    // 边界设置
-    Rx = x + n;
-    Ry = y + n;
-    // 设置n格以内的空点为合理着法
-    for (int i = x - n; i <= Rx; ++i) {
-      for (int j = y - n; j <= Ry; ++j) {
+    // 设置n格以内有棋子的点为合理着法
+    for (int i = x - n; i <= x + n; ++i) {
+      for (int j = y - n; j <= y + n; ++j) {
         IsCand[i][j] = true;
       }
     }
   }
 }
 
-// 获取棋型key
+// 获取i线上的key
 int Board::GetKey(int x, int y, int i) {
   int key = 0;
   int a = x - dx[i] * 4;
   int b = y - dy[i] * 4;
   for (int k = 0; k < 9; a += dx[i], b += dy[i], k++) {
-    if (k == 4)
+    if (k == 4) {
       continue;
+    }
     key <<= 2;
     key ^= cell[a][b].piece;
   }
   return key;
 }
 
- // 判断key的棋型，用于填充棋型表
+// 判断key的棋型，用于填充棋型表
 int Board::LineType(int role, int key) {
   int line_left[9];
   int line_right[9];
@@ -246,12 +258,12 @@ int Board::ShortLine(int *line) {
   }
   return typeTable[len][len2][count][block];
 }
-
-// 生成初级棋型表信息
+// 生成初级棋型表
 int Board::GetType(int len, int len2, int count, int block) {
   if (len >= 5 && count > 1) {
-    if (count == 5)
+    if (count == 5) {
       return win;
+    }
     if (len > 5 && len2 < 5 && block == 0) {
       switch (count) {
       case 2:
@@ -275,7 +287,7 @@ int Board::GetType(int len, int len2, int count, int block) {
   return 0;
 }
 
-// 初级棋型表的初始化
+// 初始化初级棋型表
 void Board::InitType() {
   for (int i = 0; i < 10; ++i) {
     for (int j = 0; j < 6; ++j) {
@@ -288,7 +300,7 @@ void Board::InitType() {
   }
 }
 
-// 完整棋型表的初始化
+// 初始化完整棋型表
 void Board::InitPattern() {
   for (int key = 0; key < 65536; key++) {
     patternTable[key][0] = LineType(0, key);

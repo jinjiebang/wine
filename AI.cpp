@@ -1,7 +1,6 @@
 
 #include "AI.h"
 #include<ctime>
-#include<cmath>
 #include<cstring>
 #include<cstdlib>
 #include<iostream>
@@ -15,7 +14,36 @@ int AI::StopTime() {
   return (timeout_turn < time_left / 7) ? timeout_turn : time_left / 7;
 }
 
-// 界面下子
+// 查询置换表
+int AI::ProbeHash(int depth, int alpha, int beta) {
+  Hashe *phashe = &hashTable[zobristKey % hashSize];
+  if (phashe->key == zobristKey) {
+    if (phashe->depth >= depth) {
+      switch (phashe->hashf) {
+      case hash_exact:
+        return phashe->val;
+      case hash_alpha:
+        if (phashe->val <= alpha) return alpha;
+        break;
+      case hash_beta:
+        if (phashe->val >= beta) return beta;
+        break;
+      }
+    }
+  }
+  return unknown;
+}
+
+// 写入置换表
+void AI::RecordHash(int depth, int val, int hashf) {
+  Hashe *phashe = &hashTable[zobristKey % hashSize];
+  phashe->key = zobristKey;
+  phashe->val = val;
+  phashe->hashf = hashf;
+  phashe->depth = depth;
+}
+
+// 界面落子
 void AI::TurnMove(Pos next) {
   next.x += 4, next.y += 4;
   MakeMove(next);
@@ -32,6 +60,8 @@ Pos AI::TurnBest() {
 Pos AI::gobang() {
   start = clock();
   total = 0;
+  BestVal = 0;
+  hashCount = 0;
   stopThink = false;
 
   // 第一步下中心点
@@ -40,7 +70,7 @@ Pos AI::gobang() {
     BestMove.y = size / 2 + 4;
     return BestMove;
   }
-  // 第二，三步随机
+  // 第二三步随机
   if (step == 1 || step == 2) {
     int rx, ry;
     int d = step * 2 + 1;
@@ -55,16 +85,16 @@ Pos AI::gobang() {
   }
   // 迭代加深搜索
   memset(IsLose, false, sizeof(IsLose));
-  for (int i = 2; i <= SearchDepth; i += 2) {
-    if (i >= 10 && GetTime() * 12 >= StopTime())
+  for (int i = 2; i <= SearchDepth && BestVal != 10000; i += 2) {
+    if (i > 8 && GetTime() * 12 >= StopTime()) {
       break;
+    }
     MaxDepth = i;
     BestVal = minimax(i, -10001, 10000);
-    if (BestVal == 10000)
-      break;
   }
 
   ThinkTime = GetTime();
+  //cout << (double)hashCount / (total + 1) * 100 << endl;
 
   return BestMove;
 }
@@ -73,45 +103,40 @@ inline bool AI::Same(Pos a, Pos b) {
   return a.x == b.x && a.y == b.y;
 }
 
-  // 根节点搜索
+// 根节点搜索
 int AI::minimax(int depth, int alpha, int beta) {
   UpdateRound(2);
-  
-  Pos move[32];
-  int count = GetMove(move, 30);
 
-  if (count == 1) {
+  Pos move[32];
+  int move_count = GetMove(move, 30);
+
+  if (move_count == 1) {
     BestMove = move[1];
-    return 0;
+    return BestVal;
   }
 
   move[0] = (depth > 2) ? BestMove : move[1];
 
-  // 遍历所有走法
+  // 遍历可选点
   int val;
-  for (int i = 0; i <= count; i++) {
-    if (i > 0 && Same(move[0], move[i]))
+  for (int i = 0; i <= move_count; i++) {
+    if ((i > 0 && Same(move[0], move[i])) || IsLose[i])
       continue;
-
-    if (IsLose[i])
-      continue;
-
     MakeMove(move[i]);
     do {
       if (i > 0 && alpha + 1 < beta) {
         val = -AlphaBeta(depth - 1, -alpha - 1, -alpha);
-        if (val <= alpha || val >= beta)
+        if (val <= alpha || val >= beta) {
           break;
+        }
       }
       val = -AlphaBeta(depth - 1, -beta, -alpha);
     } while (0);
     DelMove();
 
-    if (stopThink)
-      break;
+    if (stopThink) break;
 
-    if (val == -10000)
-      IsLose[i] = true;
+    if (val == -10000) IsLose[i] = true;
 
     if (val >= beta) {
       BestMove = move[i];
@@ -125,95 +150,104 @@ int AI::minimax(int depth, int alpha, int beta) {
   return alpha == -10001 ? BestVal : alpha;
 }
 
-// 带pvs的搜索
+//带pvs的搜索
 int AI::AlphaBeta(int depth, int alpha, int beta) {
   total++;
 
-  // 每1000个局面检测一次超时
   static int cnt = 1000;
   if (--cnt <= 0) {
     cnt = 1000;
-    if (MaxDepth > 4 && GetTime() + 200 >= StopTime())
+    if (GetTime() + 200 >= StopTime()) {
       stopThink = true;
+    }
   }
-  // 对方最后一子连五
-  if (CheckWin())
-    return -10000;
+
+  int val = ProbeHash(depth, alpha, beta);
+  if (val != unknown) {
+    hashCount++;
+    return val;
+  }
+  //对方已成五
+  if (CheckWin()) return -10000;
 
   // 叶节点
-  if (depth == 0)
-    return evaluate();
+  if (depth == 0) {
+    val = evaluate();
+    RecordHash(depth, val, hash_exact);
+    return val;
+  }
 
   Pos move[32];
-  int count = GetMove(move, 30);
-
-
-  // 遍历所有move
-  int val;
-  for (int i = 1; i <= count; i++) {
+  int move_count = GetMove(move, 30);
+  int hashf = hash_alpha;
+  for (int i = 1; i <= move_count; i++) {
 
     MakeMove(move[i]);
     do {
       if (i > 1 && alpha + 1 < beta) {
         val = -AlphaBeta(depth - 1, -alpha - 1, -alpha);
-        if (val <= alpha || val >= beta)
+        if (val <= alpha || val >= beta) {
           break;
+        }
       }
       val = -AlphaBeta(depth - 1, -beta, -alpha);
     } while (0);
     DelMove();
 
-    if (stopThink)
-      break;
+    if (stopThink) break;
 
     if (val >= beta) {
+      RecordHash(depth, beta, hash_beta);
       return val;
     }
     if (val > alpha) {
+      hashf = hash_exact;
       alpha = val;
     }
   }
+  if (!stopThink) RecordHash(depth, alpha, hashf);
+
   return alpha;
 }
 
-// 剪枝
-// 下子方有成五点或活四点
-// 对方有成五点(冲四或活四),此时只有一个着法
-// 对方有活四点(活三),则有多个防点
+// 棋型剪枝
 int AI::CutCand(Pos * move, Point * cand, int Csize) {
-  int me = color(step + 1);
   int you = color(step);
-  int moveLen = 0;
-  
-  if (cand[1].val >= 2400) {
-    moveLen = 1;
-    move[1] = cand[1].p;
-  } 
-  else if (cand[1].val == 1200) {
-    moveLen = 1;
-    move[1] = cand[1].p;
-    if (cand[2].val == 1200) {
-      moveLen = 2;
-      move[2] = cand[2].p;
-    }
+  int me = you ^ 1;
+  int Msize = 0;
 
-    for (int i = moveLen + 1; i <= Csize; ++i) {
-      if (IsType(cand[i].p, me, block4)
-          || IsType(cand[i].p, you, block4))
-        move[++moveLen] = cand[i].p;
+  if (cand[1].val >= 2400) {
+    move[1] = cand[1].p;
+    Msize = 1;
+  }
+  else if (cand[1].val == 1200) {
+    move[1] = cand[1].p;
+    Msize = 1;
+    if (cand[2].val == 1200) {
+      move[2] = cand[2].p;
+      Msize = 2;
+    }
+    Cell p;
+    for (int i = Msize + 1; i <= Csize; ++i) {
+      p = cell[cand[i].p.x][cand[i].p.y];
+      if (IsType(p, me, block4) || IsType(p, you, block4)) {
+        ++Msize;
+        move[Msize] = cand[i].p;
+      }
     }
   }
-  return moveLen;
+  return Msize;
 }
 
-// 生成所有着法，并返回个数
-int AI::GetMove(Pos * move, int branch) {
+// 获取最好的MaxMoves个着法
+int AI::GetMove(Pos * move, int MaxMoves) {
   int Csize = 0, Msize = 0;
+  int me = color(step + 1);
   int val;
   for (int i = b_start; i < b_end; i++) {
     for (int j = b_start; j < b_end; j++) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
-        val = ScoreMove(i, j);
+        val = ScoreMove(&cell[i][j], me);
         if (val > 0) {
           ++Csize;
           cand[Csize].p.x = i;
@@ -223,13 +257,12 @@ int AI::GetMove(Pos * move, int branch) {
       }
     }
   }
-  // 着法排序
+  // 排序
   sort(cand, Csize);
-  Csize = (Csize < branch) ? Csize : branch;
-  // 棋型剪枝
+  // 剪枝
+  Csize = (Csize < MaxMoves) ? Csize : MaxMoves;
   Msize = CutCand(move, cand, Csize);
-
-  // 如果没有剪枝
+  // 如果没发生剪枝
   if (Msize == 0) {
     Msize = Csize;
     for (int k = 1; k <= Msize; ++k) {
@@ -240,7 +273,7 @@ int AI::GetMove(Pos * move, int branch) {
   return Msize;
 }
 
-// 排序
+// 插入排序
 void AI::sort(Point * a, int n) {
   int i, j;
   Point key;
@@ -253,60 +286,44 @@ void AI::sort(Point * a, int n) {
   }
 }
 
-
-// 局势评价函数
+// 局面评价
 int AI::evaluate() {
-  int Ctype[Ntype] = { 0 };     // 先手方棋型个数
-  int Htype[Ntype] = { 0 };     // 后手方棋型个数
-  int Cscore = 0, Hscore = 0;   // 双方分值
-  int me = color(step + 1);     // 先手方
-  int you = color(step);        // 后手方
-  int remBlock4;
-  Cell *c;
+  int Ctype[8] = { 0 }, Htype[8] = { 0 };
+  int you = color(step), me = you ^ 1;
+  int p_block4;
 
-  // 统计棋型
   for (int i = b_start; i < b_end; ++i) {
     for (int j = b_start; j < b_end; ++j) {
       if (IsCand[i][j] && cell[i][j].piece == Empty) {
-        remBlock4 = Ctype[block4];
-        // 加上该点棋型
-        c = &cell[i][j];
-        TypeCount(c, me, Ctype);
-        TypeCount(c, you, Htype);
-        // 若该点有两个以上冲四则与活四等价
-        if (Ctype[block4] - remBlock4 >= 2)
-          Ctype[flex4]++;        
+        p_block4 = Ctype[block4];
+        TypeCount(&cell[i][j], me, Ctype);
+        TypeCount(&cell[i][j], you, Htype);
+        if (Ctype[block4] - p_block4 > 1)
+          Ctype[flex4]++;
       }
     }
   }
 
-  if (Ctype[win] > 0)
-    return 10000;
-  if (Htype[win] > 1)
-    return -10000;
+  if (Ctype[win] > 0) return 10000;
+  if (Htype[win] > 1) return -10000;
   if (Ctype[flex4] > 0 && Htype[win] == 0)
     return 10000;
 
-  // 计算分值
-  for (int i = 1; i < Ntype; ++i) {
+  int Cscore = 0, Hscore = 0;
+  for (int i = 1; i < 8; ++i) {
     Cscore += Ctype[i] * Cval[i];
     Hscore += Htype[i] * Hval[i];
   }
 
   return Cscore - Hscore;
 }
-
 // 着法打分
-int AI::ScoreMove(int x, int y) {
-  int score = 0;
-  int MeType[Ntype] = { 0 };
-  int YouType[Ntype] = { 0 };
-  int me = color(step + 1);
-  int you = color(step);
-  Cell *c = &cell[x][y];
+int AI::ScoreMove(Cell *c, int me) {
+  int MeType[8] = { 0 };
+  int YouType[8] = { 0 };
 
   TypeCount(c, me, MeType);
-  TypeCount(c, you, YouType);
+  TypeCount(c, me ^ 1, YouType);
 
   if (MeType[win] > 0)
     return 10000;
@@ -325,6 +342,7 @@ int AI::ScoreMove(int x, int y) {
   if (YouType[flex3] > 1)
     return 200;
 
+  int score = 0;
   for (int i = 1; i <= block4; i++) {
     score += MeVal[i] * MeType[i];
     score += YouVal[i] * YouType[i];
