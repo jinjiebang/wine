@@ -67,8 +67,7 @@ public:
   int patternTable[65536][2];                   // 完整棋型表
   Cell cell[MaxSize + 8][MaxSize + 8];          // 棋盘
   Pos remMove[MaxSize * MaxSize];               // 记录落子
-  bool IsCand[MaxSize + 8][MaxSize + 8];        // 记录是否合理着法(两格以内)
-  Point cand[256];                              // 临时存储合理着法
+  Point cand[256];                              // 临时存储合理着法(两格内有子)
   bool IsLose[MaxSize + 4][MaxSize + 4];        // 记录根节点的必败点
 
     Board();
