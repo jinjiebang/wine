@@ -61,8 +61,15 @@ void Board::MakeMove(Pos next) {
   cell[x][y].piece = color(step);
   zobristKey ^= zobrist[step & 1][x][y];
   remMove[step] = next;
-  UpdateRound(2);
   UpdateType(x, y);
+
+  for (int i = x - 2; i <= x + 2; i++){
+    cell[i][y - 2].IsCand++;
+    cell[i][y - 1].IsCand++;
+    cell[i][y    ].IsCand++;
+    cell[i][y + 1].IsCand++;
+    cell[i][y + 2].IsCand++;
+  }
 }
 
 // 删子
@@ -74,6 +81,14 @@ void Board::DelMove() {
   --step;
   cell[x][y].piece = Empty;
   UpdateType(x, y);
+
+  for (int i = x - 2; i <= x + 2; i++){
+    cell[i][y - 2].IsCand--;
+    cell[i][y - 1].IsCand--;
+    cell[i][y    ].IsCand--;
+    cell[i][y + 1].IsCand--;
+    cell[i][y + 2].IsCand--;
+  }
 }
 
 // 悔棋
@@ -112,23 +127,6 @@ void Board::UpdateType(int x, int y) {
       key = GetKey(a, b, i);
       cell[a][b].pattern[0][i] = patternTable[key][0];
       cell[a][b].pattern[1][i] = patternTable[key][1];
-    }
-  }
-}
-
-// 更新合理着法
-void Board::UpdateRound(int n) {
-  memset(IsCand, false, sizeof(IsCand));
-  int x, y;
-
-  for (int k = 1; k <= step; ++k) {
-    x = remMove[k].x;
-    y = remMove[k].y;
-    // 设置n格以内有棋子的点为合理着法
-    for (int i = x - n; i <= x + n; ++i) {
-      for (int j = y - n; j <= y + n; ++j) {
-        IsCand[i][j] = true;
-      }
     }
   }
 }

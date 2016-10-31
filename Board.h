@@ -43,6 +43,7 @@ struct Point {
 // 棋盘单点结构
 struct Cell {
   int piece;
+  int IsCand;
   int pattern[2][4];
 };
 
@@ -80,7 +81,6 @@ public:
   void DelMove();
   void Undo();
   void ReStart();
-  void UpdateRound(int n);
   void UpdateType(int x, int y);
   U64 Rand64();
   int GetKey(int x, int y, int i);

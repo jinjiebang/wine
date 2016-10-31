@@ -105,8 +105,6 @@ inline bool AI::Same(Pos a, Pos b) {
 
 // 根节点搜索
 int AI::minimax(int depth, int alpha, int beta) {
-  UpdateRound(2);
-
   Pos move[36];
   int move_count = GetMove(move, 35, true);
 
@@ -241,7 +239,7 @@ int AI::GetMove(Pos * move, int MaxMoves, bool root) {
   int val;
   for (int i = b_start; i < b_end; i++) {
     for (int j = b_start; j < b_end; j++) {
-      if (IsCand[i][j] && cell[i][j].piece == Empty) {
+      if (cell[i][j].IsCand && cell[i][j].piece == Empty) {
         if (root && IsLose[i][j]) continue;
         val = ScoreMove(&cell[i][j], me);
         if (val > 0) {
@@ -290,7 +288,7 @@ int AI::evaluate() {
 
   for (int i = b_start; i < b_end; ++i) {
     for (int j = b_start; j < b_end; ++j) {
-      if (IsCand[i][j] && cell[i][j].piece == Empty) {
+      if (cell[i][j].IsCand && cell[i][j].piece == Empty) {
         p_block4 = Ctype[block4];
         TypeCount(&cell[i][j], me, Ctype);
         TypeCount(&cell[i][j], you, Htype);
