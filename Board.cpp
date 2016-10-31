@@ -12,7 +12,6 @@ Board::Board() {
   InitZobrist();
   memset(cell, 0, sizeof(cell));
   memset(IsLose, 0, sizeof(IsLose));
-  memset(IsCand, 0, sizeof(IsCand));
   memset(remMove, 0, sizeof(remMove));
   memset(hashTable, 0, sizeof(hashTable));
   SetSize(15);
