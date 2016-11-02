@@ -105,8 +105,8 @@ inline bool AI::Same(Pos a, Pos b) {
 
 // 根节点搜索
 int AI::minimax(int depth, int alpha, int beta) {
-  Pos move[32];
-  int move_count = GetMove(move, 30);
+  Pos move[64];
+  int move_count = GetMove(move, 50);
 
   if (move_count == 1) {
     BestMove = move[1];

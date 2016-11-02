@@ -11,7 +11,7 @@ const int flex2 = 2;            // 活二
 const int block2 = 1;           // 眠二
 const int Ntype = 8;            // 棋型个数
 const int MaxSize = 20;         // 棋盘最大尺寸
-const int hashSize = 1 << 16;   // 哈希表尺寸
+const int hashSize = 1 << 20;   // 哈希表尺寸
 
 // hash表相关
 const int hash_exact = 0;
