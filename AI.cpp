@@ -105,8 +105,8 @@ inline bool AI::Same(Pos a, Pos b) {
 
 // 根节点搜索
 int AI::minimax(int depth, int alpha, int beta) {
-  Pos move[36];
-  int move_count = GetMove(move, 35, true);
+  Pos move[32];
+  int move_count = GetMove(move, 30);
 
   if (move_count == 1) {
     BestMove = move[1];
@@ -118,8 +118,10 @@ int AI::minimax(int depth, int alpha, int beta) {
   // 遍历可选点
   int val;
   for (int i = 0; i <= move_count; i++) {
-    if (i > 0 && Same(move[0], move[i]))
-      continue;
+    if (i > 0 && Same(move[0], move[i])) continue;
+    // 跳过必败点
+    if (IsLose[move[i].x][move[i].y]) continue;
+
     MakeMove(move[i]);
     do {
       if (i > 0 && alpha + 1 < beta) {
@@ -170,8 +172,8 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     return val;
   }
 
-  Pos move[36];
-  int move_count = GetMove(move, 35, false);
+  Pos move[32];
+  int move_count = GetMove(move, 30);
   int hashf = hash_alpha;
   for (int i = 1; i <= move_count; i++) {
 
@@ -233,14 +235,13 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
 }
 
 // 获取最好的MaxMoves个着法
-int AI::GetMove(Pos * move, int MaxMoves, bool root) {
+int AI::GetMove(Pos * move, int MaxMoves) {
   int Csize = 0, Msize = 0;
   int me = color(step + 1);
   int val;
   for (int i = b_start; i < b_end; i++) {
     for (int j = b_start; j < b_end; j++) {
       if (cell[i][j].IsCand && cell[i][j].piece == Empty) {
-        if (root && IsLose[i][j]) continue;
         val = ScoreMove(&cell[i][j], me);
         if (val > 0) {
           ++Csize;
