@@ -23,10 +23,10 @@ int AI::ProbeHash(int depth, int alpha, int beta) {
       case hash_exact:
         return phashe->val;
       case hash_alpha:
-        if (phashe->val <= alpha) return alpha;
+        if (phashe->val <= alpha) return phashe->val;
         break;
       case hash_beta:
-        if (phashe->val >= beta) return beta;
+        if (phashe->val >= beta) return phashe->val;
         break;
       }
     }
@@ -175,11 +175,12 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   Pos move[32];
   int move_count = GetMove(move, 30);
   int hashf = hash_alpha;
+  int val_best = -10001;
   for (int i = 1; i <= move_count; i++) {
 
     MakeMove(move[i]);
     do {
-      if (i > 1 && alpha + 1 < beta) {
+      if (hashf == hash_exact && alpha + 1 < beta) {
         val = -AlphaBeta(depth - 1, -alpha - 1, -alpha);
         if (val <= alpha || val >= beta) {
           break;
@@ -191,18 +192,22 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
 
     if (stopThink) break;
 
-    if (val >= beta) {
-      RecordHash(depth, beta, hash_beta);
-      return val;
-    }
-    if (val > alpha) {
-      hashf = hash_exact;
-      alpha = val;
+    if (val > val_best){
+      if (val >= beta) {
+        RecordHash(depth, val, hash_beta);
+        return val;
+      }
+
+      val_best = val;
+      if (val > alpha) {
+        hashf = hash_exact;
+        alpha = val;
+      }
     }
   }
-  if (!stopThink) RecordHash(depth, alpha, hashf);
+  if (!stopThink) RecordHash(depth, val_best, hashf);
 
-  return alpha;
+  return val_best;
 }
 
 // 棋型剪枝
