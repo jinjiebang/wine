@@ -227,9 +227,9 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
       move[2] = cand[2].p;
       Msize = 2;
     }
-    Cell p;
+    Cell *p;
     for (int i = Msize + 1; i <= Csize; ++i) {
-      p = cell[cand[i].p.x][cand[i].p.y];
+      p = &cell[cand[i].p.x][cand[i].p.y];
       if (IsType(p, me, block4) || IsType(p, you, block4)) {
         ++Msize;
         move[Msize] = cand[i].p;

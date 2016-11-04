@@ -105,11 +105,11 @@ public:
   }
 
   // 判断角色role在点p是否能成棋型type
-  bool IsType(Cell &p, int role, int type) {
-    return p.pattern[role][0] == type
-      || p.pattern[role][1] == type
-      || p.pattern[role][2] == type
-      || p.pattern[role][3] == type;
+  bool IsType(Cell *c, int role, int type) {
+    return c->pattern[role][0] == type
+      || c->pattern[role][1] == type
+      || c->pattern[role][2] == type
+      || c->pattern[role][3] == type;
   }
 
   bool CheckWin() {
