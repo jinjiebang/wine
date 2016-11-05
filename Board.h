@@ -93,8 +93,13 @@ public:
   int color(int step) {
     return step & 1;
   }
+
   bool CheckXy(int x, int y) {
     return cell[x][y].piece != Outside;
+  }
+
+  Cell * LastMove(){
+    return &cell[remMove[step].x][remMove[step].y];
   }
 
   void TypeCount(Cell *c, int role, int *type) {
@@ -104,7 +109,6 @@ public:
     ++type[c->pattern[role][3]];
   }
 
-  // 判断角色role在点p是否能成棋型type
   bool IsType(Cell *c, int role, int type) {
     return c->pattern[role][0] == type
       || c->pattern[role][1] == type
@@ -114,7 +118,7 @@ public:
 
   bool CheckWin() {
     int role = color(step);
-    Cell *c = &cell[remMove[step].x][remMove[step].y];
+    Cell *c = LastMove();
 
     return c->pattern[role][0] == win
       || c->pattern[role][1] == win

@@ -171,11 +171,15 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     hashCount++;
     return val;
   }
+  if (MaxDepth <= 6){
+    if (IsType(LastMove(), color(step), block4))
+      depth += 2;
+  }
 
   Pos move[64];
   int move_count = GetMove(move, 40);
   int hashf = hash_alpha;
-  int val_best = -10001;
+  int val_best = -10000;
   for (int i = 1; i <= move_count; i++) {
 
     MakeMove(move[i]);
