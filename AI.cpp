@@ -171,10 +171,6 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     hashCount++;
     return val;
   }
-  if (MaxDepth <= 6){
-    if (IsType(LastMove(), color(step), block4))
-      depth += 2;
-  }
 
   Pos move[64];
   int move_count = GetMove(move, 40);
