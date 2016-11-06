@@ -307,7 +307,7 @@ int AI::evaluate() {
   if (Ctype[win] > 0) return 10000;
   if (Htype[win] > 1) return -10000;
   if (Ctype[flex4] > 0 && Htype[win] == 0)
-    return 10000;
+    return 9998;
 
   int Cscore = 0, Hscore = 0;
   for (int i = 1; i < 8; ++i) {
