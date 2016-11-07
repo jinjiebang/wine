@@ -65,6 +65,7 @@ public:
   Hashe hashTable[hashSize];                    // 哈希表
   int typeTable[10][6][6][3];                   // 初级棋型表
   int patternTable[65536][2];                   // 完整棋型表
+  int pval[8][8][8][8];                         // 棋形分值表
   Cell cell[MaxSize + 8][MaxSize + 8];          // 棋盘
   Pos remMove[MaxSize * MaxSize];               // 记录落子
   Point cand[256];                              // 临时存储合理着法(两格内有子)
@@ -73,6 +74,7 @@ public:
     Board();
    ~Board();
   void InitType();
+  void InitPval();
   void InitPattern();
   void InitZobrist();
   void SetSize(int _size);
@@ -83,6 +85,7 @@ public:
   void UpdateType(int x, int y);
   U64 Rand64();
   int GetKey(int x, int y, int i);
+  int GetPval(int a, int b, int c, int d);
   int LineType(int role, int key);
   int ShortLine(int *line);
   int CheckFlex3(int *line);

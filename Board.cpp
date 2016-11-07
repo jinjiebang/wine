@@ -9,6 +9,7 @@
 Board::Board() {
   InitType();
   InitPattern();
+  InitPval();
   InitZobrist();
   memset(cell, 0, sizeof(cell));
   memset(IsLose, 0, sizeof(IsLose));
@@ -130,7 +131,7 @@ void Board::UpdateType(int x, int y) {
   }
 }
 
-// 获取i线上的key
+// 获取方向i上的key
 int Board::GetKey(int x, int y, int i) {
   int key = 0;
   int a = x - dx[i] * 4;
@@ -212,7 +213,7 @@ int Board::CheckFlex4(int *line) {
   return five >= 2 ? flex4 : block4;
 }
 
-// 判断单个方向的棋型
+// 判断棋型(单个方向)
 int Board::ShortLine(int *line) {
   int kong = 0, block = 0;
   int len = 1, len2 = 1, count = 1;
@@ -255,7 +256,8 @@ int Board::ShortLine(int *line) {
   }
   return typeTable[len][len2][count][block];
 }
-// 生成初级棋型表
+
+// 返回对应的棋形
 int Board::GetType(int len, int len2, int count, int block) {
   if (len >= 5 && count > 1) {
     if (count == 5) {
@@ -284,6 +286,29 @@ int Board::GetType(int len, int len2, int count, int block) {
   return 0;
 }
 
+// 根据四个方向的棋形打分
+int Board::GetPval(int a, int b, int c, int d) {
+  int type[8] = {0};
+  type[a]++; type[b]++; type[c]++; type[d]++;
+
+  if (type[win] > 0)
+    return 5000;
+  if (type[flex4] > 0 || type[block4] > 1)
+    return 1200;
+  if (type[block4] > 0 && type[flex3] > 0)
+    return 1000;
+  if (type[flex3] > 1)
+    return 200;
+
+  int val[6] = { 0, 2, 5, 5, 12, 12 };
+  int score = 0;
+  for (int i = 1; i <= block4; i++) {
+    score += val[i] * type[i];
+  }
+
+  return score;
+}
+
 // 初始化初级棋型表
 void Board::InitType() {
   for (int i = 0; i < 10; ++i) {
@@ -304,3 +329,17 @@ void Board::InitPattern() {
     patternTable[key][1] = LineType(1, key);
   }
 }
+
+// 初始化4个方向组成的棋形分值
+void Board::InitPval() {
+  for (int a = 0; a < 8; ++a) {
+    for (int b = 0; b < 8; ++b) {
+      for (int c = 0; c < 8; ++c) {
+        for (int d = 0; d < 8; ++d) {
+          pval[a][b][c][d] = GetPval(a, b, c, d);
+        }
+      }
+    }
+  }
+}
+

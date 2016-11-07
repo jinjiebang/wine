@@ -317,36 +317,17 @@ int AI::evaluate() {
 
   return Cscore - Hscore;
 }
+
 // 着法打分
 int AI::ScoreMove(Cell *c, int me) {
-  int MeType[8] = { 0 };
-  int YouType[8] = { 0 };
+  int score[2];
+  int you = me ^ 1;
+  score[me] = pval[c->pattern[me][0]][c->pattern[me][1]][c->pattern[me][2]][c->pattern[me][3]];
+  score[you] = pval[c->pattern[you][0]][c->pattern[you][1]][c->pattern[you][2]][c->pattern[you][3]];
 
-  TypeCount(c, me, MeType);
-  TypeCount(c, me ^ 1, YouType);
-
-  if (MeType[win] > 0)
-    return 10000;
-  if (YouType[win] > 0)
-    return 5000;
-  if (MeType[flex4] > 0 || MeType[block4] > 1)
-    return 2400;
-  if (MeType[block4] > 0 && MeType[flex3] > 0)
-    return 2000;
-  if (YouType[flex4] > 0 || YouType[block4] > 1)
-    return 1200;
-  if (YouType[block4] > 0 && YouType[flex3] > 0)
-    return 1000;
-  if (MeType[flex3] > 1)
-    return 400;
-  if (YouType[flex3] > 1)
-    return 200;
-
-  int score = 0;
-  for (int i = 1; i <= block4; i++) {
-    score += MeVal[i] * MeType[i];
-    score += YouVal[i] * YouType[i];
+  if (score[me] >= 200 || score[you] >= 200){
+    return score[me] >= score[you] ? score[me] * 2 : score[you];
+  }else{
+    return score[me] * 2 + score[you];
   }
-
-  return score;
 }

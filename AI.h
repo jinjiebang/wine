@@ -5,9 +5,6 @@
 #include <ctime>
 class AI:public Board {
 private:
-  // 择序棋型分值
-  int MeVal[6] = { 0, 4, 10, 10, 24, 24 };
-  int YouVal[6] = { 0, 2, 5, 5, 12, 12 };
   // 局面评价分值
   int Cval[8] = { 0, 3, 18, 27, 144, 216, 1200, 1800 };
   int Hval[8] = { 0, 2, 12, 18, 96, 144, 800, 1200 };
