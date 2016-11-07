@@ -175,7 +175,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   Pos move[64];
   int move_count = GetMove(move, 40);
   int hashf = hash_alpha;
-  int val_best = -10000;
+  int val_best = -10001;
   for (int i = 1; i <= move_count; i++) {
 
     MakeMove(move[i]);
@@ -307,7 +307,7 @@ int AI::evaluate() {
   if (Ctype[win] > 0) return 10000;
   if (Htype[win] > 1) return -10000;
   if (Ctype[flex4] > 0 && Htype[win] == 0)
-    return 9998;
+    return 10000;
 
   int Cscore = 0, Hscore = 0;
   for (int i = 1; i < 8; ++i) {
