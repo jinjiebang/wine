@@ -175,7 +175,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   Pos move[64];
   int move_count = GetMove(move, 40);
   int hashf = hash_alpha;
-  int val_best = -10001;
+  int val_best = -10000;
   for (int i = 1; i <= move_count; i++) {
 
     MakeMove(move[i]);
@@ -192,12 +192,11 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
 
     if (stopThink) break;
 
+    if (val >= beta) {
+      RecordHash(depth, val, hash_beta);
+      return val;
+    }
     if (val > val_best){
-      if (val >= beta) {
-        RecordHash(depth, val, hash_beta);
-        return val;
-      }
-
       val_best = val;
       if (val > alpha) {
         hashf = hash_exact;
@@ -242,12 +241,12 @@ int AI::CutCand(Pos * move, Point * cand, int Csize) {
 // 获取最好的MaxMoves个着法
 int AI::GetMove(Pos * move, int MaxMoves) {
   int Csize = 0, Msize = 0;
-  int me = color(step + 1);
+  int you = color(step), me = you ^ 1;
   int val;
   for (int i = b_start; i < b_end; i++) {
     for (int j = b_start; j < b_end; j++) {
       if (cell[i][j].IsCand && cell[i][j].piece == Empty) {
-        val = ScoreMove(&cell[i][j], me);
+        val = ScoreMove(&cell[i][j], me, you);
         if (val > 0) {
           ++Csize;
           cand[Csize].p.x = i;
@@ -319,9 +318,8 @@ int AI::evaluate() {
 }
 
 // 着法打分
-int AI::ScoreMove(Cell *c, int me) {
+int AI::ScoreMove(Cell *c, int me, int you) {
   int score[2];
-  int you = me ^ 1;
   score[me] = pval[c->pattern[me][0]][c->pattern[me][1]][c->pattern[me][2]][c->pattern[me][3]];
   score[you] = pval[c->pattern[you][0]][c->pattern[you][1]][c->pattern[you][2]][c->pattern[you][3]];
 

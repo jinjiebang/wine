@@ -31,7 +31,7 @@ public:
   int ProbeHash(int depth, int alpha, int beta);
   int GetTime();
   int StopTime();
-  int ScoreMove(Cell * c, int me);
+  int ScoreMove(Cell * c, int me, int you);
   int minimax(int depth, int alpha, int beta);
   int AlphaBeta(int depth, int alpha, int beta);
   int CutCand(Pos * move, Point * cand, int Csize);
