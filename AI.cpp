@@ -180,7 +180,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
 
     MakeMove(move[i]);
     do {
-      if (hashf == hash_exact && alpha + 1 < beta) {
+      if (i > 1 && alpha + 1 < beta) {
         val = -AlphaBeta(depth - 1, -alpha - 1, -alpha);
         if (val <= alpha || val >= beta) {
           break;
