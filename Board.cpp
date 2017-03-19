@@ -137,11 +137,11 @@ int Board::GetKey(int x, int y, int i) {
   int a = x - dx[i] * 4;
   int b = y - dy[i] * 4;
   for (int k = 0; k < 9; a += dx[i], b += dy[i], k++) {
-    if (k == 4) {
-      continue;
+    if (k != 4) {
+       key <<= 2;
+       key ^= cell[a][b].piece;
     }
-    key <<= 2;
-    key ^= cell[a][b].piece;
+   
   }
   return key;
 }
@@ -219,9 +219,13 @@ int Board::ShortLine(int *line) {
   int len = 1, len2 = 1, count = 1;
   int k;
 
-  int role = line[4];
-  for (k = 5; k <= 8; k++) {
-    if (line[k] == role) {
+  int who = line[4];
+  int opp = 1 - who;
+  for (k = 5; k <= 8 && line[k] != opp; k++) {
+    if(line[k + 1] == opp){
+      block++;
+    }
+    if (line[k] == who) {
       if (kong + count > 4)
         break;
       ++count;
@@ -230,16 +234,15 @@ int Board::ShortLine(int *line) {
     } else if (line[k] == Empty) {
       ++len;
       ++kong;
-    } else {
-      if (len2 == kong + count)
-        ++block;
-      break;
-    }
+    } 
   }
   // 计算中间空格
   kong = len2 - count;
-  for (k = 3; k >= 0; k--) {
-    if (line[k] == role) {
+  for (k = 3; k >= 0 && line[k] != opp; k--) {
+    if(line[k + 1] == opp){
+      block++;
+    }
+    if (line[k] == who) {
       if (kong + count > 4)
         break;
       ++count;
@@ -248,10 +251,6 @@ int Board::ShortLine(int *line) {
     } else if (line[k] == Empty) {
       ++len;
       ++kong;
-    } else {
-      if (len2 == kong + count)
-        ++block;
-      break;
     }
   }
   return typeTable[len][len2][count][block];
