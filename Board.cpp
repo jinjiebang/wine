@@ -222,7 +222,7 @@ int Board::ShortLine(int *line) {
   int who = line[4];
   int opp = 1 - who;
   for (k = 5; k <= 8 && line[k] != opp; k++) {
-    if(line[k + 1] == opp){
+    if(k + 1 <= 8 && line[k + 1] == opp){
       block++;
     }
     if (line[k] == who) {
@@ -239,7 +239,7 @@ int Board::ShortLine(int *line) {
   // 计算中间空格
   kong = len2 - count;
   for (k = 3; k >= 0 && line[k] != opp; k--) {
-    if(line[k + 1] == opp){
+    if(k + 1 <= 8 && line[k + 1] == opp){
       block++;
     }
     if (line[k] == who) {
