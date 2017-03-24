@@ -16,18 +16,15 @@ int AI::StopTime() {
 
 // 查询置换表
 int AI::ProbeHash(int depth, int alpha, int beta) {
-  Hashe *phashe = &hashTable[zobristKey % hashSize];
+  Hashe *phashe = &hashTable[zobristKey & (hashSize - 1)];
   if (phashe->key == zobristKey) {
     if (phashe->depth >= depth) {
-      switch (phashe->hashf) {
-      case hash_exact:
+      if(phashe->hashf == hash_exact){
         return phashe->val;
-      case hash_alpha:
-        if (phashe->val <= alpha) return phashe->val;
-        break;
-      case hash_beta:
-        if (phashe->val >= beta) return phashe->val;
-        break;
+      }else if(phashe->hashf == hash_alpha && phashe->val <= alpha){
+        return phashe->val;
+      }else if(phashe->hashf == hash_beta && phashe->val >= beta){
+        return phashe->val;
       }
     }
   }
