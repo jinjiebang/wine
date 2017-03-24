@@ -33,7 +33,7 @@ int AI::ProbeHash(int depth, int alpha, int beta) {
 
 // 写入置换表
 void AI::RecordHash(int depth, int val, int hashf) {
-  Hashe *phashe = &hashTable[zobristKey % hashSize];
+  Hashe *phashe = &hashTable[zobristKey & (hashSize - 1)];
   phashe->key = zobristKey;
   phashe->val = val;
   phashe->hashf = hashf;
