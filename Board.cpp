@@ -220,11 +220,7 @@ int Board::ShortLine(int *line) {
   int k;
 
   int who = line[4];
-  int opp = 1 - who;
-  for (k = 5; k <= 8 && line[k] != opp; k++) {
-    if(k + 1 <= 8 && line[k + 1] == opp){
-      block++;
-    }
+  for (k = 5; k <= 8; k++) {
     if (line[k] == who) {
       if (kong + count > 4)
         break;
@@ -234,14 +230,16 @@ int Board::ShortLine(int *line) {
     } else if (line[k] == Empty) {
       ++len;
       ++kong;
-    } 
+    } else {
+      if (line[k - 1] == who){
+        block++;
+      }
+      break;
+    }
   }
   // 计算中间空格
   kong = len2 - count;
-  for (k = 3; k >= 0 && line[k] != opp; k--) {
-    if(k - 1 >= 0 && line[k - 1] == opp){
-      block++;
-    }
+  for (k = 3; k >= 0; k--) {
     if (line[k] == who) {
       if (kong + count > 4)
         break;
@@ -251,6 +249,11 @@ int Board::ShortLine(int *line) {
     } else if (line[k] == Empty) {
       ++len;
       ++kong;
+     } else {
+      if (line[k + 1] == who){
+        block++;
+      }
+      break;
     }
   }
   return typeTable[len][len2][count][block];
