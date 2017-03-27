@@ -108,9 +108,9 @@ inline bool AI::Same(Pos a, Pos b) {
 Point AI::minimax(int depth, int alpha, int beta) {
   Pos move[64];
   int move_count = GetMove(move);
-
+  
   Point best;
-
+  
   // 只存在一个可行着法，直接返回
   if (move_count == 1) {
     best.p = move[0];
@@ -124,6 +124,7 @@ Point AI::minimax(int depth, int alpha, int beta) {
         move[i + 1] = move[i];
     }
     move[0] = bestPoint.p;
+    best = bestPoint;
   }
 
   // 遍历可选点
