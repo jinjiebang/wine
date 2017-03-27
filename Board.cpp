@@ -58,6 +58,8 @@ void Board::MakeMove(Pos next) {
   int y = next.y;
 
   ++step;
+  who ^= 1;
+  opp ^= 1;
   cell[x][y].piece = color(step);
   zobristKey ^= zobrist[step & 1][x][y];
   remMove[step] = next;
@@ -77,6 +79,8 @@ void Board::DelMove() {
   int x = remMove[step].x;
   int y = remMove[step].y;
 
+  who ^= 1;
+  opp ^= 1;
   zobristKey ^= zobrist[step & 1][x][y];
   --step;
   cell[x][y].piece = Empty;
@@ -141,7 +145,7 @@ int Board::GetKey(int x, int y, int i) {
        key <<= 2;
        key ^= cell[a][b].piece;
     }
-   
+
   }
   return key;
 }
@@ -249,7 +253,7 @@ int Board::ShortLine(int *line) {
     } else if (line[k] == Empty) {
       ++len;
       ++kong;
-     } else {
+    } else {
       if (line[k + 1] == who){
         block++;
       }

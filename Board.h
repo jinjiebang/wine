@@ -11,7 +11,9 @@ const int flex2 = 2;            // 活二
 const int block2 = 1;           // 眠二
 const int Ntype = 8;            // 棋型个数
 const int MaxSize = 20;         // 棋盘最大尺寸
+const int MaxMoves = 40;        // 最大着法数
 const int hashSize = 1 << 20;   // 哈希表尺寸
+const int searchDepth = 20;     // 最大搜索深度
 
 // hash表相关
 const int hash_exact = 0;
@@ -70,6 +72,8 @@ public:
   Pos remMove[MaxSize * MaxSize];               // 记录落子
   Point cand[256];                              // 临时存储合理着法(两格内有子)
   bool IsLose[MaxSize + 4][MaxSize + 4];        // 记录根节点的必败点
+  int who = Black;                              // 下子方
+  int opp = White;                              // 另一方
 
     Board();
    ~Board();

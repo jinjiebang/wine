@@ -12,16 +12,15 @@ private:
 public:
   int total = 0;                // 搜索局面数
   int hashCount = 0;            // hash表命中次数
-  int BestVal = 0;              // 最佳点分值
   int MaxDepth = 0;             // 实际搜索深度
-  int SearchDepth = 14;         // 搜索深度上限
   int time_left = 10000000;
   int timeout_turn = 30000;
   int timeout_match = 10000000;
   int ThinkTime = 0;
+  int bestIndex;
+  Point bestPoint;
   bool stopThink = false;
   clock_t start;
-  Pos BestMove;
 
   Pos gobang();
   Pos TurnBest();
@@ -31,12 +30,13 @@ public:
   int ProbeHash(int depth, int alpha, int beta);
   int GetTime();
   int StopTime();
-  int ScoreMove(Cell * c, int me, int you);
-  int minimax(int depth, int alpha, int beta);
+  int ScoreMove(Cell * c);
+  Point minimax(int depth, int alpha, int beta);
   int AlphaBeta(int depth, int alpha, int beta);
   int CutCand(Pos * move, Point * cand, int Csize);
-  int GetMove(Pos * move, int MaxMoves);
+  int GetMove(Pos * move);
   int evaluate();
   bool Same(Pos a, Pos b);
+
 };
 #endif
