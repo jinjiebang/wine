@@ -86,7 +86,7 @@ Pos AI::gobang() {
   bestPoint.val = 0;
   memset(IsLose, false, sizeof(IsLose));
   for (int i = 2; i <= searchDepth && bestPoint.val != 10000; i += 2) {
-    if (i > 8 && GetTime() * 12 >= StopTime()) {
+    if (stopThink || (i >= 10 && GetTime() * 12 >= StopTime())) {
       break;
     }
     MaxDepth = i;
