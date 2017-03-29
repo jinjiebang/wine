@@ -58,8 +58,6 @@ Pos AI::gobang() {
   start = clock();
   total = 0;
   hashCount = 0;
-  stopThink = false;
-
 
   Pos bestMove;
   // 第一步下中心点
@@ -82,15 +80,14 @@ Pos AI::gobang() {
     return bestMove;
   }
   // 迭代加深搜索
+  stopThink = false;
   bestIndex = 0;
   bestPoint.val = 0;
   memset(IsLose, false, sizeof(IsLose));
-  for (int i = 2; i <= searchDepth && bestPoint.val != 10000; i += 2) {
-    if (stopThink || (i >= 10 && GetTime() * 12 >= StopTime())) {
-      break;
-    }
+  for (int i = 2; i <= searchDepth && !stopThink; i += 2) {
     MaxDepth = i;
     bestPoint = minimax(i, -10001, 10000);
+    if (i >= 8 && GetTime() * 12 >= StopTime()) stopThink = true;
   }
 
   ThinkTime = GetTime();
@@ -113,6 +110,7 @@ Point AI::minimax(int depth, int alpha, int beta) {
   
   // 只存在一个可行着法，直接返回
   if (move_count == 1) {
+    stopThink = true;
     best.p = move[0];
     best.val = 0;
     return best;
@@ -154,7 +152,10 @@ Point AI::minimax(int depth, int alpha, int beta) {
         bestIndex = i;
         best.p = move[i];
         best.val = val;
-        if(val == 10000)  return best;
+        if(val == 10000) {
+          stopThink = true;
+          return best;
+        }
       }
     }
 
