@@ -228,17 +228,18 @@ int AI::CutCand(Pos * move, Point * cand, int candCount) {
   int moveCount = 0;
 
   if (cand[0].val >= 2400) {                //存在活四以上的棋形，返回最高分的点
-    move[moveCount] = cand[moveCount].p;
+    move[0] = cand[0].p;
     moveCount++;
   }else if (cand[0].val == 1200) {          //此时己方存在活三，返回活四点和双方冲四点
-    move[moveCount] = cand[moveCount].p;
+    move[0] = cand[0].p;
     moveCount++;
     if (cand[1].val == 1200) {
-       move[moveCount] = cand[moveCount].p;
+       move[1] = cand[1].p;
        moveCount++;
     }
     Cell *p;
-    for (int i = moveCount; i < MaxMoves && i < candCount; ++i) {
+    int n = candCount < MaxMoves ? candCount : MaxMoves;
+    for (int i = moveCount; i < n; ++i) {
       p = &cell[cand[i].p.x][cand[i].p.y];
       if (IsType(p, who, block4) || IsType(p, opp, block4)) {
         move[moveCount] = cand[i].p;
