@@ -106,7 +106,7 @@ public:
   }
 
   Cell * LastMove(){
-    return &cell[remMove[step].x][remMove[step].y];
+    return &cell[remMove[step - 1].x][remMove[step - 1].y];
   }
 
   void TypeCount(Cell *c, int role, int *type) {
