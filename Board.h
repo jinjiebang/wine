@@ -124,13 +124,12 @@ public:
   }
 
   bool CheckWin() {
-    int role = color(step);
     Cell *c = LastMove();
 
-    return c->pattern[role][0] == win
-      || c->pattern[role][1] == win
-      || c->pattern[role][2] == win
-      || c->pattern[role][3] == win;
+    return c->pattern[opp][0] == win
+      || c->pattern[opp][1] == win
+      || c->pattern[opp][2] == win
+      || c->pattern[opp][3] == win;
   }
 
 };
