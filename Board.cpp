@@ -57,12 +57,12 @@ void Board::MakeMove(Pos next) {
   int x = next.x;
   int y = next.y;
 
-  ++step;
+  cell[x][y].piece = who;
+  zobristKey ^= zobrist[who][x][y];
   who ^= 1;
   opp ^= 1;
-  cell[x][y].piece = color(step);
-  zobristKey ^= zobrist[step & 1][x][y];
   remMove[step] = next;
+  step++;
   UpdateType(x, y);
 
   for (int i = x - 2; i <= x + 2; i++){
@@ -76,13 +76,13 @@ void Board::MakeMove(Pos next) {
 
 // 删子
 void Board::DelMove() {
+  step--;
   int x = remMove[step].x;
   int y = remMove[step].y;
 
   who ^= 1;
   opp ^= 1;
-  zobristKey ^= zobrist[step & 1][x][y];
-  --step;
+  zobristKey ^= zobrist[who][x][y];
   cell[x][y].piece = Empty;
   UpdateType(x, y);
 
@@ -99,6 +99,8 @@ void Board::DelMove() {
 void Board::Undo() {
   if (step >= 2) {
     DelMove();
+    DelMove();
+  } else if(step == 1){
     DelMove();
   }
 }
