@@ -238,7 +238,7 @@ int AI::CutCand(Pos * move, Point * cand, int candCount) {
        moveCount++;
     }
     Cell *p;
-    for (int i = moveCount; moveCount < MaxMoves && i < candCount; ++i) {
+    for (int i = moveCount; i < MaxMoves && i < candCount; ++i) {
       p = &cell[cand[i].p.x][cand[i].p.y];
       if (IsType(p, who, block4) || IsType(p, opp, block4)) {
         move[moveCount] = cand[i].p;
