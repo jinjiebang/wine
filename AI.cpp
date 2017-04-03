@@ -178,7 +178,13 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
   //对方已成五
   if (CheckWin()) return -10000;
   // 叶节点
-  if (depth == 0) return evaluate();
+  if (depth == 0) {
+    if (IsType(LastMove(), opp, block4)) {
+      depth++;
+    } else {
+      return evaluate();
+    }
+  }
 
   int val = ProbeHash(depth, alpha, beta);
   if (val != unknown) {
