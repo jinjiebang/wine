@@ -87,7 +87,7 @@ Pos AI::gobang() {
   for (int i = 2; i <= searchDepth && !stopThink; i += 2) {
     MaxDepth = i;
     bestPoint = minimax(i, -10001, 10000);
-    if (i >= 8 && GetTime() * 12 >= StopTime()) stopThink = true;
+    if (i >= 10 && GetTime() * 12 >= StopTime()) stopThink = true;
   }
 
   ThinkTime = GetTime();
@@ -230,7 +230,7 @@ int AI::CutCand(Pos * move, Point * cand, int candCount) {
   if (cand[0].val >= 2400) {                //存在活四以上的棋形，返回最高分的点
     move[0] = cand[0].p;
     moveCount++;
-  }else if (cand[0].val == 1200) {          //此时己方存在活三，返回活四点和双方冲四点
+  }else if (cand[0].val == 1200) {          //此时对方存在活三，返回对方活四点和双方冲四点
     move[0] = cand[0].p;
     moveCount++;
     if (cand[1].val == 1200) {
@@ -334,6 +334,10 @@ int AI::ScoreMove(Cell *c) {
   score[who] = pval[c->pattern[who][0]][c->pattern[who][1]][c->pattern[who][2]][c->pattern[who][3]];
   score[opp] = pval[c->pattern[opp][0]][c->pattern[opp][1]][c->pattern[opp][2]][c->pattern[opp][3]];
 
+  /*下子方分值需乘2，因为它的棋形下一手就能形成，而对方的棋形还要下下手
+   *200表示有双活三以上棋形，此时只返回其中更高的一方分值
+   *否则返回双方分值之和
+   */
   if (score[who] >= 200 || score[opp] >= 200){
     return score[who] >= score[opp] ? score[who] * 2 : score[opp];
   }else{
