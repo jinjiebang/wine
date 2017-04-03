@@ -87,7 +87,7 @@ Pos AI::gobang() {
   for (int i = 2; i <= searchDepth && !stopThink; i += 2) {
     MaxDepth = i;
     bestPoint = minimax(i, -10001, 10000);
-    if (i >= 10 && GetTime() * 12 >= StopTime()) stopThink = true;
+    if (GetTime() >= 1000 && i >= 10 && GetTime() * 12 >= StopTime()) stopThink = true;
   }
 
   ThinkTime = GetTime();
