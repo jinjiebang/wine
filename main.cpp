@@ -48,6 +48,7 @@ int gomocup() {
         wine.TurnMove(input);
         best = wine.TurnBest();
         wine.TurnMove(best);
+        cout << best.x << "," << best.y << endl;
       }
     } else if (command == "BOARD") {
       int c;
