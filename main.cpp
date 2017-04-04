@@ -48,11 +48,6 @@ int gomocup() {
         wine.TurnMove(input);
         best = wine.TurnBest();
         wine.TurnMove(best);
-        cout << "MESSAGE";
-        cout << " level=" << wine.MaxDepth;
-        cout << " val=" << wine.bestPoint.val;
-        cout << " NPS=" << wine.total / (wine.ThinkTime + 1) << "k" << endl;
-        cout << best.x << "," << best.y << endl;
       }
     } else if (command == "BOARD") {
       int c;
