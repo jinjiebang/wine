@@ -50,6 +50,14 @@ void AI::TurnMove(Pos next) {
 Pos AI::TurnBest() {
   Pos best = gobang();
   best.x -= 4, best.y -= 4;
+  // 输出思考信息
+  cout << "MESSAGE";
+  cout << " depth=" << MaxDepth;
+  cout << " val=" << bestPoint.val;
+  cout << " NPS=" << total / (ThinkTime + 1) << "k";
+  cout << "[" << best.x << "," << best.y << "]" << endl;
+  cout << best.x << "," << best.y << endl;
+  
   return best;
 }
 
