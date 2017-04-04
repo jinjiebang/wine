@@ -56,7 +56,6 @@ Pos AI::TurnBest() {
   cout << " val=" << bestPoint.val;
   cout << " NPS=" << total / (ThinkTime + 1) << "k";
   cout << "[" << best.x << "," << best.y << "]" << endl;
-  cout << best.x << "," << best.y << endl;
   
   return best;
 }
