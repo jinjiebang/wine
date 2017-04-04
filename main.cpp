@@ -73,11 +73,9 @@ int gomocup() {
         }
         cin >> command;
       }
-      if (c == 2) {
-        best = wine.TurnBest();
-        wine.TurnMove(best);
-        cout << best.x << "," << best.y << endl;
-      }
+      best = wine.TurnBest();
+      wine.TurnMove(best);
+      cout << best.x << "," << best.y << endl;
     } else if (command == "INFO") {
       int value;
       string key;
