@@ -12,7 +12,7 @@ const int block2 = 1;           // 眠二
 const int Ntype = 8;            // 棋型个数
 const int MaxSize = 20;         // 棋盘最大尺寸
 const int MaxMoves = 40;        // 最大着法数
-const int hashSize = 1 << 20;   // 哈希表尺寸
+const int hashSize = 1 << 22;   // 哈希表尺寸
 const int searchDepth = 20;     // 最大搜索深度
 
 // hash表相关
