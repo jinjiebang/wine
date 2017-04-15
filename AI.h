@@ -19,8 +19,9 @@ public:
   int ThinkTime = 0;
   int bestIndex;
   Point bestPoint;
-  bool stopThink = false;
+  Line bestLine;
   clock_t start;
+  bool stopThink = false;
 
   Pos gobang();
   Pos TurnBest();
@@ -31,8 +32,8 @@ public:
   int GetTime();
   int StopTime();
   int ScoreMove(Cell * c);
-  Point minimax(int depth, int alpha, int beta);
-  int AlphaBeta(int depth, int alpha, int beta);
+  Point minimax(int depth, int alpha, int beta, Line *pline);
+  int AlphaBeta(int depth, int alpha, int beta, Line *pline);
   int CutCand(Pos * move, Point * cand, int Csize);
   int GetMove(Pos * move);
   int evaluate();

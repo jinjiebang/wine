@@ -57,6 +57,12 @@ struct Hashe {
   int val;
 };
 
+// 走法路线
+struct Line {
+  int n;
+  Pos moves[searchDepth];
+};
+
 class Board {
 public:
   int step = 0;                                 // 棋盘落子数

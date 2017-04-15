@@ -8,6 +8,15 @@
 
 AI wine;
 
+void toupper(string &str){
+    for (size_t i = 0; i < str.size(); i++) {
+      char &c = str[i];
+      if (c >= 'a' && c <= 'z') {
+        c += 'A' - 'a';
+      }
+    }
+}
+
 int gomocup() {
   string command;
   Pos input, best;
@@ -15,12 +24,8 @@ int gomocup() {
   int size = 15;
   while (1) {
     cin >> command;
-    for (size_t i = 0; i < command.size(); i++) {
-      char &c = command[i];
-      if (c >= 'a' && c <= 'z') {
-        c += 'A' - 'a';
-      }
-    }
+    toupper(command);
+
     if (command == "START") {
       cin >> size;
       if (size > MaxSize || size <= 5) {
@@ -57,6 +62,7 @@ int gomocup() {
       wine.ReStart();
 
       cin >> command;
+      toupper(command);
       while (command != "DONE") {
         ss.clear();
         ss << command;
@@ -68,6 +74,7 @@ int gomocup() {
           wine.TurnMove(m);
         }
         cin >> command;
+        toupper(command);
       }
       best = wine.TurnBest();
       wine.TurnMove(best);
@@ -76,31 +83,33 @@ int gomocup() {
       int value;
       string key;
       cin >> key;
-      if (key == "timeout_turn") {
+      toupper(key);
+
+      if (key == "TIMEOUT_TURN") {
         cin >> value;
         if (value != 0)
           wine.timeout_turn = value;
 
-      } else if (key == "timeout_match") {
+      } else if (key == "TIMEOUT_MATCH") {
         cin >> value;
         if (value != 0)
           wine.timeout_match = value;
 
-      } else if (key == "time_left") {
+      } else if (key == "TIMEOUT_LEFT") {
         cin >> value;
         if (value != 0)
           wine.time_left = value;
 
-      } else if (key == "max_memory") {
+      } else if (key == "MAX_MEMORY") {
         cin >> value;
         // TODO
-      } else if (key == "game_type") {
+      } else if (key == "GAME_TYPE") {
         cin >> value;
         // TODO
-      } else if (key == "rule") {
+      } else if (key == "RULE") {
         cin >> value;
         // TODO
-      } else if (key == "folder") {
+      } else if (key == "FOLDER") {
         string t;
         cin >> t;
       }

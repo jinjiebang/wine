@@ -53,7 +53,12 @@ Pos AI::TurnBest() {
   // 输出思考信息
   cout << "MESSAGE" << " depth=" << MaxDepth << " NPS=" << total / (ThinkTime + 1) << "k" << endl;
   cout << "MESSAGE" << " best: [" << best.x << "," << best.y << "]" << " val=" << bestPoint.val << endl;
-  
+  cout << "MESSAGE" << " bestLine:";
+  for(int i = 0;i< bestLine.n;i++){
+    cout << " [" << bestLine.moves[i].x - 4 << "," << bestLine.moves[i].y - 4 << "]";
+  }
+  cout<<endl;
+
   return best;
 }
 
@@ -90,7 +95,7 @@ Pos AI::gobang() {
   memset(IsLose, false, sizeof(IsLose));
   for (int i = 2; i <= searchDepth && !stopThink; i += 2) {
     MaxDepth = i;
-    bestPoint = minimax(i, -10001, 10000);
+    bestPoint = minimax(i, -10001, 10000, &bestLine);
     if (GetTime() >= 1000 && i >= 10 && GetTime() * 12 >= StopTime()) stopThink = true;
   }
 
@@ -106,17 +111,19 @@ inline bool AI::Same(Pos a, Pos b) {
 }
 
 // 根节点搜索
-Point AI::minimax(int depth, int alpha, int beta) {
+Point AI::minimax(int depth, int alpha, int beta, Line *pline) {
+  Line line;
   Pos move[64];
   int move_count = GetMove(move);
-  
+
   Point best;
-  
+
   // 只存在一个可行着法，直接返回
   if (move_count == 1) {
     stopThink = true;
     best.p = move[0];
     best.val = 0;
+    pline->n = 0;
     return best;
   }
 
@@ -138,12 +145,12 @@ Point AI::minimax(int depth, int alpha, int beta) {
       MakeMove(move[i]);
       do {
         if (i > 0 && alpha + 1 < beta) {
-          val = -AlphaBeta(depth - 1, -alpha - 1, -alpha);
+          val = -AlphaBeta(depth - 1, -alpha - 1, -alpha, &line);
           if (val <= alpha || val >= beta) {
             break;
           }
         }
-        val = -AlphaBeta(depth - 1, -beta, -alpha);
+        val = -AlphaBeta(depth - 1, -beta, -alpha, &line);
       } while (0);
       DelMove();
 
@@ -156,6 +163,11 @@ Point AI::minimax(int depth, int alpha, int beta) {
         bestIndex = i;
         best.p = move[i];
         best.val = val;
+        //保存最佳路线
+        pline->moves[0] = move[i];
+        memcpy(pline->moves + 1, line.moves, line.n * sizeof(Pos));
+        pline->n = line.n + 1;
+        //找到必胜
         if(val == 10000) {
           stopThink = true;
           return best;
@@ -169,7 +181,7 @@ Point AI::minimax(int depth, int alpha, int beta) {
 }
 
 //带pvs的搜索
-int AI::AlphaBeta(int depth, int alpha, int beta) {
+int AI::AlphaBeta(int depth, int alpha, int beta, Line *pline) {
   total++;
 
   static int cnt = 1000;
@@ -180,16 +192,25 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     }
   }
   //对方已成五
-  if (CheckWin()) return -10000;
+  if (CheckWin()){
+    pline->n = 0;
+    return -10000;
+  }
   // 叶节点
-  if (depth == 0) return evaluate();
+  if (depth <= 0){
+    pline->n = 0;
+    //isPvLine = false;
+    return evaluate();
+  }
 
   int val = ProbeHash(depth, alpha, beta);
   if (val != unknown) {
     hashCount++;
+    pline->n = 0;
     return val;
   }
 
+  Line line;
   Pos move[64];
   int move_count = GetMove(move);
   int hashf = hash_alpha;
@@ -199,12 +220,12 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
     MakeMove(move[i]);
     do {
       if (i > 0 && alpha + 1 < beta) {
-        val = -AlphaBeta(depth - 1, -alpha - 1, -alpha);
+        val = -AlphaBeta(depth - 1, -alpha - 1, -alpha, &line);
         if (val <= alpha || val >= beta) {
           break;
         }
       }
-      val = -AlphaBeta(depth - 1, -beta, -alpha);
+      val = -AlphaBeta(depth - 1, -beta, -alpha, &line);
     } while (0);
     DelMove();
 
@@ -219,6 +240,9 @@ int AI::AlphaBeta(int depth, int alpha, int beta) {
       if (val > alpha) {
         hashf = hash_exact;
         alpha = val;
+        pline->moves[0] = move[i];
+        memcpy(pline->moves + 1, line.moves, line.n * sizeof(Pos));
+        pline->n = line.n + 1;
       }
     }
   }
