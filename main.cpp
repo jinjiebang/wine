@@ -95,7 +95,7 @@ int gomocup() {
         if (value != 0)
           wine.timeout_match = value;
 
-      } else if (key == "TIMEOUT_LEFT") {
+      } else if (key == "TIME_LEFT") {
         cin >> value;
         if (value != 0)
           wine.time_left = value;
