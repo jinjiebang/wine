@@ -80,6 +80,8 @@ public:
   bool IsLose[MaxSize + 4][MaxSize + 4];        // 记录根节点的必败点
   int who = Black;                              // 下子方
   int opp = White;                              // 另一方
+  Point rootMove[64];                           // 根节点着法
+  int rootCount;                                // 根节点着法个数
 
     Board();
    ~Board();
@@ -103,7 +105,7 @@ public:
   int GetType(int len, int len2, int count, int block);
 
   /* 可内联成员函数 */
-  
+
   // 返回第step步棋的颜色，先手黑棋，后手白棋
   int color(int step) {
     return step & 1;

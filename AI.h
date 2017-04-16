@@ -14,7 +14,7 @@ public:
   int hashCount = 0;            // hash表命中次数
   int MaxDepth = 0;             // 实际搜索深度
   int time_left = 10000000;
-  int timeout_turn = 30000;
+  int timeout_turn = 5000;
   int timeout_match = 10000000;
   int ThinkTime = 0;
   int bestIndex;
@@ -22,6 +22,7 @@ public:
   Line bestLine;
   clock_t start;
   bool stopThink = false;
+  int Npoint=0;
 
   Pos gobang();
   Pos TurnBest();

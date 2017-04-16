@@ -10,7 +10,6 @@
 int AI::GetTime() {
   return (double)(clock() - start) / CLOCKS_PER_SEC * 1000;
 }
- 
 // 返回当前可用的搜索时间
 int AI::StopTime() {
   return (timeout_turn < time_left / 7) ? timeout_turn : time_left / 7;
@@ -115,36 +114,35 @@ inline bool AI::Same(Pos a, Pos b) {
 // 根节点搜索
 Point AI::minimax(int depth, int alpha, int beta, Line *pline) {
   Line line;
-  Pos move[64];
-  int move_count = GetMove(move);
-
   Point best;
 
-  // 只存在一个可行着法，直接返回
-  if (move_count == 1) {
-    stopThink = true;
-    best.p = move[0];
-    best.val = 0;
-    pline->n = 0;
-    return best;
-  }
-
-  //上一层搜索的最佳点移动到首位
-  if(depth > 2){
-    for(int i = bestIndex - 1;i >= 0;i--){
-        move[i + 1] = move[i];
+  if(depth == 2){
+    Pos moves[64];
+    rootCount = GetMove(moves);
+    // 只存在一个可行着法，直接返回
+    if (rootCount == 1) {
+      stopThink = true;
+      best.p = moves[0];
+      best.val = 0;
+      pline->n = 0;
+      return best;
     }
-    move[0] = bestPoint.p;
-    best = bestPoint;
+
+    for(int i = 0;i < rootCount; i++){
+        rootMove[i].p = moves[i];
+    }
+  }else{
+    sort(rootMove, rootCount);
   }
 
   // 遍历可选点
   int val;
-  for (int i = 0; i < move_count; i++) {
+  for (int i = 0; i < rootCount; i++) {
     // 搜索非必败点
-    if (!IsLose[move[i].x][move[i].y]){
+    Pos p = rootMove[i].p;
+    if (!IsLose[p.x][p.y]){
 
-      MakeMove(move[i]);
+      MakeMove(p);
       do {
         if (i > 0 && alpha + 1 < beta) {
           val = -AlphaBeta(depth - 1, -alpha - 1, -alpha, &line);
@@ -156,17 +154,20 @@ Point AI::minimax(int depth, int alpha, int beta, Line *pline) {
       } while (0);
       DelMove();
 
+      rootMove[i].val=val;
+
       if (stopThink) break;
 
-      if (val == -10000) IsLose[move[i].x][move[i].y] = true;
+      if (val == -10000) IsLose[p.x][p.y] = true;
+
 
       if (val > alpha) {
         alpha = val;
         bestIndex = i;
-        best.p = move[i];
+        best.p = p;
         best.val = val;
         //保存最佳路线
-        pline->moves[0] = move[i];
+        pline->moves[0] = p;
         memcpy(pline->moves + 1, line.moves, line.n * sizeof(Pos));
         pline->n = line.n + 1;
         //找到必胜
@@ -204,7 +205,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta, Line *pline) {
     //isPvLine = false;
     return evaluate();
   }
-  
+
   // 查询哈希表
   int val = ProbeHash(depth, alpha, beta);
   if (val != unknown) {
@@ -342,21 +343,21 @@ int AI::evaluate() {
         TypeCount(&cell[i][j], who, whoType);
         TypeCount(&cell[i][j], opp, oppType);
         // 双冲四等同于活四
-        if (whoType[block4] - block4_temp >= 2){          
+        if (whoType[block4] - block4_temp >= 2){
           whoType[flex4]++;
         }
       }
     }
   }
-  
+
   // 当前局面轮到who下棋
   // who存在连五点，必胜
-  if (whoType[win] >= 1) return 10000;                          
-  // opp存在两个连五点，无法阻挡，必败                                                        
-  if (oppType[win] >= 2) return -10000;                        
+  if (whoType[win] >= 1) return 10000;
+  // opp存在两个连五点，无法阻挡，必败
+  if (oppType[win] >= 2) return -10000;
   // oppType[win]==0表示opp没有空格能成五，也就是没有冲四，此时who有活四的空格可下，必胜
-  if (oppType[win] == 0 && whoType[flex4] >= 1) return 10000;   
-                                                               
+  if (oppType[win] == 0 && whoType[flex4] >= 1) return 10000;
+
   // 计算双方局面分
   int Cscore = 0, Hscore = 0;
   for (int i = 1; i < 8; ++i) {
