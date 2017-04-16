@@ -6,10 +6,12 @@
 #include<iostream>
   using namespace std;
 
+// 返回当前已用的搜索时间
 int AI::GetTime() {
   return (double)(clock() - start) / CLOCKS_PER_SEC * 1000;
 }
-
+ 
+// 返回当前可用的搜索时间
 int AI::StopTime() {
   return (timeout_turn < time_left / 7) ? timeout_turn : time_left / 7;
 }
@@ -202,7 +204,8 @@ int AI::AlphaBeta(int depth, int alpha, int beta, Line *pline) {
     //isPvLine = false;
     return evaluate();
   }
-
+  
+  // 查询哈希表
   int val = ProbeHash(depth, alpha, beta);
   if (val != unknown) {
     hashCount++;
@@ -324,29 +327,37 @@ void AI::sort(Point * a, int n) {
   }
 }
 
-// 局面评价
+// 局面估值
 int AI::evaluate() {
   int whoType[8] = { 0 };               //记录下子方棋形数
   int oppType[8] = { 0 };               //记录另一方棋形数
   int block4_temp;
 
+  // 统计棋盘空点能成的棋形 棋盘数组：cell[i][j]
+  // isCand 表示该位置两格内的棋子个数
   for (int i = b_start; i < b_end; ++i) {
     for (int j = b_start; j < b_end; ++j) {
       if (cell[i][j].IsCand && cell[i][j].piece == Empty) {
         block4_temp = whoType[block4];
         TypeCount(&cell[i][j], who, whoType);
         TypeCount(&cell[i][j], opp, oppType);
-        if (whoType[block4] - block4_temp >= 2){
+        // 双冲四等同于活四
+        if (whoType[block4] - block4_temp >= 2){          
           whoType[flex4]++;
         }
       }
     }
   }
-
-  if (whoType[win] >= 1) return 10000;
-  if (oppType[win] >= 2) return -10000;
-  if (oppType[win] == 0 && whoType[flex4] >= 1) return 10000;
-
+  
+  // 当前局面轮到who下棋
+  // who存在连五点，必胜
+  if (whoType[win] >= 1) return 10000;                          
+  // opp存在两个连五点，无法阻挡，必败                                                        
+  if (oppType[win] >= 2) return -10000;                        
+  // oppType[win]==0表示opp没有空格能成五，也就是没有冲四，此时who有活四的空格可下，必胜
+  if (oppType[win] == 0 && whoType[flex4] >= 1) return 10000;   
+                                                               
+  // 计算双方局面分
   int Cscore = 0, Hscore = 0;
   for (int i = 1; i < 8; ++i) {
     Cscore += whoType[i] * Cval[i];
