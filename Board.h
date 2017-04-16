@@ -103,32 +103,35 @@ public:
   int GetType(int len, int len2, int count, int block);
 
   /* 可内联成员函数 */
+  
+  // 返回第step步棋的颜色，先手黑棋，后手白棋
   int color(int step) {
     return step & 1;
   }
-
+  // 检查坐标x,y是否越界
   bool CheckXy(int x, int y) {
     return cell[x][y].piece != Outside;
   }
-
+  // 返回最后一步棋的Cell指针
   Cell * LastMove(){
     return &cell[remMove[step - 1].x][remMove[step - 1].y];
   }
-
+  // role:黑棋-1 白棋-0 type:统计棋形个数的数组 c:棋盘该位置的Cell指针
   void TypeCount(Cell *c, int role, int *type) {
     ++type[c->pattern[role][0]];
     ++type[c->pattern[role][1]];
     ++type[c->pattern[role][2]];
     ++type[c->pattern[role][3]];
   }
-
+  // role:黑棋-1 白棋-0 type:要判断的棋形 c:棋盘该位置的Cell指针
+  // 返回该位置4个方向是否存在棋形type
   bool IsType(Cell *c, int role, int type) {
     return c->pattern[role][0] == type
       || c->pattern[role][1] == type
       || c->pattern[role][2] == type
       || c->pattern[role][3] == type;
   }
-
+ // 检查最后一步棋是否成连五
   bool CheckWin() {
     Cell *c = LastMove();
 
