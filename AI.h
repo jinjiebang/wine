@@ -6,8 +6,8 @@
 class AI:public Board {
 private:
   // 局面评价分值
-  int Cval[8] = { 0, 3, 18, 27, 144, 216, 1200, 1800 };
-  int Hval[8] = { 0, 2, 12, 18, 96, 144, 800, 1200 };
+  int whoVal[8] = { 0, 3, 18, 27, 144, 216, 1200, 1800 };
+  int oppVal[8] = { 0, 2, 12, 18, 96, 144, 800, 1200 };
 
 public:
   int total = 0;                // 搜索局面数
@@ -17,7 +17,6 @@ public:
   int timeout_turn = 5000;
   int timeout_match = 10000000;
   int ThinkTime = 0;
-  int bestIndex;
   Point bestPoint;
   Line bestLine;
   clock_t start;
@@ -29,6 +28,8 @@ public:
   void sort(Point * a, int n);
   void TurnMove(Pos next);
   void RecordHash(int depth, int val, int hashf);
+  void RecordPVS(Pos best);
+  Pos MoveNext(MoveList &moveList);
   int ProbeHash(int depth, int alpha, int beta);
   int GetTime();
   int StopTime();
@@ -38,7 +39,6 @@ public:
   int CutCand(Pos * move, Point * cand, int Csize);
   int GetMove(Pos * move);
   int evaluate();
-  bool Same(Pos a, Pos b);
 
 };
 #endif

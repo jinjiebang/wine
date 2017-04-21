@@ -12,7 +12,8 @@ const int block2 = 1;           // 眠二
 const int Ntype = 8;            // 棋型个数
 const int MaxSize = 20;         // 棋盘最大尺寸
 const int MaxMoves = 40;        // 最大着法数
-const int hashSize = 1 << 22;   // 哈希表尺寸
+const int hashSize = 1 << 22;   // 普通置换表尺寸
+const int pvsSize = 1 << 20;    // pvs置换表尺寸
 const int searchDepth = 20;     // 最大搜索深度
 
 // hash表相关
@@ -56,11 +57,22 @@ struct Hashe {
   int hashf;
   int val;
 };
+struct Pv {
+  U64 key;
+  Pos best;
+};
 
 // 走法路线
 struct Line {
   int n;
   Pos moves[searchDepth];
+};
+
+struct MoveList {
+    int phase,n,index;
+    bool first;
+    Pos hashMove;
+    Pos moves[64];
 };
 
 class Board {
@@ -71,6 +83,7 @@ public:
   U64 zobristKey = 0;                           // 表示当前局面的zobristKey
   U64 zobrist[2][MaxSize + 4][MaxSize + 4];     // zobrist键值表
   Hashe hashTable[hashSize];                    // 哈希表
+  Pv pvsTable[pvsSize];                         // pvs置换表
   int typeTable[10][6][6][3];                   // 初级棋型表
   int patternTable[65536][2];                   // 完整棋型表
   int pval[8][8][8][8];                         // 棋形分值表
@@ -103,6 +116,7 @@ public:
   int CheckFlex3(int *line);
   int CheckFlex4(int *line);
   int GetType(int len, int len2, int count, int block);
+  Pos MoveNext(MoveList &MoveList);
 
   /* 可内联成员函数 */
 

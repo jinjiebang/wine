@@ -91,7 +91,6 @@ Pos AI::gobang() {
   }
   // 迭代加深搜索
   stopThink = false;
-  bestIndex = 0;
   bestPoint.val = 0;
   memset(IsLose, false, sizeof(IsLose));
   for (int i = 2; i <= searchDepth && !stopThink; i += 2) {
@@ -107,9 +106,7 @@ Pos AI::gobang() {
   return bestMove;
 }
 
-inline bool AI::Same(Pos a, Pos b) {
-  return a.x == b.x && a.y == b.y;
-}
+
 
 // 根节点搜索
 Point AI::minimax(int depth, int alpha, int beta, Line *pline) {
@@ -163,7 +160,6 @@ Point AI::minimax(int depth, int alpha, int beta, Line *pline) {
 
       if (val > alpha) {
         alpha = val;
-        bestIndex = i;
         best.p = p;
         best.val = val;
         //保存最佳路线
@@ -177,10 +173,58 @@ Point AI::minimax(int depth, int alpha, int beta, Line *pline) {
         }
       }
     }
-
   }
 
+
   return best;
+}
+// 获取下一步着法
+Pos AI::MoveNext(MoveList &moveList){
+    /*phase0:置换表着法
+     *phase1:生成全部着法
+     *phase2:依次返回phase1中的着法
+     */
+
+    switch(moveList.phase){
+    case 0 :
+        moveList.phase = 1;
+        Pv *e;
+        e = &pvsTable[zobristKey % pvsSize];
+        if(e->key == zobristKey){
+            moveList.hashMove = e->best;
+            return e->best;
+        }
+    case 1 :
+        moveList.phase = 2;
+        moveList.n = GetMove(moveList.moves);
+        moveList.index = 0;
+        if(moveList.first == false){
+            for(int i = 0;i < moveList.n; i++){
+                if(moveList.moves[i].x == moveList.hashMove.x && moveList.moves[i].y == moveList.hashMove.y){
+                    for (int j = i + 1; j <  moveList.n; j++){
+                        moveList.moves[j-1]=moveList.moves[j];
+                    }
+                    moveList.n--;
+                    break;
+                }
+            }
+        }
+    case 2 :
+        if(moveList.index < moveList.n){
+            moveList.index++;
+            return moveList.moves[moveList.index-1];
+        }
+    default :
+        Pos p = {-1, -1};
+        return p;
+
+    }
+}
+// 记录pv着法
+void AI::RecordPVS(Pos best){
+    Pv *e = &pvsTable[zobristKey % pvsSize];
+    e->key = zobristKey;
+    e->best = best;
 }
 
 //带pvs的搜索
@@ -192,6 +236,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta, Line *pline) {
     cnt = 1000;
     if (GetTime() + 50 >= StopTime()) {
       stopThink = true;
+      return alpha;
     }
   }
   //对方已成五
@@ -202,7 +247,6 @@ int AI::AlphaBeta(int depth, int alpha, int beta, Line *pline) {
   // 叶节点
   if (depth <= 0){
     pline->n = 0;
-    //isPvLine = false;
     return evaluate();
   }
 
@@ -215,15 +259,16 @@ int AI::AlphaBeta(int depth, int alpha, int beta, Line *pline) {
   }
 
   Line line;
-  Pos move[64];
-  int move_count = GetMove(move);
+  MoveList moveList;
+  moveList.phase = 0;
+  moveList.first = true;
+  Pos p = MoveNext(moveList);
+  Point best = {p, -10000};
   int hashf = hash_alpha;
-  int val_best = -10000;
-  for (int i = 0; i < move_count; i++) {
-
-    MakeMove(move[i]);
+  while(p.x != -1){
+    MakeMove(p);
     do {
-      if (i > 0 && alpha + 1 < beta) {
+      if (!moveList.first && alpha + 1 < beta) {
         val = -AlphaBeta(depth - 1, -alpha - 1, -alpha, &line);
         if (val <= alpha || val >= beta) {
           break;
@@ -233,26 +278,33 @@ int AI::AlphaBeta(int depth, int alpha, int beta, Line *pline) {
     } while (0);
     DelMove();
 
-    if (stopThink) break;
+    if (stopThink) return best.val;
 
     if (val >= beta) {
       RecordHash(depth, val, hash_beta);
+      RecordPVS(p);
       return val;
     }
-    if (val > val_best){
-      val_best = val;
+    if (val > best.val){
+      best.val = val;
+      best.p = p;
       if (val > alpha) {
         hashf = hash_exact;
         alpha = val;
-        pline->moves[0] = move[i];
+        pline->moves[0] = p;
         memcpy(pline->moves + 1, line.moves, line.n * sizeof(Pos));
         pline->n = line.n + 1;
       }
     }
+    p = MoveNext(moveList);
+    moveList.first = false;
   }
-  if (!stopThink) RecordHash(depth, val_best, hashf);
 
-  return val_best;
+
+  RecordHash(depth, best.val, hashf);
+  RecordPVS(best.p);
+
+  return best.val;
 }
 
 // 棋型剪枝
@@ -334,8 +386,7 @@ int AI::evaluate() {
   int oppType[8] = { 0 };               //记录另一方棋形数
   int block4_temp;
 
-  // 统计棋盘空点能成的棋形 棋盘数组：cell[i][j]
-  // isCand 表示该位置两格内的棋子个数
+  // 统计棋盘所有空点能成的棋形数量
   for (int i = b_start; i < b_end; ++i) {
     for (int j = b_start; j < b_end; ++j) {
       if (cell[i][j].IsCand && cell[i][j].piece == Empty) {
@@ -351,21 +402,24 @@ int AI::evaluate() {
   }
 
   // 当前局面轮到who下棋
-  // who存在连五点，必胜
+  // 1.who存在连五点，必胜
+  // 2.opp存在两个连五点，无法阻挡，必败
+  // 3.opp不能成五，who有活四的空格可下，必胜
+  // 4.opp有四三，who无法反四，必败
   if (whoType[win] >= 1) return 10000;
-  // opp存在两个连五点，无法阻挡，必败
   if (oppType[win] >= 2) return -10000;
-  // oppType[win]==0表示opp没有空格能成五，也就是没有冲四，此时who有活四的空格可下，必胜
   if (oppType[win] == 0 && whoType[flex4] >= 1) return 10000;
+  if (whoType[flex4] + whoType[block4] == 0 && oppType[win] >= 1 && oppType[flex4] >= 1) return -10000;
+
 
   // 计算双方局面分
-  int Cscore = 0, Hscore = 0;
+  int whoScore = 0, oppScore = 0;
   for (int i = 1; i < 8; ++i) {
-    Cscore += whoType[i] * Cval[i];
-    Hscore += oppType[i] * Hval[i];
+    whoScore += whoType[i] * whoVal[i];
+    oppScore += oppType[i] * oppVal[i];
   }
 
-  return Cscore - Hscore;
+  return whoScore - oppScore;
 }
 
 // 着法打分
