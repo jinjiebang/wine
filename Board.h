@@ -14,7 +14,7 @@ const int MaxSize = 20;         // 棋盘最大尺寸
 const int MaxMoves = 40;        // 最大着法数
 const int hashSize = 1 << 22;   // 普通置换表尺寸
 const int pvsSize = 1 << 20;    // pvs置换表尺寸
-const int searchDepth = 20;     // 最大搜索深度
+const int MaxDepth = 20;        // 最大搜索深度
 
 // hash表相关
 const int hash_exact = 0;
@@ -65,7 +65,7 @@ struct Pv {
 // 走法路线
 struct Line {
   int n;
-  Pos moves[searchDepth];
+  Pos moves[MaxDepth];
 };
 
 struct MoveList {

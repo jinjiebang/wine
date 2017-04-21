@@ -10,7 +10,7 @@
 int AI::GetTime() {
   return (double)(clock() - start) / CLOCKS_PER_SEC * 1000;
 }
-// 返回当前可用的搜索时间
+// 返回每步可用的搜索时间
 int AI::StopTime() {
   return (timeout_turn < time_left / 7) ? timeout_turn : time_left / 7;
 }
@@ -52,7 +52,7 @@ Pos AI::TurnBest() {
   Pos best = gobang();
   best.x -= 4, best.y -= 4;
   // 输出思考信息
-  cout << "MESSAGE" << " depth=" << MaxDepth << " NPS=" << total / (ThinkTime + 1) << "k" << endl;
+  cout << "MESSAGE" << " depth=" << searchDepth << " NPS=" << total / (ThinkTime + 1) << "k" << endl;
   cout << "MESSAGE" << " best: [" << best.x << "," << best.y << "]" << " val=" << bestPoint.val << endl;
   cout << "MESSAGE" << " bestLine:";
   for(int i = 0;i< bestLine.n;i++){
@@ -93,10 +93,11 @@ Pos AI::gobang() {
   stopThink = false;
   bestPoint.val = 0;
   memset(IsLose, false, sizeof(IsLose));
-  for (int i = 2; i <= searchDepth && !stopThink; i += 2) {
-    MaxDepth = i;
-    bestPoint = minimax(i, -10001, 10000, &bestLine);
-    if (GetTime() >= 1000 && i >= 10 && GetTime() * 12 >= StopTime()) stopThink = true;
+  for (searchDepth = 2; searchDepth <= MaxDepth && !stopThink; searchDepth += 2) {
+    bestPoint = minimax(searchDepth, -10001, 10000, &bestLine);
+    if(stopThink || (searchDepth >= 10 && GetTime() >= 1000 && GetTime()* 14 > StopTime())){
+        break;
+    }
   }
 
   ThinkTime = GetTime();

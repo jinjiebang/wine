@@ -12,7 +12,7 @@ private:
 public:
   int total = 0;                // 搜索局面数
   int hashCount = 0;            // hash表命中次数
-  int MaxDepth = 0;             // 实际搜索深度
+  int searchDepth = 0;          // 实际搜索深度
   int time_left = 10000000;
   int timeout_turn = 5000;
   int timeout_match = 10000000;
