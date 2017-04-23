@@ -410,8 +410,6 @@ int AI::evaluate() {
   if (whoType[win] >= 1) return 10000;
   if (oppType[win] >= 2) return -10000;
   if (oppType[win] == 0 && whoType[flex4] >= 1) return 10000;
-  if (whoType[flex4] + whoType[block4] == 0 && oppType[win] >= 1 && oppType[flex4] >= 1) return -10000;
-
 
   // 计算双方局面分
   int whoScore = 0, oppScore = 0;
