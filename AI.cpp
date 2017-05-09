@@ -405,7 +405,6 @@ int AI::evaluate() {
   // 1.who存在连五点，必胜
   // 2.opp存在两个连五点，无法阻挡，必败
   // 3.opp不能成五，who有活四的空格可下，必胜
-  // 4.opp有四三，who无法反四，必败
   if (whoType[win] >= 1) return 10000;
   if (oppType[win] >= 2) return -10000;
   if (oppType[win] == 0 && whoType[flex4] >= 1) return 10000;
