@@ -111,8 +111,9 @@ Pos AI::gobang() {
 
 // 根节点搜索
 Point AI::minimax(int depth, int alpha, int beta, Line *pline) {
-  Line line;
   Point best;
+  Line line;
+  line.n = 0;
 
   if(depth == 2){
     Pos moves[64];
@@ -242,12 +243,10 @@ int AI::AlphaBeta(int depth, int alpha, int beta, Line *pline) {
   }
   //对方已成五
   if (CheckWin()){
-    pline->n = 0;
     return -10000;
   }
   // 叶节点
   if (depth <= 0){
-    pline->n = 0;
     return evaluate();
   }
 
@@ -255,11 +254,11 @@ int AI::AlphaBeta(int depth, int alpha, int beta, Line *pline) {
   int val = ProbeHash(depth, alpha, beta);
   if (val != unknown) {
     hashCount++;
-    pline->n = 0;
     return val;
   }
 
   Line line;
+  line.n = 0;
   MoveList moveList;
   moveList.phase = 0;
   moveList.first = true;
