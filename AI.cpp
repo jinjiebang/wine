@@ -111,7 +111,7 @@ Pos AI::gobang() {
 
 // 根节点搜索
 Point AI::minimax(int depth, int alpha, int beta, Line *pline) {
-  Point best;
+  Point best = rootMove[0];
   Line line;
   line.n = 0;
 
