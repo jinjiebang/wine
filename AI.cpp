@@ -77,18 +77,19 @@ Pos AI::gobang() {
     return bestMove;
   }
   /* 第二步随机选择第一手棋周围一格内的点, 第三步随机选择第一手棋周围两格内的点 */
+  /*
   if (step == 1 || step == 2) {
     int rx, ry;
     srand(time(NULL));
     do {
-      /*rand() % (step * 2 + 1) - step表示随机选择 -step 到 step 的值*/
+      //rand() % (step * 2 + 1) - step表示随机选择 -step 到 step 的值
       rx = remMove[0].x + rand() % (step * 2 + 1) - step;
       ry = remMove[0].y + rand() % (step * 2 + 1) - step;
     } while (!CheckXy(rx, ry) || cell[rx][ry].piece != Empty);
     bestMove.x = rx;
     bestMove.y = ry;
     return bestMove;
-  }
+  }*/
   // 迭代加深搜索
   stopThink = false;
   bestPoint.val = 0;
