@@ -14,6 +14,7 @@ Board::Board() {
   memset(cell, 0, sizeof(cell));
   memset(IsLose, 0, sizeof(IsLose));
   memset(remMove, 0, sizeof(remMove));
+  memset(pvsTable, 0, sizeof(pvsTable));
   memset(hashTable, 0, sizeof(hashTable));
   SetSize(15);
 }
@@ -107,7 +108,7 @@ void Board::Undo() {
 
 // 重新开始
 void Board::ReStart() {
-  zobristKey = 0;
+  memset(pvsTable, 0, sizeof(pvsTable));
   memset(hashTable, 0, sizeof(hashTable));
   while (step) {
     DelMove();
