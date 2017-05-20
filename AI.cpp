@@ -77,7 +77,6 @@ Pos AI::gobang() {
     return bestMove;
   }
   /* 第二步随机选择第一手棋周围一格内的点, 第三步随机选择第一手棋周围两格内的点 */
-  /*
   if (step == 1 || step == 2) {
     int rx, ry;
     srand(time(NULL));
@@ -89,7 +88,7 @@ Pos AI::gobang() {
     bestMove.x = rx;
     bestMove.y = ry;
     return bestMove;
-  }*/
+  }
   // 迭代加深搜索
   stopThink = false;
   bestPoint.val = 0;
