@@ -134,7 +134,7 @@ Point AI::minimax(int depth, int alpha, int beta, Line *pline) {
         if(rootMove[i].val > rootMove[0].val){
             Point temp = rootMove[0];
             rootMove[0] = rootMove[i];
-            rootMove[i ]= temp;
+            rootMove[i] = temp;
         }
     }
   }
