@@ -130,7 +130,13 @@ Point AI::minimax(int depth, int alpha, int beta, Line *pline) {
         rootMove[i].p = moves[i];
     }
   }else{
-    sort(rootMove, rootCount);
+    for(int i = 1; i < rootCount; i++){
+        if(rootMove[i].val > rootMove[0].val){
+            Point temp = rootMove[0];
+            rootMove[0] = rootMove[i];
+            rootMove[i ]= temp;
+        }
+    }
   }
 
   // 遍历可选点
