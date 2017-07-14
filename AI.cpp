@@ -93,9 +93,9 @@ Pos AI::gobang() {
   stopThink = false;
   bestPoint.val = 0;
   memset(IsLose, false, sizeof(IsLose));
-  for (searchDepth = 2; searchDepth <= MaxDepth && !stopThink; searchDepth++) {
+  for (searchDepth = 2; searchDepth <= MaxDepth && !stopThink; searchDepth += 2) {
     bestPoint = minimax(searchDepth, -10001, 10000, &bestLine);
-    if(stopThink || (searchDepth >= 10 && GetTime() >= 1000 && GetTime()* 5 > StopTime())){
+    if(stopThink || (searchDepth >= 10 && GetTime() >= 1000 && GetTime()* 12 > StopTime())){
         break;
     }
   }
