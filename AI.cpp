@@ -418,8 +418,8 @@ int AI::evaluate() {
   // 计算双方局面分
   int whoScore = 0, oppScore = 0;
   for (int i = 1; i < 8; ++i) {
-    whoScore += whoType[i] * eval[i];
-    oppScore += oppType[i] * eval[i];
+    whoScore += whoType[i] * whoVal[i];
+    oppScore += oppType[i] * oppVal[i];
   }
 
   return whoScore - oppScore;
