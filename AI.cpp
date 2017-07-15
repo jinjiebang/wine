@@ -250,6 +250,12 @@ int AI::AlphaBeta(int depth, int alpha, int beta, Line *pline) {
   if (CheckWin()){
     return -10000;
   }
+  // 冲四延伸
+  if (depth <= 1){
+    if(IsType(LastMove(), opp, block4)){
+        depth += 2;
+    }
+  }
   // 叶节点
   if (depth <= 0){
     return evaluate();
