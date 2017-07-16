@@ -251,7 +251,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta, Line *pline) {
     return -10000;
   }
   // 冲四延伸
-  if (depth <= 1){
+  if (depth <= 1 && ply < MaxDepth){
     if(IsType(LastMove(), opp, block4)){
         depth += 2;
     }
