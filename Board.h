@@ -95,6 +95,7 @@ public:
   int opp = White;                              // 另一方
   Point rootMove[64];                           // 根节点着法
   int rootCount;                                // 根节点着法个数
+  int ply = 0;                                  // 当前搜索的层数
 
     Board();
    ~Board();
