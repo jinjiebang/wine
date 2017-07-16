@@ -57,7 +57,8 @@ void Board::SetSize(int _size) {
 void Board::MakeMove(Pos next) {
   int x = next.x;
   int y = next.y;
-
+  
+  ply++;
   cell[x][y].piece = who;
   zobristKey ^= zobrist[who][x][y];
   who ^= 1;
@@ -80,7 +81,8 @@ void Board::DelMove() {
   step--;
   int x = remMove[step].x;
   int y = remMove[step].y;
-
+  
+  ply--;
   who ^= 1;
   opp ^= 1;
   zobristKey ^= zobrist[who][x][y];
