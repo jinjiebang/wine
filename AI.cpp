@@ -92,6 +92,7 @@ Pos AI::gobang() {
   // 迭代加深搜索
   stopThink = false;
   bestPoint.val = 0;
+  ply = 0;
   memset(IsLose, false, sizeof(IsLose));
   for (searchDepth = 2; searchDepth <= MaxDepth && !stopThink; searchDepth += 2) {
     bestPoint = minimax(searchDepth, -10001, 10000, &bestLine);
