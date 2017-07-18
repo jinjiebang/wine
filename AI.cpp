@@ -94,9 +94,9 @@ Pos AI::gobang() {
   bestPoint.val = 0;
   ply = 0;
   memset(IsLose, false, sizeof(IsLose));
-  for (searchDepth = 2; searchDepth <= MaxDepth && !stopThink; searchDepth += 2) {
+  for (searchDepth = 2; searchDepth <= MaxDepth && !stopThink; searchDepth++) {
     bestPoint = minimax(searchDepth, -10001, 10000, &bestLine);
-    if(stopThink || (searchDepth >= 10 && GetTime() >= 1000 && GetTime()* 12 > StopTime())){
+    if(stopThink || (searchDepth >= 10 && GetTime() >= 1000 && GetTime()* 5 > StopTime())){
         break;
     }
   }
@@ -131,13 +131,7 @@ Point AI::minimax(int depth, int alpha, int beta, Line *pline) {
         rootMove[i].p = moves[i];
     }
   }else{
-    for(int i = 1; i < rootCount; i++){
-        if(rootMove[i].val > rootMove[0].val){
-            Point temp = rootMove[0];
-            rootMove[0] = rootMove[i];
-            rootMove[i] = temp;
-        }
-    }
+      sort(rootMove,rootCount);
   }
 
   // 遍历可选点
@@ -252,7 +246,7 @@ int AI::AlphaBeta(int depth, int alpha, int beta, Line *pline) {
     return -10000;
   }
   // 冲四延伸
-  if (depth <= 1 && ply < MaxDepth){
+  if (depth <= 0 && ply < MaxDepth){
     if(IsType(LastMove(), opp, block4)){
         depth += 2;
     }
@@ -425,8 +419,8 @@ int AI::evaluate() {
   // 计算双方局面分
   int whoScore = 0, oppScore = 0;
   for (int i = 1; i < 8; ++i) {
-    whoScore += whoType[i] * whoVal[i];
-    oppScore += oppType[i] * oppVal[i];
+    whoScore += whoType[i] * eval[i];
+    oppScore += oppType[i] * eval[i];
   }
 
   return whoScore - oppScore;
