@@ -1,5 +1,6 @@
 # wine
 Gomoku game (Five in a Row) playing program witha strong artificial intelligence algorithm. Documented in author's native language (Chinese)
+•最新版AI已移至https://github.com/jinjiebang/AIWine，最新版AI能在gomocup排名第5
 
 •使用了pvs和迭代加深的五子棋
 
